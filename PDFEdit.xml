@@ -1,0 +1,296 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>PDFEdit</name>
+    </assembly>
+    <members>
+        <member name="T:PDFEdit.Controllers.DocumentController">
+            <summary>
+            A controller for handling documents.
+            </summary>
+            <seealso cref="T:Microsoft.AspNetCore.Mvc.ControllerBase"/>
+        </member>
+        <member name="M:PDFEdit.Controllers.DocumentController.#ctor(PDFEdit.Services.DirectoryService,PDFEdit.Services.PDFService,PDFEdit.Services.PDFManipulationService)">
+            <summary>
+            Initialises a new instance of the <see cref="T:PDFEdit.Controllers.DocumentController"/>
+            class.
+            </summary>
+            <param name="directoryService">The directory service.</param>
+            <param name="pdfService">The PDF service.</param>
+            <param name="pdfManipulationService">The PDF manipulation service.</param>
+        </member>
+        <member name="M:PDFEdit.Controllers.DocumentController.GetDocuments">
+            <summary>
+            Gets the documents in the input folder.
+            </summary>
+            <returns>
+            An enumerator that allows foreach to be used to process the documents in this collection.
+            </returns>
+        </member>
+        <member name="M:PDFEdit.Controllers.DocumentController.GetPageCount(System.String)">
+            <summary>
+            Gets page count of the specified document.
+            </summary>
+            <param name="document">The document.</param>
+            <returns>
+            The page count.
+            </returns>
+        </member>
+        <member name="M:PDFEdit.Controllers.DocumentController.GetPagePreview(System.String,System.Int32)">
+            <summary>
+            Gets page preview in the specified document.
+            </summary>
+            <param name="document">The document.</param>
+            <param name="pageNumber">The page number (starting at 1).</param>
+            <returns>
+            The page preview.
+            </returns>
+        </member>
+        <member name="M:PDFEdit.Controllers.DocumentController.RotatePage(System.String,System.Int32)">
+            <summary>
+            Rotate page in the specified document.
+            </summary>
+            <param name="document">The document.</param>
+            <param name="pageNumber">The page number (starting at 1).</param>
+            <returns>
+            An IActionResult.
+            </returns>
+        </member>
+        <member name="M:PDFEdit.Controllers.DocumentController.DeletePage(System.String,System.Int32)">
+            <summary>
+            Deletes the page in the specified document.
+            </summary>
+            <param name="document">The document.</param>
+            <param name="pageNumber">The page number (starting at 1).</param>
+            <returns>
+            An IActionResult.
+            </returns>
+        </member>
+        <member name="M:PDFEdit.Controllers.DocumentController.ReorderPages(System.String,System.Collections.Generic.List{System.Int32})">
+            <summary>
+            Reorder pages in the specified document.
+            </summary>
+            <param name="document">The document.</param>
+            <param name="newPageOrder">The new page order.</param>
+            <returns>
+            An IActionResult.
+            </returns>
+        </member>
+        <member name="M:PDFEdit.Controllers.DocumentController.RevertChanges(System.String)">
+            <summary>
+            Revert changes to the specified document.
+            </summary>
+            <param name="document">The document.</param>
+            <returns>
+            An IActionResult.
+            </returns>
+        </member>
+        <member name="M:PDFEdit.Controllers.DocumentController.Delete(System.String)">
+            <summary>
+            Deletes the specified document.
+            </summary>
+            <param name="document">The document.</param>
+            <returns>
+            An IActionResult.
+            </returns>
+        </member>
+        <member name="M:PDFEdit.Controllers.DocumentController.Save(System.String)">
+            <summary>
+            Saves the specified document to the output directory.
+            </summary>
+            <param name="document">The document.</param>
+            <returns>
+            An IActionResult.
+            </returns>
+        </member>
+        <member name="T:PDFEdit.Models.DocNetSingleton">
+            <summary>
+            A document net singleton.
+            </summary>
+            <seealso cref="T:System.IDisposable"/>
+        </member>
+        <member name="P:PDFEdit.Models.DocNetSingleton.Instance">
+            <summary>
+            Gets the instance.
+            </summary>
+            <value>
+            The instance.
+            </value>
+        </member>
+        <member name="M:PDFEdit.Models.DocNetSingleton.#ctor">
+            <summary>
+            Initialises a new instance of the <see cref="T:PDFEdit.Models.DocNetSingleton"/> class.
+            </summary>
+        </member>
+        <member name="M:PDFEdit.Models.DocNetSingleton.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged
+            resources.
+            </summary>
+            <seealso cref="M:System.IDisposable.Dispose"/>
+        </member>
+        <member name="T:PDFEdit.Services.DirectoryService">
+            <summary>
+            A directory service.
+            </summary>
+        </member>
+        <member name="F:PDFEdit.Services.DirectoryService.PDF_EXTENSION">
+            <summary>
+            The PDF extension.
+            </summary>
+        </member>
+        <member name="F:PDFEdit.Services.DirectoryService.EDITING_PDF_EXTENSION">
+            <summary>
+            The editing PDF extension.
+            </summary>
+        </member>
+        <member name="F:PDFEdit.Services.DirectoryService._inputDirectory">
+            <summary>
+            Pathname of the input directory.
+            </summary>
+        </member>
+        <member name="F:PDFEdit.Services.DirectoryService._originalDirectory">
+            <summary>
+            Pathname of the original directory.
+            </summary>
+        </member>
+        <member name="F:PDFEdit.Services.DirectoryService._outputDirectory">
+            <summary>
+            Pathname of the output directory.
+            </summary>
+        </member>
+        <member name="M:PDFEdit.Services.DirectoryService.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Initialises a new instance of the <see cref="T:PDFEdit.Services.DirectoryService"/> class.
+            </summary>
+            <exception cref="T:System.Exception">Thrown when an exception error condition occurs.</exception>
+            <param name="configuration">The configuration.</param>
+        </member>
+        <member name="M:PDFEdit.Services.DirectoryService.GetDocumentList">
+            <summary>
+            Gets the document lists in this collection.
+            </summary>
+            <returns>
+            An enumerator that allows foreach to be used to process the document lists in this collection.
+            </returns>
+        </member>
+        <member name="M:PDFEdit.Services.DirectoryService.GetDocumentPath(System.String)">
+            <summary>
+            Gets document path.
+            </summary>
+            <param name="name">The name.</param>
+            <returns>
+            The document path.
+            </returns>
+        </member>
+        <member name="M:PDFEdit.Services.DirectoryService.GetEditingDocumentPath(System.String)">
+            <summary>
+            Gets editing document path.
+            </summary>
+            <exception cref="T:System.Exception">Thrown when an exception error condition occurs.</exception>
+            <param name="name">The name.</param>
+            <returns>
+            The editing document path.
+            </returns>
+        </member>
+        <member name="M:PDFEdit.Services.DirectoryService.Delete(System.String)">
+            <summary>
+            Deletes the document and any modifications.
+            </summary>
+            <param name="name">The name.</param>
+        </member>
+        <member name="M:PDFEdit.Services.DirectoryService.Save(System.String)">
+            <summary>
+            Saves the document to the output directory.
+            </summary>
+            <param name="name">The name.</param>
+        </member>
+        <member name="T:PDFEdit.Services.PDFManipulationService">
+            <summary>
+            A PDF manipulation service.
+            </summary>
+        </member>
+        <member name="F:PDFEdit.Services.PDFManipulationService._directoryService">
+            <summary>
+            The directory service.
+            </summary>
+        </member>
+        <member name="M:PDFEdit.Services.PDFManipulationService.#ctor(PDFEdit.Services.DirectoryService)">
+            <summary>
+            Initialises a new instance of the <see cref="T:PDFEdit.Services.PDFManipulationService"/>
+            class.
+            </summary>
+            <param name="directoryService">The directory service.</param>
+        </member>
+        <member name="M:PDFEdit.Services.PDFManipulationService.RotateClockwise(System.String,System.Int32)">
+            <summary>
+            Rotate clockwise.
+            </summary>
+            <param name="document">The document.</param>
+            <param name="pageNumber">The page number.</param>
+        </member>
+        <member name="M:PDFEdit.Services.PDFManipulationService.DeletePage(System.String,System.Int32)">
+            <summary>
+            Deletes the page.
+            </summary>
+            <param name="document">The document.</param>
+            <param name="pageNumber">The page number.</param>
+        </member>
+        <member name="M:PDFEdit.Services.PDFManipulationService.ReorderPages(System.String,System.Collections.Generic.List{System.Int32})">
+            <summary>
+            Reorder pages.
+            </summary>
+            <param name="document">The document.</param>
+            <param name="newPageOrder">The new page order.</param>
+        </member>
+        <member name="M:PDFEdit.Services.PDFManipulationService.RevertChanges(System.String)">
+            <summary>
+            Revert changes.
+            </summary>
+            <param name="document">The document.</param>
+        </member>
+        <member name="T:PDFEdit.Services.PDFService">
+            <summary>
+            A PDF service.
+            </summary>
+        </member>
+        <member name="F:PDFEdit.Services.PDFService._docNet">
+            <summary>
+            The document net.
+            </summary>
+        </member>
+        <member name="M:PDFEdit.Services.PDFService.#ctor(PDFEdit.Models.DocNetSingleton)">
+            <summary>
+            Initialises a new instance of the <see cref="T:PDFEdit.Services.PDFService"/> class.
+            </summary>
+            <param name="docNet">The document net.</param>
+        </member>
+        <member name="M:PDFEdit.Services.PDFService.GetPageCount(System.String)">
+            <summary>
+            Gets page count.
+            </summary>
+            <param name="path">Full pathname of the file.</param>
+            <returns>
+            The page count.
+            </returns>
+        </member>
+        <member name="M:PDFEdit.Services.PDFService.GetPagePreview(System.String,System.Int32,System.Drawing.Imaging.ImageFormat)">
+            <summary>
+            Gets page preview.
+            </summary>
+            <param name="path">Full pathname of the file.</param>
+            <param name="pageNumber">The page number.</param>
+            <param name="imageFormat">The image format.</param>
+            <returns>
+            An array of byte.
+            </returns>
+        </member>
+        <member name="M:PDFEdit.Services.PDFService.AddBytes(System.Drawing.Bitmap,System.Byte[])">
+            <summary>
+            Adds the bytes to 'rawBytes'.
+            </summary>
+            <param name="bmp">The bitmap.</param>
+            <param name="rawBytes">The raw in bytes.</param>
+        </member>
+    </members>
+</doc>
