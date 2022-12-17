@@ -1,0 +1,53 @@
+/* Scroll wrapper */
+.scrolling-wrapper {
+  overflow-x: scroll;
+  overflow-y: hidden;
+  white-space: nowrap;
+  padding-bottom: 20px;
+}
+
+/* Sizes of thumbnails */
+.scrolling-wrapper.small .thumb-container img {
+  height: 200px;
+}
+
+.scrolling-wrapper.medium .thumb-container img {
+  height: 400px;
+}
+
+.scrolling-wrapper.large .thumb-container img {
+  height: 800px;
+}
+
+/* Thumbnail container*/
+.thumb-container {
+  display: inline-block;
+  margin-right: 20px;
+  background-color: #fff;
+  position: relative;
+}
+
+.thumb-container:last-child {
+  margin-right: 0;
+}
+
+.thumb {
+  border: 3px solid black;
+}
+
+.thumb.active {
+  border-color: #ff0000;
+}
+
+.page-number {
+    position: absolute;
+    float: left;
+    height: 28px;
+    left: 3px;
+    right: 3px;
+    bottom: 3px;
+    background: #000;
+    color: #fff;
+    opacity: 0.5;
+    text-align: center;
+}

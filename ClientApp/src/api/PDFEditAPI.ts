@@ -33,7 +33,7 @@ export class DocumentClient {
      * Gets the documents in the input folder.
      * @return An enumerator that allows foreach to be used to process the documents in this collection.
      */
-    getDocuments(): Observable<string[] | null> {
+    getDocuments(): Observable<Document[] | null> {
         let url_ = this.baseUrl + "/api/documents/list";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -53,14 +53,14 @@ export class DocumentClient {
                 try {
                     return this.processGetDocuments(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<string[] | null>;
+                    return _observableThrow(e) as any as Observable<Document[] | null>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<string[] | null>;
+                return _observableThrow(response_) as any as Observable<Document[] | null>;
         }));
     }
 
-    protected processGetDocuments(response: HttpResponseBase): Observable<string[] | null> {
+    protected processGetDocuments(response: HttpResponseBase): Observable<Document[] | null> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -74,7 +74,7 @@ export class DocumentClient {
             if (Array.isArray(resultData200)) {
                 result200 = [] as any;
                 for (let item of resultData200)
-                    result200!.push(item);
+                    result200!.push(Document.fromJS(item));
             }
             else {
                 result200 = <any>null;
@@ -86,7 +86,7 @@ export class DocumentClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<string[] | null>(null as any);
+        return _observableOf<Document[] | null>(null as any);
     }
 
     /**
@@ -94,7 +94,7 @@ export class DocumentClient {
      * @param document The document.
      * @return The page count.
      */
-    getPageCount(document: string): Observable<FileResponse | null> {
+    getPageCount(document: string): Observable<number> {
         let url_ = this.baseUrl + "/api/documents/{document}";
         if (document === undefined || document === null)
             throw new Error("The parameter 'document' must be defined.");
@@ -117,37 +117,34 @@ export class DocumentClient {
                 try {
                     return this.processGetPageCount(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<FileResponse | null>;
+                    return _observableThrow(e) as any as Observable<number>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<FileResponse | null>;
+                return _observableThrow(response_) as any as Observable<number>;
         }));
     }
 
-    protected processGetPageCount(response: HttpResponseBase): Observable<FileResponse | null> {
+    protected processGetPageCount(response: HttpResponseBase): Observable<number> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
             (response as any).error instanceof Blob ? (response as any).error : undefined;
 
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200 || status === 206) {
-            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
-            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
-            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
-            if (fileName) {
-                fileName = decodeURIComponent(fileName);
-            } else {
-                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
-                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
-            }
-            return _observableOf({ fileName: fileName, data: responseBlob as any, status: status, headers: _headers });
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : <any>null;
+    
+            return _observableOf(result200);
+            }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<FileResponse | null>(null as any);
+        return _observableOf<number>(null as any);
     }
 
     /**
@@ -593,6 +590,50 @@ export class DocumentClient {
         }
         return _observableOf<FileResponse | null>(null as any);
     }
+}
+
+export class Document implements IDocument {
+    name!: string;
+    created!: Date;
+    lastModified!: Date;
+
+    constructor(data?: IDocument) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.name = _data["name"] !== undefined ? _data["name"] : <any>null;
+            this.created = _data["created"] ? new Date(_data["created"].toString()) : <any>null;
+            this.lastModified = _data["lastModified"] ? new Date(_data["lastModified"].toString()) : <any>null;
+        }
+    }
+
+    static fromJS(data: any): Document {
+        data = typeof data === 'object' ? data : {};
+        let result = new Document();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["name"] = this.name !== undefined ? this.name : <any>null;
+        data["created"] = this.created ? this.created.toISOString() : <any>null;
+        data["lastModified"] = this.lastModified ? this.lastModified.toISOString() : <any>null;
+        return data;
+    }
+}
+
+export interface IDocument {
+    name: string;
+    created: Date;
+    lastModified: Date;
 }
 
 export interface FileResponse {

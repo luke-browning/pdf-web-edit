@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using PDFEdit.Models;
 using PDFEdit.Services;
 using System.Drawing.Imaging;
 
@@ -38,7 +39,7 @@ namespace PDFEdit.Controllers
         /// </returns>
         [HttpGet]
         [Route("list")]
-        public IEnumerable<string> GetDocuments()
+        public IEnumerable<Document> GetDocuments()
         {
             return _directoryService.GetDocumentList();
         }
@@ -52,20 +53,20 @@ namespace PDFEdit.Controllers
         /// </returns>
         [HttpGet]
         [Route("{document}")]
-        public IActionResult GetPageCount(string document)
+        public int GetPageCount(string document)
         {
             // Get the path to the document
             var path = _directoryService.GetDocumentPath(document);
 
             if (path != null)
             {
-                var info = _pdfService.GetPageCount(path);
+                var pageCount = _pdfService.GetPageCount(path);
 
-                return Ok(info);
+                return pageCount;
             }
             else
             {
-                return NotFound();
+                return 0;
             }
         }
 

@@ -63,7 +63,7 @@ namespace PDFEdit.Services
             byte[] result = null;
 
             // Open the document
-            var doc = _docNet.Instance.GetDocReader(path, new Docnet.Core.Models.PageDimensions(1080, 1920));
+            var doc = _docNet.Instance.GetDocReader(path, new Docnet.Core.Models.PageDimensions(565, 800));
             var pageReader = doc.GetPageReader(pageNumber);
 
             // Render the image

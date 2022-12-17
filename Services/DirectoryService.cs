@@ -1,4 +1,6 @@
-﻿namespace PDFEdit.Services
+﻿using PDFEdit.Models;
+
+namespace PDFEdit.Services
 {
     /// <summary>
     /// A directory service.
@@ -59,10 +61,15 @@
         /// <returns>
         /// An enumerator that allows foreach to be used to process the document lists in this collection.
         /// </returns>
-        public IEnumerable<string> GetDocumentList()
+        public IEnumerable<Document> GetDocumentList()
         {
             var documents = Directory.EnumerateFiles(_inputDirectory, $"*{PDF_EXTENSION}")
-                .Select(x => Path.GetFileNameWithoutExtension(x));
+                .Select(x => new Document
+                {
+                    Name = Path.GetFileNameWithoutExtension(x),
+                    Created = File.GetCreationTime(x),
+                    LastModified = File.GetLastWriteTime(x)
+                });
 
             return documents;
         }
