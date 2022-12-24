@@ -90,12 +90,73 @@ export class DocumentClient {
     }
 
     /**
+     * Gets a document.
+     * @param document The document.
+     * @return The document.
+     */
+    getDocument(document: string): Observable<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/documents/{document}/download";
+        if (document === undefined || document === null)
+            throw new Error("The parameter 'document' must be defined.");
+        url_ = url_.replace("{document}", encodeURIComponent("" + document));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetDocument(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetDocument(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<FileResponse | null>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<FileResponse | null>;
+        }));
+    }
+
+    protected processGetDocument(response: HttpResponseBase): Observable<FileResponse | null> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return _observableOf({ fileName: fileName, data: responseBlob as any, status: status, headers: _headers });
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<FileResponse | null>(null as any);
+    }
+
+    /**
      * Gets page count of the specified document.
      * @param document The document.
      * @return The page count.
      */
     getPageCount(document: string): Observable<number> {
-        let url_ = this.baseUrl + "/api/documents/{document}";
+        let url_ = this.baseUrl + "/api/documents/{document}/page-count";
         if (document === undefined || document === null)
             throw new Error("The parameter 'document' must be defined.");
         url_ = url_.replace("{document}", encodeURIComponent("" + document));
@@ -151,16 +212,26 @@ export class DocumentClient {
      * Gets page preview in the specified document.
      * @param document The document.
      * @param pageNumber The page number (starting at 1).
+     * @param width The page width.
+     * @param height The page height.
      * @return The page preview.
      */
-    getPagePreview(document: string, pageNumber: number): Observable<FileResponse | null> {
-        let url_ = this.baseUrl + "/api/documents/{document}/{pageNumber}";
+    getPagePreview(document: string, pageNumber: number, width: number, height: number): Observable<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/documents/{document}/preview/{pageNumber}?";
         if (document === undefined || document === null)
             throw new Error("The parameter 'document' must be defined.");
         url_ = url_.replace("{document}", encodeURIComponent("" + document));
         if (pageNumber === undefined || pageNumber === null)
             throw new Error("The parameter 'pageNumber' must be defined.");
         url_ = url_.replace("{pageNumber}", encodeURIComponent("" + pageNumber));
+        if (width === undefined || width === null)
+            throw new Error("The parameter 'width' must be defined and cannot be null.");
+        else
+            url_ += "width=" + encodeURIComponent("" + width) + "&";
+        if (height === undefined || height === null)
+            throw new Error("The parameter 'height' must be defined and cannot be null.");
+        else
+            url_ += "height=" + encodeURIComponent("" + height) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -213,36 +284,37 @@ export class DocumentClient {
     }
 
     /**
-     * Rotate page in the specified document.
+     * Rotates pages in the specified document.
      * @param document The document.
-     * @param pageNumber The page number (starting at 1).
+     * @param pageNumbers The page numbers (1-based).
      * @return An IActionResult.
      */
-    rotatePage(document: string, pageNumber: number): Observable<FileResponse | null> {
-        let url_ = this.baseUrl + "/api/documents/{document}/{pageNumber}/rotate";
+    rotatePages(document: string, pageNumbers: number[]): Observable<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/documents/{document}/rotate-pages";
         if (document === undefined || document === null)
             throw new Error("The parameter 'document' must be defined.");
         url_ = url_.replace("{document}", encodeURIComponent("" + document));
-        if (pageNumber === undefined || pageNumber === null)
-            throw new Error("The parameter 'pageNumber' must be defined.");
-        url_ = url_.replace("{pageNumber}", encodeURIComponent("" + pageNumber));
         url_ = url_.replace(/[?&]$/, "");
 
+        const content_ = JSON.stringify(pageNumbers);
+
         let options_ : any = {
+            body: content_,
             observe: "response",
             responseType: "blob",
             withCredentials: true,
             headers: new HttpHeaders({
+                "Content-Type": "application/json",
                 "Accept": "application/json"
             })
         };
 
         return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processRotatePage(response_);
+            return this.processRotatePages(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processRotatePage(response_ as any);
+                    return this.processRotatePages(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<FileResponse | null>;
                 }
@@ -251,7 +323,7 @@ export class DocumentClient {
         }));
     }
 
-    protected processRotatePage(response: HttpResponseBase): Observable<FileResponse | null> {
+    protected processRotatePages(response: HttpResponseBase): Observable<FileResponse | null> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -278,36 +350,37 @@ export class DocumentClient {
     }
 
     /**
-     * Deletes the page in the specified document.
+     * Deletes the pages in the specified document.
      * @param document The document.
-     * @param pageNumber The page number (starting at 1).
+     * @param pageNumbers The page numbers (1-based).
      * @return An IActionResult.
      */
-    deletePage(document: string, pageNumber: number): Observable<FileResponse | null> {
-        let url_ = this.baseUrl + "/api/documents/{document}/{pageNumber}/delete";
+    deletePages(document: string, pageNumbers: number[]): Observable<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/documents/{document}/delete-pages";
         if (document === undefined || document === null)
             throw new Error("The parameter 'document' must be defined.");
         url_ = url_.replace("{document}", encodeURIComponent("" + document));
-        if (pageNumber === undefined || pageNumber === null)
-            throw new Error("The parameter 'pageNumber' must be defined.");
-        url_ = url_.replace("{pageNumber}", encodeURIComponent("" + pageNumber));
         url_ = url_.replace(/[?&]$/, "");
 
+        const content_ = JSON.stringify(pageNumbers);
+
         let options_ : any = {
+            body: content_,
             observe: "response",
             responseType: "blob",
             withCredentials: true,
             headers: new HttpHeaders({
+                "Content-Type": "application/json",
                 "Accept": "application/json"
             })
         };
 
         return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processDeletePage(response_);
+            return this.processDeletePages(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processDeletePage(response_ as any);
+                    return this.processDeletePages(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<FileResponse | null>;
                 }
@@ -316,7 +389,7 @@ export class DocumentClient {
         }));
     }
 
-    protected processDeletePage(response: HttpResponseBase): Observable<FileResponse | null> {
+    protected processDeletePages(response: HttpResponseBase): Observable<FileResponse | null> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -345,25 +418,25 @@ export class DocumentClient {
     /**
      * Reorder pages in the specified document.
      * @param document The document.
-     * @param newPageOrder (optional) The new page order.
+     * @param newPageOrder The new page order.
      * @return An IActionResult.
      */
-    reorderPages(document: string, newPageOrder?: number[] | undefined): Observable<FileResponse | null> {
-        let url_ = this.baseUrl + "/api/documents/{document}/reorder?";
+    reorderPages(document: string, newPageOrder: number[]): Observable<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/documents/{document}/reorder-pages";
         if (document === undefined || document === null)
             throw new Error("The parameter 'document' must be defined.");
         url_ = url_.replace("{document}", encodeURIComponent("" + document));
-        if (newPageOrder === null)
-            throw new Error("The parameter 'newPageOrder' cannot be null.");
-        else if (newPageOrder !== undefined)
-            newPageOrder && newPageOrder.forEach(item => { url_ += "newPageOrder=" + encodeURIComponent("" + item) + "&"; });
         url_ = url_.replace(/[?&]$/, "");
 
+        const content_ = JSON.stringify(newPageOrder);
+
         let options_ : any = {
+            body: content_,
             observe: "response",
             responseType: "blob",
             withCredentials: true,
             headers: new HttpHeaders({
+                "Content-Type": "application/json",
                 "Accept": "application/json"
             })
         };

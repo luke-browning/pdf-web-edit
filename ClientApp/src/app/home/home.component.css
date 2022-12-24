@@ -1,3 +1,8 @@
+/* Toolbar */
+.toolbar .btn {
+    margin-right: 5px;
+}
+
 /* Scroll wrapper */
 .scrolling-wrapper {
   overflow-x: scroll;
@@ -9,14 +14,20 @@
 /* Sizes of thumbnails */
 .scrolling-wrapper.small .thumb-container img {
   height: 200px;
+  min-height: 200px;
+  min-width: 141px;
 }
 
 .scrolling-wrapper.medium .thumb-container img {
   height: 400px;
+  min-height: 400px;
+  min-width: 282px;
 }
 
 .scrolling-wrapper.large .thumb-container img {
   height: 800px;
+  min-height: 800px;
+  min-width: 565px;
 }
 
 /* Thumbnail container*/
@@ -40,14 +51,24 @@
 }
 
 .page-number {
-    position: absolute;
-    float: left;
-    height: 28px;
-    left: 3px;
-    right: 3px;
-    bottom: 3px;
-    background: #000;
-    color: #fff;
-    opacity: 0.5;
-    text-align: center;
+  position: absolute;
+  float: left;
+  height: 28px;
+  left: 3px;
+  right: 3px;
+  bottom: 3px;
+  background: #000;
+  color: #fff;
+  opacity: 0.5;
+  text-align: center;
+}
+
+.loading {
+  position: absolute;
+  float: left;
+  left: 3px;
+  right: 3px;
+  bottom: 3px;
+  top: 3px;
+  background: #fff;
 }

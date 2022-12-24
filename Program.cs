@@ -1,4 +1,5 @@
 using Microsoft.OpenApi.Models;
+using PDFEdit.Extensions;
 using PDFEdit.Models;
 using PDFEdit.Services;
 using System.Reflection;
@@ -58,6 +59,8 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller}/{action=Index}/{id?}");
 
-app.MapFallbackToFile("index.html"); ;
+app.MapFallbackToFile("index.html");
+
+app.AddGlobalErrorHandler();
 
 app.Run();

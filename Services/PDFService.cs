@@ -1,4 +1,6 @@
 ﻿using PDFEdit.Models;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
@@ -33,12 +35,15 @@ namespace PDFEdit.Services
         /// </returns>
         public int GetPageCount(string path)
         {
-            //PdfDocument pdfDocument = new PdfDocument(new PdfReader(path));
-            //var pages = pdfDocument.GetNumberOfPages();
-            //pdfDocument.Close();
+            int pages = 0;
 
-            var reader = _docNet.Instance.GetDocReader(path, new Docnet.Core.Models.PageDimensions());
-            var pages = reader.GetPageCount();
+            // Get the file 
+            byte[] file = LoadFile(path);
+
+            using (var reader = _docNet.Instance.GetDocReader(file, new Docnet.Core.Models.PageDimensions()))
+            {
+                pages = reader.GetPageCount();
+            }
 
             return pages;
         }
@@ -48,60 +53,64 @@ namespace PDFEdit.Services
         /// </summary>
         /// <param name="path">Full pathname of the file.</param>
         /// <param name="pageNumber">The page number.</param>
-        /// <param name="imageFormat">The image format.</param>
+        /// <param name="width">The width</param>
+        /// <param name="height">The height</param>
         /// <returns>
         /// An array of byte.
         /// </returns>
-        public byte[] GetPagePreview(string path, int pageNumber, ImageFormat imageFormat)
+        public byte[] GetPagePreview(string path, int pageNumber, int width, int height)
         {
-            //PdfDocument pdfDocument = new PdfDocument(new PdfReader(path));
-            //var page = pdfDocument.GetPage(pageNumber);
-            //var thumb = page.GetThumbnailImage();
-            //pdfDocument.Close();
-            //Image image = new Image(thumb);
+            byte[] result;
 
-            byte[] result = null;
+            byte[] rawBytes;
+            int pageWidth;
+            int pageHeight;
+
+            // Get the file 
+            byte[] file = LoadFile(path);
 
             // Open the document
-            var doc = _docNet.Instance.GetDocReader(path, new Docnet.Core.Models.PageDimensions(565, 800));
-            var pageReader = doc.GetPageReader(pageNumber);
-
-            // Render the image
-            var rawBytes = pageReader.GetImage();
-
-            var width = pageReader.GetPageWidth();
-            var height = pageReader.GetPageHeight();
-
-            using (var bmp = new Bitmap(width, height, PixelFormat.Format32bppArgb))
+            using (var doc = _docNet.Instance.GetDocReader(file, new Docnet.Core.Models.PageDimensions(width, height)))
             {
-                // Create the bitmap
-                AddBytes(bmp, rawBytes);
+                var pageReader = doc.GetPageReader(pageNumber);
 
-                // Convert it to a byte array
-                using (var stream = new MemoryStream())
-                {
-                    bmp.Save(stream, imageFormat);
-                    result = stream.ToArray();
-                }
+                // Render the image
+                rawBytes = pageReader.GetImage();
+
+                pageWidth = pageReader.GetPageWidth();
+                pageHeight = pageReader.GetPageHeight();
+            }
+
+            // Convert it to a byte array
+            using (var img = Image.LoadPixelData<Bgra32>(rawBytes, pageWidth, pageHeight))
+            using (var stream = new MemoryStream())
+            {
+                img.SaveAsPng(stream);
+                result = stream.ToArray();
             }
 
             return result;
         }
 
         /// <summary>
-        /// Adds the bytes to 'rawBytes'.
+        /// Loads a file.
         /// </summary>
-        /// <param name="bmp">The bitmap.</param>
-        /// <param name="rawBytes">The raw in bytes.</param>
-        private static void AddBytes(Bitmap bmp, byte[] rawBytes)
+        /// <param name="path">Full pathname of the file.</param>
+        /// <returns>
+        /// An array of byte.
+        /// </returns>
+        private static byte[] LoadFile(string path)
         {
-            var rect = new Rectangle(0, 0, bmp.Width, bmp.Height);
+            byte[] file;
 
-            var bmpData = bmp.LockBits(rect, ImageLockMode.WriteOnly, bmp.PixelFormat);
-            var pNative = bmpData.Scan0;
+            using (var ms = new MemoryStream())
+            using (FileStream fs = File.OpenRead(path))
+            {
+                fs.CopyTo(ms);
+                file = ms.ToArray();
+            }
 
-            Marshal.Copy(rawBytes, 0, pNative, rawBytes.Length);
-            bmp.UnlockBits(bmpData);
+            return file;
         }
     }
 }

@@ -23,13 +23,13 @@
 
   <div class="col text-center">
     <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-      <input type="radio" class="btn-check" name="size" id="size-small" value="small" autocomplete="off" [(ngModel)]="size">
+      <input type="radio" class="btn-check" name="size" id="size-small" value="small" autocomplete="off" [(ngModel)]="size" (change)="setSize($event)">
       <label class="btn btn-outline-primary" for="size-small">Small</label>
 
-      <input type="radio" class="btn-check" name="size" id="size-medium" value="medium" autocomplete="off" [(ngModel)]="size">
+      <input type="radio" class="btn-check" name="size" id="size-medium" value="medium" autocomplete="off" [(ngModel)]="size" (change)="setSize($event)">
       <label class="btn btn-outline-primary" for="size-medium">Medium</label>
 
-      <input type="radio" class="btn-check" name="size" id="size-large" value="large" autocomplete="off" [(ngModel)]="size">
+      <input type="radio" class="btn-check" name="size" id="size-large" value="large" autocomplete="off" [(ngModel)]="size" (change)="setSize($event)">
       <label class="btn btn-outline-primary" for="size-large">Large</label>
     </div>
   </div>
@@ -49,15 +49,28 @@
       </div>
       <div class="card-body">
 
-        <div class="toolbar">
-          <button type="button" class="btn btn-light">Rotate</button>
-          <button type="button" class="btn btn-light">Remove</button>
+        <div class="toolbar mb-3">
+          <button type="button" class="btn btn-primary" (click)="selectAll(document)">Select All</button>
+          <button type="button" class="btn btn-primary" (click)="unselect(document)">Unselect</button>
+
+          <button type="button" class="btn btn-primary" [disabled]="!document.hasSelectedPages" (click)="rotate(document)">Rotate</button>
+          <button type="button" class="btn btn-primary" [disabled]="!document.hasSelectedPages" (click)="remove(document)">Remove</button>
+
+          <a [href]="document.downloadUrl" target="_blank" class="btn btn-primary">Download</a>
+          <button type="button" class="btn btn-primary" (click)="delete(document)">Delete</button>
+          <button type="button" class="btn btn-primary" (click)="revert(document)">Revert Changes</button>
+          <button type="button" class="btn btn-primary" (click)="save(document)">Save</button>
         </div>
 
-        <div class="scrolling-wrapper" [class]="size">
+        <div class="scrolling-wrapper" [class]="size" [dragula]="document.name" [dragulaModel]="document.pages" (dragulaModelChange)="reorder(document, $event)">
           <ng-container *ngFor="let page of document.pages">
             <div class="thumb-container" (click)="setActive(document, page, $event)">
-              <img [src]="page.data" class="thumb" [class.active]="page.active" />
+              <div *ngIf="!page.loaded" class="loading d-flex justify-content-center align-items-center">
+                <div class="spinner-border" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+              </div>
+              <img [src]="page.url" class="thumb" [class.active]="page.active" (load)="page.loaded = true;" />
               <div class="page-number">{{ page.number }}</div>
             </div>
           </ng-container>

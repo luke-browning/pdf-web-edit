@@ -23,11 +23,11 @@ namespace PDFEdit.Services
         }
 
         /// <summary>
-        /// Rotate clockwise.
+        /// Rotates pages clockwise.
         /// </summary>
         /// <param name="document">The document.</param>
-        /// <param name="pageNumber">The page number.</param>
-        public void RotateClockwise(string document, int pageNumber)
+        /// <param name="pageNumbers">The page numbers to rotate.</param>
+        public void RotateClockwise(string document, List<int> pageNumbers)
         {
             var path = _directoryService.GetDocumentPath(document);
             var outPath = _directoryService.GetEditingDocumentPath(document);
@@ -37,10 +37,13 @@ namespace PDFEdit.Services
             // Open the document
             var pdfDocument = new PdfDocument(new PdfReader(path), new PdfWriter(ms));
 
-            // Get & rotate the page
-            var page = pdfDocument.GetPage(pageNumber);
-            var rotation = page.GetRotation();
-            page.SetRotation((rotation + 90) % 360);
+            // Rotate the requested pages
+            foreach (var pageNumber in pageNumbers)
+            {
+                var page = pdfDocument.GetPage(pageNumber);
+                var rotation = page.GetRotation();
+                page.SetRotation((rotation + 90) % 360);
+            }
 
             // Close the doc before getting the bytes from the memory stream
             // otherwise the output file is corrupt
@@ -49,7 +52,7 @@ namespace PDFEdit.Services
             var bytes = ms.ToArray();
 
             // Update the file
-            using (FileStream file = new FileStream(outPath, FileMode.OpenOrCreate, FileAccess.Write))
+            using (FileStream file = new FileStream(outPath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite))
             {
                 file.Write(bytes, 0, bytes.Length);
                 ms.Close();
@@ -60,8 +63,8 @@ namespace PDFEdit.Services
         /// Deletes the page.
         /// </summary>
         /// <param name="document">The document.</param>
-        /// <param name="pageNumber">The page number.</param>
-        public void DeletePage(string document, int pageNumber)
+        /// <param name="pageNumbers">The page numbers.</param>
+        public void DeletePage(string document, List<int> pageNumbers)
         {
             var path = _directoryService.GetDocumentPath(document);
             var outPath = _directoryService.GetEditingDocumentPath(document);
@@ -71,8 +74,21 @@ namespace PDFEdit.Services
             // Open the document
             var pdfDocument = new PdfDocument(new PdfReader(path), new PdfWriter(ms));
 
-            // Remove the page
-            pdfDocument.RemovePage(pageNumber);
+            // Sort the page numbers so we go start to finish
+            pageNumbers.Sort();
+
+            // Keep track of how many pages we remove so we can update the index
+            // when multiple pages are being removed
+            var pagesRemoved = 0;
+
+            // Remove the pages
+            foreach (var pageNumber in pageNumbers)
+            {
+                var pageToRemove = pageNumber - pagesRemoved;
+                pdfDocument.RemovePage(pageToRemove);
+
+                pagesRemoved++;
+            }
 
             // Close the doc before getting the bytes from the memory stream
             // otherwise the output file is corrupt

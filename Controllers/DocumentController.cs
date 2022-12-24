@@ -45,6 +45,33 @@ namespace PDFEdit.Controllers
         }
 
         /// <summary>
+        /// Gets a document.
+        /// </summary>
+        /// <param name="document">The document.</param>
+        /// <returns>
+        /// The document.
+        /// </returns>
+        [HttpGet]
+        [Route("{document}/download")]
+        public IActionResult GetDocument(string document)
+        {
+            // Get the path to the document
+            var downloadFilePath = _directoryService.GetDocumentPath(document);
+            var originalFilePath = _directoryService.GetUnmodifiedDocumentPath(document);
+
+            if (downloadFilePath != null)
+            {
+                var bytes = _directoryService.GetDocumentBytes(document);
+
+                return File(bytes, "application/pdf", Path.GetFileName(originalFilePath));
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
+        /// <summary>
         /// Gets page count of the specified document.
         /// </summary>
         /// <param name="document">The document.</param>
@@ -52,7 +79,7 @@ namespace PDFEdit.Controllers
         /// The page count.
         /// </returns>
         [HttpGet]
-        [Route("{document}")]
+        [Route("{document}/page-count")]
         public int GetPageCount(string document)
         {
             // Get the path to the document
@@ -75,12 +102,14 @@ namespace PDFEdit.Controllers
         /// </summary>
         /// <param name="document">The document.</param>
         /// <param name="pageNumber">The page number (starting at 1).</param>
+        /// <param name="width">The page width.</param>
+        /// <param name="height">The page height.</param>
         /// <returns>
         /// The page preview.
         /// </returns>
         [HttpGet]
-        [Route("{document}/{pageNumber}")]
-        public IActionResult GetPagePreview(string document, int pageNumber)
+        [Route("{document}/preview/{pageNumber}")]
+        public IActionResult GetPagePreview(string document, int pageNumber, int width, int height)
         {
             // Get the path to the document
             var path = _directoryService.GetDocumentPath(document);
@@ -88,17 +117,19 @@ namespace PDFEdit.Controllers
             // Make sure pages are 1 based
             pageNumber = pageNumber - 1;
 
-            // Make sure the page number is in the correct range 
-            if ((pageNumber < 0) || (pageNumber > (_pdfService.GetPageCount(path) - 1)))
-            {
-                return NotFound();
-            }
-
             if (path != null)
             {
-                var img = _pdfService.GetPagePreview(path, pageNumber, ImageFormat.Png);
+                // Make sure the page number is in the correct range 
+                if ((pageNumber < 0) || (pageNumber > (_pdfService.GetPageCount(path) - 1)))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    var img = _pdfService.GetPagePreview(path, pageNumber, width, height);
 
-                return File(img, "image/png");
+                    return File(img, "image/png");
+                }
             }
             else
             {
@@ -107,23 +138,23 @@ namespace PDFEdit.Controllers
         }
 
         /// <summary>
-        /// Rotate page in the specified document.
+        /// Rotates pages in the specified document.
         /// </summary>
         /// <param name="document">The document.</param>
-        /// <param name="pageNumber">The page number (starting at 1).</param>
+        /// <param name="pageNumbers">The page numbers (1-based).</param>
         /// <returns>
         /// An IActionResult.
         /// </returns>
         [HttpPost]
-        [Route("{document}/{pageNumber}/rotate")]
-        public IActionResult RotatePage(string document, int pageNumber)
+        [Route("{document}/rotate-pages")]
+        public IActionResult RotatePages(string document, [FromBody] List<int> pageNumbers)
         {
             // Get the path to the document
             var path = _directoryService.GetDocumentPath(document);
 
             if (path != null)
             {
-                _pdfManipulationService.RotateClockwise(document, pageNumber);
+                _pdfManipulationService.RotateClockwise(document, pageNumbers);
 
                 return Ok();
             }
@@ -134,23 +165,23 @@ namespace PDFEdit.Controllers
         }
 
         /// <summary>
-        /// Deletes the page in the specified document.
+        /// Deletes the pages in the specified document.
         /// </summary>
         /// <param name="document">The document.</param>
-        /// <param name="pageNumber">The page number (starting at 1).</param>
+        /// <param name="pageNumbers">The page numbers (1-based).</param>
         /// <returns>
         /// An IActionResult.
         /// </returns>
         [HttpPost]
-        [Route("{document}/{pageNumber}/delete")]
-        public IActionResult DeletePage(string document, int pageNumber)
+        [Route("{document}/delete-pages")]
+        public IActionResult DeletePages(string document, [FromBody] List<int> pageNumbers)
         {
             // Get the path to the document
             var path = _directoryService.GetDocumentPath(document);
 
             if (path != null)
             {
-                _pdfManipulationService.DeletePage(document, pageNumber);
+                _pdfManipulationService.DeletePage(document, pageNumbers);
 
                 return Ok();
             }
@@ -169,8 +200,8 @@ namespace PDFEdit.Controllers
         /// An IActionResult.
         /// </returns>
         [HttpPost]
-        [Route("{document}/reorder")]
-        public IActionResult ReorderPages(string document, List<int> newPageOrder)
+        [Route("{document}/reorder-pages")]
+        public IActionResult ReorderPages(string document, [FromBody] List<int> newPageOrder)
         {
             // Get the path to the document
             var path = _directoryService.GetDocumentPath(document);

@@ -8,6 +8,11 @@ namespace PDFEdit.Services
     public class DirectoryService
     {
         /// <summary>
+        /// The lock.
+        /// </summary>
+        private object __lock = new object();
+
+        /// <summary>
         /// The PDF extension.
         /// </summary>
         private const string PDF_EXTENSION = ".pdf";
@@ -64,6 +69,7 @@ namespace PDFEdit.Services
         public IEnumerable<Document> GetDocumentList()
         {
             var documents = Directory.EnumerateFiles(_inputDirectory, $"*{PDF_EXTENSION}")
+                .Where(x => !x.EndsWith(EDITING_PDF_EXTENSION, StringComparison.OrdinalIgnoreCase))
                 .Select(x => new Document
                 {
                     Name = Path.GetFileNameWithoutExtension(x),
@@ -101,6 +107,28 @@ namespace PDFEdit.Services
         }
 
         /// <summary>
+        /// Gets unmodified document path.
+        /// </summary>
+        /// <exception cref="Exception">Thrown when an exception error condition occurs.</exception>
+        /// <param name="name">The name.</param>
+        /// <returns>
+        /// The unmodified document path.
+        /// </returns>
+        public string GetUnmodifiedDocumentPath(string name)
+        {
+            var pdfPath = Path.Combine(_inputDirectory, name) + PDF_EXTENSION;
+
+            if (File.Exists(pdfPath))
+            {
+                return pdfPath;
+            }
+            else
+            {
+                throw new Exception($"Source file does not exist: {pdfPath}");
+            }
+        }
+
+        /// <summary>
         /// Gets editing document path.
         /// </summary>
         /// <exception cref="Exception">Thrown when an exception error condition occurs.</exception>
@@ -125,22 +153,55 @@ namespace PDFEdit.Services
         }
 
         /// <summary>
-        /// Deletes the document and any modifications.
+        /// Gets document bytes.
         /// </summary>
         /// <param name="name">The name.</param>
-        public void Delete(string name)
+        /// <returns>
+        /// An array of byte.
+        /// </returns>
+        public byte[] GetDocumentBytes(string name)
         {
+            byte[] result;
+
             var editedPDFPath = Path.Combine(_inputDirectory, name) + EDITING_PDF_EXTENSION;
             var originalPDFPath = Path.Combine(_inputDirectory, name) + PDF_EXTENSION;
 
             if (File.Exists(editedPDFPath))
             {
-                File.Delete(editedPDFPath);
+                result = File.ReadAllBytes(editedPDFPath);
             }
-            
-            if (File.Exists(originalPDFPath))
+            else  if (File.Exists(originalPDFPath))
             {
-                File.Delete(originalPDFPath);
+                result = File.ReadAllBytes(originalPDFPath);
+            }
+            else
+            {
+                throw new Exception($"Source file does not exist: {originalPDFPath}");
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Deletes the document and any modifications.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        public void Delete(string name)
+        {
+            lock (__lock)
+            {
+                var editedPDFPath = Path.Combine(_inputDirectory, name) + EDITING_PDF_EXTENSION;
+                var originalPDFPath = Path.Combine(_inputDirectory, name) + PDF_EXTENSION;
+
+                if (File.Exists(editedPDFPath))
+                {
+                    File.Delete(editedPDFPath);
+                }
+
+                if (File.Exists(originalPDFPath))
+                {
+                    File.Delete(originalPDFPath);
+                }
             }
         }
 
@@ -150,20 +211,23 @@ namespace PDFEdit.Services
         /// <param name="name">The name.</param>
         public void Save(string name)
         {
-            var editedPDFPath = Path.Combine(_inputDirectory, name) + EDITING_PDF_EXTENSION;
-            var originalPDFPath = Path.Combine(_inputDirectory, name) + PDF_EXTENSION;
-
-            var outputPath = Path.Combine(_outputDirectory, name) + PDF_EXTENSION;
-            var originalOutputPath = Path.Combine(_originalDirectory, name) + PDF_EXTENSION;
-
-            if (File.Exists(editedPDFPath))
+            lock (__lock)
             {
-                File.Move(editedPDFPath, outputPath);
-                File.Move(originalPDFPath, originalOutputPath);
-            }
-            else if (File.Exists(originalPDFPath))
-            {
-                File.Move(originalPDFPath, outputPath);
+                var editedPDFPath = Path.Combine(_inputDirectory, name) + EDITING_PDF_EXTENSION;
+                var originalPDFPath = Path.Combine(_inputDirectory, name) + PDF_EXTENSION;
+
+                var outputPath = Path.Combine(_outputDirectory, name) + PDF_EXTENSION;
+                var originalOutputPath = Path.Combine(_originalDirectory, name) + PDF_EXTENSION;
+
+                if (File.Exists(editedPDFPath))
+                {
+                    File.Move(editedPDFPath, outputPath);
+                    File.Move(originalPDFPath, originalOutputPath);
+                }
+                else if (File.Exists(originalPDFPath))
+                {
+                    File.Move(originalPDFPath, outputPath);
+                }
             }
         }
     }
