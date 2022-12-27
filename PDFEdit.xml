@@ -114,6 +114,56 @@
             An IActionResult.
             </returns>
         </member>
+        <member name="T:PDFEdit.Extensions.ApplicationBuilderExtensions">
+            <summary>
+            An application builder extensions.
+            </summary>
+        </member>
+        <member name="M:PDFEdit.Extensions.ApplicationBuilderExtensions.AddGlobalErrorHandler(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            An IApplicationBuilder extension method that adds a global error handler.
+            </summary>
+            <param name="applicationBuilder">The applicationBuilder to act on.</param>
+            <returns>
+            An IApplicationBuilder.
+            </returns>
+        </member>
+        <member name="T:PDFEdit.Extensions.GlobalErrorHandlingMiddleware">
+            <summary>
+            A global error handling middleware.
+            </summary>
+        </member>
+        <member name="F:PDFEdit.Extensions.GlobalErrorHandlingMiddleware._next">
+            <summary>
+            The next.
+            </summary>
+        </member>
+        <member name="M:PDFEdit.Extensions.GlobalErrorHandlingMiddleware.#ctor(Microsoft.AspNetCore.Http.RequestDelegate)">
+            <summary>
+            Initialises a new instance of the
+            <see cref="T:PDFEdit.Extensions.GlobalErrorHandlingMiddleware"/> class.
+            </summary>
+            <param name="next">The next.</param>
+        </member>
+        <member name="M:PDFEdit.Extensions.GlobalErrorHandlingMiddleware.Invoke(Microsoft.AspNetCore.Http.HttpContext)">
+            <summary>
+            Executes the given operation on a different thread, and waits for the result.
+            </summary>
+            <param name="context">The context.</param>
+            <returns>
+            A Task.
+            </returns>
+        </member>
+        <member name="M:PDFEdit.Extensions.GlobalErrorHandlingMiddleware.HandleExceptionAsync(Microsoft.AspNetCore.Http.HttpContext,System.Exception)">
+            <summary>
+            Handles the exception asynchronous.
+            </summary>
+            <param name="context">The context.</param>
+            <param name="exception">The exception.</param>
+            <returns>
+            A Task.
+            </returns>
+        </member>
         <member name="T:PDFEdit.Models.DocNetSingleton">
             <summary>
             A document net singleton.
@@ -139,6 +189,73 @@
             resources.
             </summary>
             <seealso cref="M:System.IDisposable.Dispose"/>
+        </member>
+        <member name="T:PDFEdit.Models.Document">
+            <summary>
+            A document.
+            </summary>
+        </member>
+        <member name="P:PDFEdit.Models.Document.Name">
+            <summary>
+            Gets or sets the name.
+            </summary>
+            <value>
+            The name.
+            </value>
+        </member>
+        <member name="P:PDFEdit.Models.Document.Created">
+            <summary>
+            Gets or sets the Date/Time of the created.
+            </summary>
+            <value>
+            The created.
+            </value>
+        </member>
+        <member name="P:PDFEdit.Models.Document.LastModified">
+            <summary>
+            Gets or sets the Date/Time of the last modified.
+            </summary>
+            <value>
+            The last modified.
+            </value>
+        </member>
+        <member name="T:PDFEdit.Pages.ErrorModel">
+            <summary>
+            A data Model for the error.
+            </summary>
+            <seealso cref="T:Microsoft.AspNetCore.Mvc.RazorPages.PageModel"/>
+        </member>
+        <member name="F:PDFEdit.Pages.ErrorModel._logger">
+            <summary>
+            The logger.
+            </summary>
+        </member>
+        <member name="M:PDFEdit.Pages.ErrorModel.#ctor(Microsoft.Extensions.Logging.ILogger{PDFEdit.Pages.ErrorModel})">
+            <summary>
+            Initialises a new instance of the <see cref="T:PDFEdit.Pages.ErrorModel"/> class.
+            </summary>
+            <param name="logger">The logger.</param>
+        </member>
+        <member name="P:PDFEdit.Pages.ErrorModel.RequestId">
+            <summary>
+            Gets or sets the identifier of the request.
+            </summary>
+            <value>
+            The identifier of the request.
+            </value>
+        </member>
+        <member name="P:PDFEdit.Pages.ErrorModel.ShowRequestId">
+            <summary>
+            Gets a value indicating whether the request identifier is shown.
+            </summary>
+            <value>
+            True if show request identifier, false if not.
+            </value>
+        </member>
+        <member name="M:PDFEdit.Pages.ErrorModel.OnGet">
+            <summary>
+            Executes the get action.
+            </summary>
         </member>
         <member name="T:PDFEdit.Services.DirectoryService">
             <summary>
@@ -218,6 +335,14 @@
             <returns>
             The editing document path.
             </returns>
+        </member>
+        <member name="M:PDFEdit.Services.DirectoryService.Rename(System.String,System.String)">
+            <summary>
+            Renames a file.
+            </summary>
+            <exception cref="T:System.Exception">Thrown when an exception error condition occurs.</exception>
+            <param name="name">The name.</param>
+            <param name="newName">Name of the new.</param>
         </member>
         <member name="M:PDFEdit.Services.DirectoryService.GetDocumentBytes(System.String)">
             <summary>
@@ -315,7 +440,6 @@
             </summary>
             <param name="path">Full pathname of the file.</param>
             <param name="pageNumber">The page number.</param>
-            <param name="imageFormat">The image format.</param>
             <param name="width">The width</param>
             <param name="height">The height</param>
             <returns>

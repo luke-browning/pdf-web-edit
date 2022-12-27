@@ -153,6 +153,50 @@ namespace PDFEdit.Services
         }
 
         /// <summary>
+        /// Renames a file.
+        /// </summary>
+        /// <exception cref="Exception">Thrown when an exception error condition occurs.</exception>
+        /// <param name="name">The name.</param>
+        /// <param name="newName">Name of the new.</param>
+        public void Rename(string name, string newName)
+        {
+            lock (__lock)
+            {
+                var editedPDFPath = Path.Combine(_inputDirectory, name) + EDITING_PDF_EXTENSION;
+                var originalPDFPath = Path.Combine(_inputDirectory, name) + PDF_EXTENSION;
+
+                if (newName.Any(x => Path.GetInvalidFileNameChars().Contains(x)))
+                {
+                    throw new Exception($"New file name contains invalid characters");
+                }
+
+                if (File.Exists(editedPDFPath))
+                {
+                    var newEditedPDFPath = Path.Combine(_inputDirectory, newName) + EDITING_PDF_EXTENSION;
+
+                    if (File.Exists(newEditedPDFPath))
+                    {
+                        throw new Exception($"New file name already exists: {newEditedPDFPath}");
+                    }
+
+                    File.Move(editedPDFPath, newEditedPDFPath);
+                }
+
+                if (File.Exists(originalPDFPath))
+                {
+                    var newOriginalPDFPath = Path.Combine(_inputDirectory, newName) + PDF_EXTENSION;
+
+                    if (File.Exists(newOriginalPDFPath))
+                    {
+                        throw new Exception($"New file name already exists: {newOriginalPDFPath}");
+                    }
+
+                    File.Move(originalPDFPath, newOriginalPDFPath);
+                }
+            }
+        }
+
+        /// <summary>
         /// Gets document bytes.
         /// </summary>
         /// <param name="name">The name.</param>

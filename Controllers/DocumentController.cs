@@ -138,6 +138,33 @@ namespace PDFEdit.Controllers
         }
 
         /// <summary>
+        /// Renames a document.
+        /// </summary>
+        /// <param name="document">The document.</param>
+        /// <param name="newDocumentName">New name of the document.</param>
+        /// <returns>
+        /// An IActionResult.
+        /// </returns>
+        [HttpPost]
+        [Route("{document}/rename/{newDocumentName}")]
+        public IActionResult Rename(string document, string newDocumentName)
+        {
+            // Get the path to the document
+            var path = _directoryService.GetDocumentPath(document);
+
+            if (path != null)
+            {
+                _directoryService.Rename(document, newDocumentName);
+
+                return Ok();
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
+        /// <summary>
         /// Rotates pages in the specified document.
         /// </summary>
         /// <param name="document">The document.</param>
