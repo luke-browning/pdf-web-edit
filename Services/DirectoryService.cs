@@ -1,7 +1,7 @@
-﻿using PDFEdit.Helpers;
-using PDFEdit.Models;
+﻿using PDFWebEdit.Helpers;
+using PDFWebEdit.Models;
 
-namespace PDFEdit.Services
+namespace PDFWebEdit.Services
 {
     /// <summary>
     /// A directory service.
@@ -39,7 +39,7 @@ namespace PDFEdit.Services
         private readonly string _outputDirectory;
 
         /// <summary>
-        /// Initialises a new instance of the <see cref="PDFEdit.Services.DirectoryService"/> class.
+        /// Initialises a new instance of the <see cref="PDFWebEdit.Services.DirectoryService"/> class.
         /// </summary>
         /// <exception cref="Exception">Thrown when an exception error condition occurs.</exception>
         /// <param name="configuration">The configuration.</param>

@@ -9,7 +9,7 @@
     <SpaProxyLaunchCommand>npm start</SpaProxyLaunchCommand>
     <ImplicitUsings>enable</ImplicitUsings>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
-    <DocumentationFile>PDFEdit.xml</DocumentationFile>
+    <DocumentationFile>PDFWebEdit.xml</DocumentationFile>
     <UserSecretsId>15b132e2-632c-4239-a0fd-c300da1e056f</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerfileContext>.</DockerfileContext>

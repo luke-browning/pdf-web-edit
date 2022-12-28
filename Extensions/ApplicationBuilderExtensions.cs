@@ -1,4 +1,4 @@
-﻿namespace PDFEdit.Extensions
+﻿namespace PDFWebEdit.Extensions
 {
     /// <summary>
     /// An application builder extensions.

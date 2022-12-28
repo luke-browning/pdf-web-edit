@@ -1,7 +1,7 @@
 using Microsoft.OpenApi.Models;
-using PDFEdit.Extensions;
-using PDFEdit.Models;
-using PDFEdit.Services;
+using PDFWebEdit.Extensions;
+using PDFWebEdit.Models;
+using PDFWebEdit.Services;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,8 +22,8 @@ builder.Services.AddSwaggerGen(options =>
     options.SwaggerDoc("V1", new OpenApiInfo
     {
         Version = "V1",
-        Title = "PDFEdit API",
-        Description = "PDFEdit API"
+        Title = "PDFWebEdit API",
+        Description = "PDFWebEdit API"
     });
 });
 

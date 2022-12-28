@@ -1,4 +1,4 @@
-﻿namespace PDFEdit.Helpers
+﻿namespace PDFWebEdit.Helpers
 {
     /// <summary>
     /// A directory helpers.

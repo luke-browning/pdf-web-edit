@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System.Text.Json;
 
-namespace PDFEdit.Extensions
+namespace PDFWebEdit.Extensions
 {
     /// <summary>
     /// A global error handling middleware.
@@ -15,7 +15,7 @@ namespace PDFEdit.Extensions
 
         /// <summary>
         /// Initialises a new instance of the
-        /// <see cref="PDFEdit.Extensions.GlobalErrorHandlingMiddleware"/> class.
+        /// <see cref="PDFWebEdit.Extensions.GlobalErrorHandlingMiddleware"/> class.
         /// </summary>
         /// <param name="next">The next.</param>
         public GlobalErrorHandlingMiddleware(RequestDelegate next)

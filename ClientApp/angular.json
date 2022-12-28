@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "PDFEdit": {
+    "PDFWebEdit": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:application": {
@@ -69,10 +69,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "PDFEdit:build:production"
+              "browserTarget": "PDFWebEdit:build:production"
             },
             "development": {
-              "browserTarget": "PDFEdit:build:development",
+              "browserTarget": "PDFWebEdit:build:development",
               "proxyConfig": "proxy.conf.js"
             }
           },
@@ -81,7 +81,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "PDFEdit:build"
+            "browserTarget": "PDFWebEdit:build"
           }
         },
         "test": {
@@ -129,5 +129,5 @@
       }
     }
   },
-  "defaultProject": "PDFEdit"
+  "defaultProject": "PDFWebEdit"
 }

@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using PDFEdit.Models;
-using PDFEdit.Services;
+using PDFWebEdit.Models;
+using PDFWebEdit.Services;
 using System.Drawing.Imaging;
 
-namespace PDFEdit.Controllers
+namespace PDFWebEdit.Controllers
 {
     /// <summary>
     /// A controller for handling documents.
@@ -18,7 +18,7 @@ namespace PDFEdit.Controllers
         private readonly PDFManipulationService _pdfManipulationService;
 
         /// <summary>
-        /// Initialises a new instance of the <see cref="PDFEdit.Controllers.DocumentController"/>
+        /// Initialises a new instance of the <see cref="PDFWebEdit.Controllers.DocumentController"/>
         /// class.
         /// </summary>
         /// <param name="directoryService">The directory service.</param>

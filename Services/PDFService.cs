@@ -1,11 +1,11 @@
-﻿using PDFEdit.Models;
+﻿using PDFWebEdit.Models;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 
-namespace PDFEdit.Services
+namespace PDFWebEdit.Services
 {
     /// <summary>
     /// A PDF service.
@@ -18,7 +18,7 @@ namespace PDFEdit.Services
         private readonly DocNetSingleton _docNet;
 
         /// <summary>
-        /// Initialises a new instance of the <see cref="PDFEdit.Services.PDFService"/> class.
+        /// Initialises a new instance of the <see cref="PDFWebEdit.Services.PDFService"/> class.
         /// </summary>
         /// <param name="docNet">The document net.</param>
         public PDFService(DocNetSingleton docNet)

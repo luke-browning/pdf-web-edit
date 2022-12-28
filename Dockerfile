@@ -18,16 +18,16 @@ RUN apt-get install -y libpng-dev libjpeg-dev curl libxi6 build-essential libgl1
 RUN curl -sL https://deb.nodesource.com/setup_14.x | bash -
 RUN apt-get install -y nodejs
 WORKDIR /src
-COPY ["PDFEdit.csproj", "."]
-RUN dotnet restore "./PDFEdit.csproj"
+COPY ["PDFWebEdit.csproj", "."]
+RUN dotnet restore "./PDFWebEdit.csproj"
 COPY . .
 WORKDIR "/src/."
-RUN dotnet build "PDFEdit.csproj" -c Release -o /app/build
+RUN dotnet build "PDFWebEdit.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "PDFEdit.csproj" -c Release -o /app/publish
+RUN dotnet publish "PDFWebEdit.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "PDFEdit.dll"]
+ENTRYPOINT ["dotnet", "PDFWebEdit.dll"]

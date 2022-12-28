@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { forEachChild } from 'typescript';
-import { PDFEditAPI } from '../../api/PDFEditAPI';
+import { PDFWebEditAPI } from '../../api/PDFWebEditAPI';
 import { MessageBoxComponent } from '../message-box/message-box.component';
 
 @Component({
@@ -22,7 +22,7 @@ export class HomeComponent {
   sort = 'Name';
   sortDirection = 'Asc';
 
-  constructor(private api: PDFEditAPI.DocumentClient, private modalService: NgbModal) {
+  constructor(private api: PDFWebEditAPI.DocumentClient, private modalService: NgbModal) {
 
     // Load the document list
     api.getDocuments().subscribe(result => {
@@ -221,7 +221,7 @@ export class HomeComponent {
 
   // Helpers
 
-  loadDocuments(files: PDFEditAPI.Document[]) {
+  loadDocuments(files: PDFWebEditAPI.Document[]) {
 
     this.documents = [];
 
@@ -233,7 +233,7 @@ export class HomeComponent {
     });
   }
 
-  loadDocument(file: PDFEditAPI.Document): Doc {
+  loadDocument(file: PDFWebEditAPI.Document): Doc {
 
     let doc: Doc = {
       name: file.name,

@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Diagnostics;
 
-namespace PDFEdit.Pages
+namespace PDFWebEdit.Pages
 {
     /// <summary>
     /// A data Model for the error.
@@ -17,7 +17,7 @@ namespace PDFEdit.Pages
         private readonly ILogger<ErrorModel> _logger;
 
         /// <summary>
-        /// Initialises a new instance of the <see cref="PDFEdit.Pages.ErrorModel"/> class.
+        /// Initialises a new instance of the <see cref="PDFWebEdit.Pages.ErrorModel"/> class.
         /// </summary>
         /// <param name="logger">The logger.</param>
         public ErrorModel(ILogger<ErrorModel> logger)

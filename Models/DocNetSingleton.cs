@@ -1,6 +1,6 @@
 ﻿using Docnet.Core;
 
-namespace PDFEdit.Models
+namespace PDFWebEdit.Models
 {
     /// <summary>
     /// A document net singleton.
@@ -17,7 +17,7 @@ namespace PDFEdit.Models
         public IDocLib Instance { get; }
 
         /// <summary>
-        /// Initialises a new instance of the <see cref="PDFEdit.Models.DocNetSingleton"/> class.
+        /// Initialises a new instance of the <see cref="PDFWebEdit.Models.DocNetSingleton"/> class.
         /// </summary>
         public DocNetSingleton()
         {

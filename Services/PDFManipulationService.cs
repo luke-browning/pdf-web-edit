@@ -1,6 +1,6 @@
 ﻿using iText.Kernel.Pdf;
 
-namespace PDFEdit.Services
+namespace PDFWebEdit.Services
 {
     /// <summary>
     /// A PDF manipulation service.
@@ -13,7 +13,7 @@ namespace PDFEdit.Services
         private readonly DirectoryService _directoryService;
 
         /// <summary>
-        /// Initialises a new instance of the <see cref="PDFEdit.Services.PDFManipulationService"/>
+        /// Initialises a new instance of the <see cref="PDFWebEdit.Services.PDFManipulationService"/>
         /// class.
         /// </summary>
         /// <param name="directoryService">The directory service.</param>

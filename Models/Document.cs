@@ -1,4 +1,4 @@
-﻿namespace PDFEdit.Models
+﻿namespace PDFWebEdit.Models
 {
     /// <summary>
     /// A document.
