@@ -57,6 +57,16 @@
             The page preview.
             </returns>
         </member>
+        <member name="M:PDFEdit.Controllers.DocumentController.Rename(System.String,System.String)">
+            <summary>
+            Renames a document.
+            </summary>
+            <param name="document">The document.</param>
+            <param name="newDocumentName">New name of the document.</param>
+            <returns>
+            An IActionResult.
+            </returns>
+        </member>
         <member name="M:PDFEdit.Controllers.DocumentController.RotatePages(System.String,System.Collections.Generic.List{System.Int32})">
             <summary>
             Rotates pages in the specified document.
@@ -163,6 +173,27 @@
             <returns>
             A Task.
             </returns>
+        </member>
+        <member name="T:PDFEdit.Helpers.DirectoryHelpers">
+            <summary>
+            A directory helpers.
+            </summary>
+        </member>
+        <member name="M:PDFEdit.Helpers.DirectoryHelpers.IsDirectoryWriteable(System.String)">
+            <summary>
+            Check if a directory is writeable.
+            </summary>
+            <param name="path">Full pathname of the file.</param>
+            <returns>
+            True if it succeeds, false if it fails.
+            </returns>
+        </member>
+        <member name="M:PDFEdit.Helpers.DirectoryHelpers.CheckDirectory(System.String)">
+            <summary>
+            Check directory is usable.
+            </summary>
+            <exception cref="T:System.Exception">Thrown when an exception error condition occurs.</exception>
+            <param name="path">Full pathname of the file.</param>
         </member>
         <member name="T:PDFEdit.Models.DocNetSingleton">
             <summary>

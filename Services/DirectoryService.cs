@@ -1,4 +1,5 @@
-﻿using PDFEdit.Models;
+﻿using PDFEdit.Helpers;
+using PDFEdit.Models;
 
 namespace PDFEdit.Services
 {
@@ -49,15 +50,10 @@ namespace PDFEdit.Services
             _originalDirectory = configuration["Directories:Original"];
             _outputDirectory = configuration["Directories:Output"];
 
-            if (!Directory.Exists(_inputDirectory))
-            {
-                throw new Exception("Input directory does not exist");
-            }
-
-            if (!Directory.Exists(_outputDirectory))
-            {
-                throw new Exception("Output directory does not exist");
-            }
+            // Check the directories are writable
+            DirectoryHelpers.CheckDirectory(_inputDirectory);
+            DirectoryHelpers.CheckDirectory(_originalDirectory);
+            DirectoryHelpers.CheckDirectory(_outputDirectory);
         }
 
         /// <summary>

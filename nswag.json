@@ -1,6 +1,6 @@
 {
   "runtime": "Net60",
-  "defaultVariables": null,
+  "defaultVariables": "Bin=",
   "documentGenerator": {
     "webApiToOpenApi": {
       "controllerNames": [],
@@ -46,7 +46,7 @@
       "outputType": "Swagger2",
       "newLineBehavior": "Auto",
       "assemblyPaths": [
-        "bin/Debug/net6.0/PDFEdit.dll"
+        "$(Bin)\\PDFEdit.dll"
       ],
       "assemblyConfig": null,
       "referencePaths": [],
