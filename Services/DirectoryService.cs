@@ -1,4 +1,5 @@
-﻿using PDFWebEdit.Helpers;
+﻿using PDFWebEdit.Enumerations;
+using PDFWebEdit.Helpers;
 using PDFWebEdit.Models;
 
 namespace PDFWebEdit.Services
@@ -29,9 +30,9 @@ namespace PDFWebEdit.Services
         private readonly string _inputDirectory;
 
         /// <summary>
-        /// Pathname of the original directory.
+        /// Pathname of the trash directory.
         /// </summary>
-        private readonly string _originalDirectory;
+        private readonly string _trashDirectory;
 
         /// <summary>
         /// Pathname of the output directory.
@@ -39,32 +40,61 @@ namespace PDFWebEdit.Services
         private readonly string _outputDirectory;
 
         /// <summary>
+        /// The configuration service.
+        /// </summary>
+        private readonly ConfigService _configService;
+
+        /// <summary>
         /// Initialises a new instance of the <see cref="PDFWebEdit.Services.DirectoryService"/> class.
         /// </summary>
         /// <exception cref="Exception">Thrown when an exception error condition occurs.</exception>
         /// <param name="configuration">The configuration.</param>
-        public DirectoryService(IConfiguration configuration)
+        /// <param name="configService"></param>
+        public DirectoryService(IConfiguration configuration, ConfigService configService)
         {
             // Get directory paths
             _inputDirectory = configuration["Directories:Input"];
-            _originalDirectory = configuration["Directories:Original"];
+            _trashDirectory = configuration["Directories:Trash"];
             _outputDirectory = configuration["Directories:Output"];
 
             // Check the directories are writable
             DirectoryHelpers.CheckDirectory(_inputDirectory);
-            DirectoryHelpers.CheckDirectory(_originalDirectory);
+            DirectoryHelpers.CheckDirectory(_trashDirectory);
             DirectoryHelpers.CheckDirectory(_outputDirectory);
+
+            // The config service
+            _configService = configService;
         }
 
         /// <summary>
         /// Gets the document lists in this collection.
         /// </summary>
+        /// <param name="targetDirectory">Target directory.</param>
         /// <returns>
         /// An enumerator that allows foreach to be used to process the document lists in this collection.
         /// </returns>
-        public IEnumerable<Document> GetDocumentList()
+        public IEnumerable<Document> GetDocumentList(TargetDirectory targetDirectory = TargetDirectory.Input)
         {
-            var documents = Directory.EnumerateFiles(_inputDirectory, $"*{PDF_EXTENSION}")
+            string directory;
+
+            switch (targetDirectory)
+            {
+                default:
+                case TargetDirectory.Input:
+                    directory = _inputDirectory;
+                    break;
+
+                case TargetDirectory.Output:
+                    directory = _outputDirectory;
+                    break;
+
+                case TargetDirectory.Trash:
+                    directory = _trashDirectory;
+                    break;
+            }
+
+            // Load docs
+            var documents = Directory.EnumerateFiles(directory, $"*{PDF_EXTENSION}")
                 .Where(x => !x.EndsWith(EDITING_PDF_EXTENSION, StringComparison.OrdinalIgnoreCase))
                 .Select(x => new Document
                 {
@@ -233,14 +263,31 @@ namespace PDFWebEdit.Services
                 var editedPDFPath = Path.Combine(_inputDirectory, name) + EDITING_PDF_EXTENSION;
                 var originalPDFPath = Path.Combine(_inputDirectory, name) + PDF_EXTENSION;
 
+                var editedPDFTrashPath = Path.Combine(_trashDirectory, name) + EDITING_PDF_EXTENSION;
+                var originalPDFTrashPath = Path.Combine(_trashDirectory, name) + PDF_EXTENSION;
+
                 if (File.Exists(editedPDFPath))
                 {
-                    File.Delete(editedPDFPath);
+                    if (_configService.Settings.MoveFilesToTrashOnDelete)
+                    {
+                        File.Move(editedPDFPath, editedPDFTrashPath);
+                    }
+                    else
+                    {
+                        File.Delete(editedPDFPath);
+                    }
                 }
 
                 if (File.Exists(originalPDFPath))
                 {
-                    File.Delete(originalPDFPath);
+                    if (_configService.Settings.MoveFilesToTrashOnDelete)
+                    {
+                        File.Move(originalPDFPath, originalPDFTrashPath);
+                    }
+                    else
+                    {
+                        File.Delete(originalPDFPath);
+                    }
                 }
             }
         }
@@ -257,12 +304,16 @@ namespace PDFWebEdit.Services
                 var originalPDFPath = Path.Combine(_inputDirectory, name) + PDF_EXTENSION;
 
                 var outputPath = Path.Combine(_outputDirectory, name) + PDF_EXTENSION;
-                var originalOutputPath = Path.Combine(_originalDirectory, name) + PDF_EXTENSION;
+                var trashOutputPath = Path.Combine(_trashDirectory, name) + PDF_EXTENSION;
 
                 if (File.Exists(editedPDFPath))
                 {
                     File.Move(editedPDFPath, outputPath);
-                    File.Move(originalPDFPath, originalOutputPath);
+
+                    if (_configService.Settings.DeleteOriginalFileOnSave)
+                    {
+                        File.Move(originalPDFPath, trashOutputPath);
+                    }
                 }
                 else if (File.Exists(originalPDFPath))
                 {
