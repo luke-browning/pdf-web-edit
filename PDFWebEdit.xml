@@ -124,6 +124,26 @@
             An IActionResult.
             </returns>
         </member>
+        <member name="T:PDFWebEdit.Enumerations.TargetDirectory">
+            <summary>
+            Values that represent target directories.
+            </summary>
+        </member>
+        <member name="F:PDFWebEdit.Enumerations.TargetDirectory.Input">
+            <summary>
+            An enum constant representing the input option.
+            </summary>
+        </member>
+        <member name="F:PDFWebEdit.Enumerations.TargetDirectory.Output">
+            <summary>
+            An enum constant representing the output option.
+            </summary>
+        </member>
+        <member name="F:PDFWebEdit.Enumerations.TargetDirectory.Trash">
+            <summary>
+            An enum constant representing the trash option.
+            </summary>
+        </member>
         <member name="T:PDFWebEdit.Extensions.ApplicationBuilderExtensions">
             <summary>
             An application builder extensions.
@@ -194,6 +214,27 @@
             </summary>
             <exception cref="T:System.Exception">Thrown when an exception error condition occurs.</exception>
             <param name="path">Full pathname of the file.</param>
+        </member>
+        <member name="T:PDFWebEdit.Models.Config">
+            <summary>
+            A configuration.
+            </summary>
+        </member>
+        <member name="P:PDFWebEdit.Models.Config.DeleteOriginalFileOnSave">
+            <summary>
+            Gets or sets a value indicating whether the original file on save wil be deleted.
+            </summary>
+            <value>
+            True if delete original file on save, false if not.
+            </value>
+        </member>
+        <member name="P:PDFWebEdit.Models.Config.MoveFilesToTrashOnDelete">
+            <summary>
+            Gets or sets a value indicating whether the move files to trash on delete.
+            </summary>
+            <value>
+            True if move files to trash on delete, false if not.
+            </value>
         </member>
         <member name="T:PDFWebEdit.Models.DocNetSingleton">
             <summary>
@@ -288,6 +329,55 @@
             Executes the get action.
             </summary>
         </member>
+        <member name="T:PDFWebEdit.Services.ConfigService">
+            <summary>
+            A configuration service.
+            </summary>
+        </member>
+        <member name="F:PDFWebEdit.Services.ConfigService.CONFIG_FILENAME">
+            <summary>
+            Filename of the configuration file.
+            </summary>
+        </member>
+        <member name="F:PDFWebEdit.Services.ConfigService._configDirectory">
+            <summary>
+            Pathname of the configuration directory.
+            </summary>
+        </member>
+        <member name="F:PDFWebEdit.Services.ConfigService._configFilePath">
+            <summary>
+            Full pathname of the configuration file.
+            </summary>
+        </member>
+        <member name="F:PDFWebEdit.Services.ConfigService.Settings">
+            <summary>
+            The configuration.
+            </summary>
+        </member>
+        <member name="F:PDFWebEdit.Services.ConfigService.LatestRelease">
+            <summary>
+            The release.
+            </summary>
+        </member>
+        <member name="M:PDFWebEdit.Services.ConfigService.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Initialises a new instance of the <see cref="T:PDFWebEdit.Services.ConfigService"/> class.
+            </summary>
+            <param name="configuration">The configuration.</param>
+        </member>
+        <member name="M:PDFWebEdit.Services.ConfigService.CreateDefaultConfig">
+            <summary>
+            Creates default configuration.
+            </summary>
+        </member>
+        <member name="M:PDFWebEdit.Services.ConfigService.GetLatestRelease(System.String,System.String,System.String)">
+            <summary>
+            Gets the latest release info.
+            </summary>
+            <param name="username">The username.</param>
+            <param name="repository">The repository.</param>
+            <param name="userAgent">The user agent.</param>
+        </member>
         <member name="T:PDFWebEdit.Services.DirectoryService">
             <summary>
             A directory service.
@@ -313,9 +403,9 @@
             Pathname of the input directory.
             </summary>
         </member>
-        <member name="F:PDFWebEdit.Services.DirectoryService._originalDirectory">
+        <member name="F:PDFWebEdit.Services.DirectoryService._trashDirectory">
             <summary>
-            Pathname of the original directory.
+            Pathname of the trash directory.
             </summary>
         </member>
         <member name="F:PDFWebEdit.Services.DirectoryService._outputDirectory">
@@ -323,17 +413,24 @@
             Pathname of the output directory.
             </summary>
         </member>
-        <member name="M:PDFWebEdit.Services.DirectoryService.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
+        <member name="F:PDFWebEdit.Services.DirectoryService._configService">
+            <summary>
+            The configuration service.
+            </summary>
+        </member>
+        <member name="M:PDFWebEdit.Services.DirectoryService.#ctor(Microsoft.Extensions.Configuration.IConfiguration,PDFWebEdit.Services.ConfigService)">
             <summary>
             Initialises a new instance of the <see cref="T:PDFWebEdit.Services.DirectoryService"/> class.
             </summary>
             <exception cref="T:System.Exception">Thrown when an exception error condition occurs.</exception>
             <param name="configuration">The configuration.</param>
+            <param name="configService"></param>
         </member>
-        <member name="M:PDFWebEdit.Services.DirectoryService.GetDocumentList">
+        <member name="M:PDFWebEdit.Services.DirectoryService.GetDocumentList(PDFWebEdit.Enumerations.TargetDirectory)">
             <summary>
             Gets the document lists in this collection.
             </summary>
+            <param name="targetDirectory">Target directory.</param>
             <returns>
             An enumerator that allows foreach to be used to process the document lists in this collection.
             </returns>

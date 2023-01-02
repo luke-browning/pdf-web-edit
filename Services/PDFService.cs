@@ -1,9 +1,6 @@
 ﻿using PDFWebEdit.Models;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.Runtime.InteropServices;
 
 namespace PDFWebEdit.Services
 {

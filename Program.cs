@@ -28,6 +28,7 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 builder.Services.AddSingleton<DocNetSingleton>();
+builder.Services.AddSingleton<ConfigService>();
 builder.Services.AddTransient<DirectoryService>();
 builder.Services.AddTransient<PDFService>();
 builder.Services.AddTransient<PDFManipulationService>();
