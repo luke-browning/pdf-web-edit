@@ -19,36 +19,50 @@
             <param name="pdfService">The PDF service.</param>
             <param name="pdfManipulationService">The PDF manipulation service.</param>
         </member>
-        <member name="M:PDFWebEdit.Controllers.DocumentController.GetDocuments">
+        <member name="M:PDFWebEdit.Controllers.DocumentController.GetDocuments(PDFWebEdit.Enumerations.TargetDirectory)">
             <summary>
             Gets the documents in the input folder.
             </summary>
+            <param name="targetDirectory">The target directory.</param>
             <returns>
             An enumerator that allows foreach to be used to process the documents in this collection.
             </returns>
         </member>
-        <member name="M:PDFWebEdit.Controllers.DocumentController.GetDocument(System.String)">
+        <member name="M:PDFWebEdit.Controllers.DocumentController.GetDocument(PDFWebEdit.Enumerations.TargetDirectory,System.String)">
             <summary>
             Gets a document.
             </summary>
+            <param name="targetDirectory">The target directory.</param>
             <param name="document">The document.</param>
             <returns>
             The document.
             </returns>
         </member>
-        <member name="M:PDFWebEdit.Controllers.DocumentController.GetPageCount(System.String)">
+        <member name="M:PDFWebEdit.Controllers.DocumentController.DownloadDocument(PDFWebEdit.Enumerations.TargetDirectory,System.String)">
+            <summary>
+            Gets a document.
+            </summary>
+            <param name="targetDirectory">The target directory.</param>
+            <param name="document">The document.</param>
+            <returns>
+            The document.
+            </returns>
+        </member>
+        <member name="M:PDFWebEdit.Controllers.DocumentController.GetPageCount(PDFWebEdit.Enumerations.TargetDirectory,System.String)">
             <summary>
             Gets page count of the specified document.
             </summary>
+            <param name="targetDirectory">The target directory.</param>
             <param name="document">The document.</param>
             <returns>
             The page count.
             </returns>
         </member>
-        <member name="M:PDFWebEdit.Controllers.DocumentController.GetPagePreview(System.String,System.Int32,System.Int32,System.Int32)">
+        <member name="M:PDFWebEdit.Controllers.DocumentController.GetPagePreview(PDFWebEdit.Enumerations.TargetDirectory,System.String,System.Int32,System.Int32,System.Int32)">
             <summary>
             Gets page preview in the specified document.
             </summary>
+            <param name="targetDirectory">The target directory.</param>
             <param name="document">The document.</param>
             <param name="pageNumber">The page number (starting at 1).</param>
             <param name="width">The page width.</param>
@@ -57,58 +71,84 @@
             The page preview.
             </returns>
         </member>
-        <member name="M:PDFWebEdit.Controllers.DocumentController.Rename(System.String,System.String)">
+        <member name="M:PDFWebEdit.Controllers.DocumentController.Rename(PDFWebEdit.Enumerations.TargetDirectory,System.String,System.String)">
             <summary>
             Renames a document.
             </summary>
+            <param name="targetDirectory">The target directory.</param>
             <param name="document">The document.</param>
             <param name="newDocumentName">New name of the document.</param>
             <returns>
             An IActionResult.
             </returns>
         </member>
-        <member name="M:PDFWebEdit.Controllers.DocumentController.RotatePages(System.String,System.Collections.Generic.List{System.Int32})">
+        <member name="M:PDFWebEdit.Controllers.DocumentController.RotatePages(PDFWebEdit.Enumerations.TargetDirectory,System.String,System.Collections.Generic.List{System.Int32})">
             <summary>
             Rotates pages in the specified document.
             </summary>
+            <param name="targetDirectory">The target directory.</param>
             <param name="document">The document.</param>
             <param name="pageNumbers">The page numbers (1-based).</param>
             <returns>
             An IActionResult.
             </returns>
         </member>
-        <member name="M:PDFWebEdit.Controllers.DocumentController.DeletePages(System.String,System.Collections.Generic.List{System.Int32})">
+        <member name="M:PDFWebEdit.Controllers.DocumentController.DeletePages(PDFWebEdit.Enumerations.TargetDirectory,System.String,System.Collections.Generic.List{System.Int32})">
             <summary>
             Deletes the pages in the specified document.
             </summary>
+            <param name="targetDirectory">The target directory.</param>
             <param name="document">The document.</param>
             <param name="pageNumbers">The page numbers (1-based).</param>
             <returns>
             An IActionResult.
             </returns>
         </member>
-        <member name="M:PDFWebEdit.Controllers.DocumentController.ReorderPages(System.String,System.Collections.Generic.List{System.Int32})">
+        <member name="M:PDFWebEdit.Controllers.DocumentController.ReorderPages(PDFWebEdit.Enumerations.TargetDirectory,System.String,System.Collections.Generic.List{System.Int32})">
             <summary>
             Reorder pages in the specified document.
             </summary>
+            <param name="targetDirectory">The target directory.</param>
             <param name="document">The document.</param>
             <param name="newPageOrder">The new page order.</param>
             <returns>
             An IActionResult.
             </returns>
         </member>
-        <member name="M:PDFWebEdit.Controllers.DocumentController.RevertChanges(System.String)">
+        <member name="M:PDFWebEdit.Controllers.DocumentController.RevertChanges(PDFWebEdit.Enumerations.TargetDirectory,System.String)">
             <summary>
             Revert changes to the specified document.
             </summary>
+            <param name="targetDirectory">The target directory.</param>
             <param name="document">The document.</param>
             <returns>
             An IActionResult.
             </returns>
         </member>
-        <member name="M:PDFWebEdit.Controllers.DocumentController.Delete(System.String)">
+        <member name="M:PDFWebEdit.Controllers.DocumentController.Delete(PDFWebEdit.Enumerations.TargetDirectory,System.String)">
             <summary>
             Deletes the specified document.
+            </summary>
+            <param name="targetDirectory">The target directory.</param>
+            <param name="document">The document.</param>
+            <returns>
+            An IActionResult.
+            </returns>
+        </member>
+        <member name="M:PDFWebEdit.Controllers.DocumentController.Unlock(PDFWebEdit.Enumerations.TargetDirectory,System.String,System.String)">
+            <summary>
+            Unlocks the document.
+            </summary>
+            <param name="targetDirectory">The target directory.</param>
+            <param name="document">The document.</param>
+            <param name="password">The password.</param>
+            <returns>
+            An IActionResult.
+            </returns>
+        </member>
+        <member name="M:PDFWebEdit.Controllers.DocumentController.Restore(System.String)">
+            <summary>
+            Restores a document from trash.
             </summary>
             <param name="document">The document.</param>
             <returns>
@@ -117,12 +157,32 @@
         </member>
         <member name="M:PDFWebEdit.Controllers.DocumentController.Save(System.String)">
             <summary>
-            Saves the specified document to the output directory.
+            Saves the specified document in the input directory to the output directory.
             </summary>
             <param name="document">The document.</param>
             <returns>
             An IActionResult.
             </returns>
+        </member>
+        <member name="T:PDFWebEdit.Enumerations.DocumentStatus">
+            <summary>
+            Values that represent document status.
+            </summary>
+        </member>
+        <member name="F:PDFWebEdit.Enumerations.DocumentStatus.Ok">
+            <summary>
+            An enum constant representing the ok option.
+            </summary>
+        </member>
+        <member name="F:PDFWebEdit.Enumerations.DocumentStatus.Corrupted">
+            <summary>
+            An enum constant representing the corrupted option.
+            </summary>
+        </member>
+        <member name="F:PDFWebEdit.Enumerations.DocumentStatus.PasswordProtected">
+            <summary>
+            An enum constant representing the password protected option.
+            </summary>
         </member>
         <member name="T:PDFWebEdit.Enumerations.TargetDirectory">
             <summary>
@@ -215,6 +275,22 @@
             <exception cref="T:System.Exception">Thrown when an exception error condition occurs.</exception>
             <param name="path">Full pathname of the file.</param>
         </member>
+        <member name="M:PDFWebEdit.Helpers.FileHelpers.LoadFile(System.String)">
+            <summary>
+            Loads a file.
+            </summary>
+            <param name="path">Full pathname of the file.</param>
+            <returns>
+            An array of byte.
+            </returns>
+        </member>
+        <member name="M:PDFWebEdit.Helpers.FileHelpers.WriteFile(System.String,System.Byte[])">
+            <summary>
+            Writes a file.
+            </summary>
+            <param name="path">Full pathname of the file.</param>
+            <param name="content">The content.</param>
+        </member>
         <member name="T:PDFWebEdit.Models.Config">
             <summary>
             A configuration.
@@ -289,6 +365,43 @@
             </summary>
             <value>
             The last modified.
+            </value>
+        </member>
+        <member name="P:PDFWebEdit.Models.Document.HasChanges">
+            <summary>
+            Gets or sets a value indicating whether this object has changes.
+            </summary>
+            <value>
+            True if this object has changes, false if not.
+            </value>
+        </member>
+        <member name="P:PDFWebEdit.Models.Document.Status">
+            <summary>
+            Gets or sets the document status.
+            </summary>
+            <value>
+            The document status.
+            </value>
+        </member>
+        <member name="T:PDFWebEdit.Models.Status">
+            <summary>
+            A status.
+            </summary>
+        </member>
+        <member name="P:PDFWebEdit.Models.Status.Success">
+            <summary>
+            Gets or sets a value indicating whether the success.
+            </summary>
+            <value>
+            True if success, false if not.
+            </value>
+        </member>
+        <member name="P:PDFWebEdit.Models.Status.Message">
+            <summary>
+            Gets or sets the message.
+            </summary>
+            <value>
+            The message.
             </value>
         </member>
         <member name="T:PDFWebEdit.Pages.ErrorModel">
@@ -418,13 +531,19 @@
             The configuration service.
             </summary>
         </member>
-        <member name="M:PDFWebEdit.Services.DirectoryService.#ctor(Microsoft.Extensions.Configuration.IConfiguration,PDFWebEdit.Services.ConfigService)">
+        <member name="F:PDFWebEdit.Services.DirectoryService._pdfService">
+            <summary>
+            The PDF service.
+            </summary>
+        </member>
+        <member name="M:PDFWebEdit.Services.DirectoryService.#ctor(Microsoft.Extensions.Configuration.IConfiguration,PDFWebEdit.Services.ConfigService,PDFWebEdit.Services.PDFService)">
             <summary>
             Initialises a new instance of the <see cref="T:PDFWebEdit.Services.DirectoryService"/> class.
             </summary>
             <exception cref="T:System.Exception">Thrown when an exception error condition occurs.</exception>
             <param name="configuration">The configuration.</param>
-            <param name="configService"></param>
+            <param name="configService">The configuration service</param>
+            <param name="pdfService">The PDF service</param>
         </member>
         <member name="M:PDFWebEdit.Services.DirectoryService.GetDocumentList(PDFWebEdit.Enumerations.TargetDirectory)">
             <summary>
@@ -435,55 +554,77 @@
             An enumerator that allows foreach to be used to process the document lists in this collection.
             </returns>
         </member>
-        <member name="M:PDFWebEdit.Services.DirectoryService.GetDocumentPath(System.String)">
+        <member name="M:PDFWebEdit.Services.DirectoryService.GetDocument(PDFWebEdit.Enumerations.TargetDirectory,System.String)">
+            <summary>
+            Gets a document.
+            </summary>
+            <param name="targetDirectory">Target directory.</param>
+            <param name="name">The name.</param>
+            <returns>
+            The document.
+            </returns>
+        </member>
+        <member name="M:PDFWebEdit.Services.DirectoryService.GetDocumentPath(PDFWebEdit.Enumerations.TargetDirectory,System.String)">
             <summary>
             Gets document path.
             </summary>
+            <param name="targetDirectory">The target directory.</param>
             <param name="name">The name.</param>
             <returns>
             The document path.
             </returns>
         </member>
-        <member name="M:PDFWebEdit.Services.DirectoryService.GetUnmodifiedDocumentPath(System.String)">
+        <member name="M:PDFWebEdit.Services.DirectoryService.GetUnmodifiedDocumentPath(PDFWebEdit.Enumerations.TargetDirectory,System.String)">
             <summary>
             Gets unmodified document path.
             </summary>
             <exception cref="T:System.Exception">Thrown when an exception error condition occurs.</exception>
+            <param name="targetDirectory">The target directory.</param>
             <param name="name">The name.</param>
             <returns>
             The unmodified document path.
             </returns>
         </member>
-        <member name="M:PDFWebEdit.Services.DirectoryService.GetEditingDocumentPath(System.String)">
+        <member name="M:PDFWebEdit.Services.DirectoryService.GetEditingDocumentPath(PDFWebEdit.Enumerations.TargetDirectory,System.String)">
             <summary>
             Gets editing document path.
             </summary>
             <exception cref="T:System.Exception">Thrown when an exception error condition occurs.</exception>
+            <param name="targetDirectory">The target directory.</param>
             <param name="name">The name.</param>
             <returns>
             The editing document path.
             </returns>
         </member>
-        <member name="M:PDFWebEdit.Services.DirectoryService.Rename(System.String,System.String)">
+        <member name="M:PDFWebEdit.Services.DirectoryService.Rename(PDFWebEdit.Enumerations.TargetDirectory,System.String,System.String)">
             <summary>
             Renames a file.
             </summary>
             <exception cref="T:System.Exception">Thrown when an exception error condition occurs.</exception>
+            <param name="targetDirectory">The target directory.</param>
             <param name="name">The name.</param>
             <param name="newName">Name of the new.</param>
         </member>
-        <member name="M:PDFWebEdit.Services.DirectoryService.GetDocumentBytes(System.String)">
+        <member name="M:PDFWebEdit.Services.DirectoryService.GetDocumentBytes(PDFWebEdit.Enumerations.TargetDirectory,System.String)">
             <summary>
             Gets document bytes.
             </summary>
+            <param name="targetDirectory">The target directory.</param>
             <param name="name">The name.</param>
             <returns>
             An array of byte.
             </returns>
         </member>
-        <member name="M:PDFWebEdit.Services.DirectoryService.Delete(System.String)">
+        <member name="M:PDFWebEdit.Services.DirectoryService.Delete(PDFWebEdit.Enumerations.TargetDirectory,System.String)">
             <summary>
             Deletes the document and any modifications.
+            </summary>
+            <param name="targetDirectory">The target directory.</param>
+            <param name="name">The name.</param>
+        </member>
+        <member name="M:PDFWebEdit.Services.DirectoryService.Restore(System.String)">
+            <summary>
+            Restores a deleted document to the input directory.
             </summary>
             <param name="name">The name.</param>
         </member>
@@ -492,6 +633,15 @@
             Saves the document to the output directory.
             </summary>
             <param name="name">The name.</param>
+        </member>
+        <member name="M:PDFWebEdit.Services.DirectoryService.GetTargetDirectoryPath(PDFWebEdit.Enumerations.TargetDirectory)">
+            <summary>
+            Gets target directory path.
+            </summary>
+            <param name="targetDirectory">The target directory.</param>
+            <returns>
+            The target directory path.
+            </returns>
         </member>
         <member name="T:PDFWebEdit.Services.PDFManipulationService">
             <summary>
@@ -503,39 +653,57 @@
             The directory service.
             </summary>
         </member>
-        <member name="M:PDFWebEdit.Services.PDFManipulationService.#ctor(PDFWebEdit.Services.DirectoryService)">
+        <member name="F:PDFWebEdit.Services.PDFManipulationService._docNet">
+            <summary>
+            The document net.
+            </summary>
+        </member>
+        <member name="M:PDFWebEdit.Services.PDFManipulationService.#ctor(PDFWebEdit.Services.DirectoryService,PDFWebEdit.Models.DocNetSingleton)">
             <summary>
             Initialises a new instance of the <see cref="T:PDFWebEdit.Services.PDFManipulationService"/>
             class.
             </summary>
             <param name="directoryService">The directory service.</param>
+            <param name="docNet">The DocNet service.</param>
         </member>
-        <member name="M:PDFWebEdit.Services.PDFManipulationService.RotateClockwise(System.String,System.Collections.Generic.List{System.Int32})">
+        <member name="M:PDFWebEdit.Services.PDFManipulationService.RotateClockwise(PDFWebEdit.Enumerations.TargetDirectory,System.String,System.Collections.Generic.List{System.Int32})">
             <summary>
             Rotates pages clockwise.
             </summary>
+            <param name="targetDirectory">Target directory.</param>
             <param name="document">The document.</param>
             <param name="pageNumbers">The page numbers to rotate.</param>
         </member>
-        <member name="M:PDFWebEdit.Services.PDFManipulationService.DeletePage(System.String,System.Collections.Generic.List{System.Int32})">
+        <member name="M:PDFWebEdit.Services.PDFManipulationService.DeletePage(PDFWebEdit.Enumerations.TargetDirectory,System.String,System.Collections.Generic.List{System.Int32})">
             <summary>
             Deletes the page.
             </summary>
+            <param name="targetDirectory">Target directory.</param>
             <param name="document">The document.</param>
             <param name="pageNumbers">The page numbers.</param>
         </member>
-        <member name="M:PDFWebEdit.Services.PDFManipulationService.ReorderPages(System.String,System.Collections.Generic.List{System.Int32})">
+        <member name="M:PDFWebEdit.Services.PDFManipulationService.ReorderPages(PDFWebEdit.Enumerations.TargetDirectory,System.String,System.Collections.Generic.List{System.Int32})">
             <summary>
             Reorder pages.
             </summary>
+            <param name="targetDirectory">Target directory.</param>
             <param name="document">The document.</param>
             <param name="newPageOrder">The new page order.</param>
         </member>
-        <member name="M:PDFWebEdit.Services.PDFManipulationService.RevertChanges(System.String)">
+        <member name="M:PDFWebEdit.Services.PDFManipulationService.RevertChanges(PDFWebEdit.Enumerations.TargetDirectory,System.String)">
             <summary>
             Revert changes.
             </summary>
+            <param name="targetDirectory">Target directory.</param>
             <param name="document">The document.</param>
+        </member>
+        <member name="M:PDFWebEdit.Services.PDFManipulationService.Unlock(PDFWebEdit.Enumerations.TargetDirectory,System.String,System.String)">
+            <summary>
+            Unlocks an encrypted file.
+            </summary>
+            <param name="targetDirectory">Target directory.</param>
+            <param name="document">The document.</param>
+            <param name="password">The password.</param>
         </member>
         <member name="T:PDFWebEdit.Services.PDFService">
             <summary>
@@ -551,7 +719,16 @@
             <summary>
             Initialises a new instance of the <see cref="T:PDFWebEdit.Services.PDFService"/> class.
             </summary>
-            <param name="docNet">The document net.</param>
+            <param name="docNet">The DocNet service.</param>
+        </member>
+        <member name="M:PDFWebEdit.Services.PDFService.GetDocumentStatus(System.String)">
+            <summary>
+            Gets document status.
+            </summary>
+            <param name="path">Full pathname of the file.</param>
+            <returns>
+            The document status.
+            </returns>
         </member>
         <member name="M:PDFWebEdit.Services.PDFService.GetPageCount(System.String)">
             <summary>
@@ -570,15 +747,6 @@
             <param name="pageNumber">The page number.</param>
             <param name="width">The width</param>
             <param name="height">The height</param>
-            <returns>
-            An array of byte.
-            </returns>
-        </member>
-        <member name="M:PDFWebEdit.Services.PDFService.LoadFile(System.String)">
-            <summary>
-            Loads a file.
-            </summary>
-            <param name="path">Full pathname of the file.</param>
             <returns>
             An array of byte.
             </returns>

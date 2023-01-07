@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
-import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { forEachChild } from 'typescript';
 import { PDFWebEditAPI } from '../../api/PDFWebEditAPI';
+import { InputBoxComponent } from '../input-box/input-box.component';
 import { MessageBoxComponent } from '../message-box/message-box.component';
 
 @Component({
@@ -15,6 +15,9 @@ export class HomeComponent {
   documents: Doc[] = [];
 
   // Options
+  directory = PDFWebEditAPI.TargetDirectory.Input;
+  targetDirectories = PDFWebEditAPI.TargetDirectory;
+
   size = 'medium';
   pageHeight = 400;
   pageWidth = 282;
@@ -22,10 +25,24 @@ export class HomeComponent {
   sort = 'Name';
   sortDirection = 'Asc';
 
-  constructor(private api: PDFWebEditAPI.DocumentClient, private modalService: NgbModal) {
+  constructor(private api: PDFWebEditAPI.DocumentClient, private modalService: NgbModal, private route: ActivatedRoute, private router: Router) {
+
+    switch (router.url) {
+      default:
+        this.directory = PDFWebEditAPI.TargetDirectory.Input
+        break;
+
+      case '/output':
+        this.directory = PDFWebEditAPI.TargetDirectory.Output;
+        break;
+
+      case '/trash':
+        this.directory = PDFWebEditAPI.TargetDirectory.Trash;
+        break;
+    }
 
     // Load the document list
-    api.getDocuments().subscribe(result => {
+    api.getDocuments(this.directory).subscribe(result => {
 
       this.loadDocuments(result!);
 
@@ -63,7 +80,10 @@ export class HomeComponent {
     });
   }
 
+  //
   // Sizing
+  // 
+
   setSize($event: Event) {
 
     let size = ($event.target as HTMLInputElement).value;
@@ -90,7 +110,10 @@ export class HomeComponent {
     this.reloadDocumentsPages(this.documents);
   }
 
+  //
   // Sorting
+  // 
+
   setSort(sort: string) {
     this.sort = sort;
     this.sortDocuments();
@@ -136,6 +159,10 @@ export class HomeComponent {
     }
   }
 
+  // 
+  // Selection
+  // 
+
   selectAll(doc: Doc) {
     doc.pages.forEach(page => {
       page.active = true;
@@ -151,7 +178,10 @@ export class HomeComponent {
     doc.hasSelectedPages = false;
   }
 
+  //
   // Manipulation
+  // 
+
   rotate(doc: Doc) {
 
     let pagesToRotate = this.getSelectedPageNumbers(doc);
@@ -160,8 +190,11 @@ export class HomeComponent {
 
       this.setPagesUnloaded(doc, pagesToRotate);
 
-      this.api.rotatePages(doc.name, pagesToRotate).subscribe(() => {
+      this.api.rotatePages(this.directory, doc.name, pagesToRotate).subscribe(() => {
+
         this.loadDocumentPages(doc, pagesToRotate);
+        this.setDocumentModifiedState(doc, true);
+
       }, error => this.showMessageBox(error));
 
     } else {
@@ -177,8 +210,11 @@ export class HomeComponent {
 
       this.setPagesUnloaded(doc, pagesToRemove);
 
-      this.api.deletePages(doc.name, pagesToRemove).subscribe(() => {
+      this.api.deletePages(this.directory, doc.name, pagesToRemove).subscribe(() => {
+
         this.loadDocumentPages(doc);
+        this.setDocumentModifiedState(doc, true);
+
       }, error => this.showMessageBox(error));
 
     } else {
@@ -196,19 +232,30 @@ export class HomeComponent {
 
     this.setPagesUnloaded(doc, newPageOrder);
 
-    this.api.reorderPages(doc.name, newPageOrder).subscribe(() => {
+    this.api.reorderPages(this.directory, doc.name, newPageOrder).subscribe(() => {
+
       this.loadDocumentPages(doc);
+      this.setDocumentModifiedState(doc, true);
+      
     }, error => this.showMessageBox(error));
   }
 
   revert(doc: Doc) {
-    this.api.revertChanges(doc.name).subscribe(() => {
-      this.loadDocumentPages(doc);
+    this.api.revertChanges(this.directory, doc.name).subscribe(() => {
+      this.api.getDocument(this.directory, doc.name).subscribe((updatedDocument) => {
+
+        // Make sure the document isn't null
+        if (updatedDocument != null) {
+          this.replaceDoc(doc, updatedDocument);
+        } else {
+          this.showMessageBox('File does not exist!');
+        }
+      });
     }, error => this.showMessageBox(error));
   }
 
   delete(doc: Doc) {
-    this.api.delete(doc.name).subscribe(() => {
+    this.api.delete(this.directory, doc.name).subscribe(() => {
       this.documents = this.documents.filter(item => item.name !== doc.name);
     }, error => this.showMessageBox(error));
   }
@@ -219,7 +266,44 @@ export class HomeComponent {
     }, error => this.showMessageBox(error));
   }
 
+  restore(doc: Doc) {
+    this.api.restore(doc.name).subscribe(() => {
+      this.documents = this.documents.filter(item => item.name !== doc.name);
+    }, error => this.showMessageBox(error));
+  }
+
+  unlock(doc: Doc) {
+
+    this.showInputBox('This document is password protected. Please enter the password to unlock it.', 'Unlock Document', true).then(result => {
+      if (result) {
+        this.api.unlock(this.directory, doc.name, result).subscribe(() => {
+          this.api.getDocument(this.directory, doc.name).subscribe((updatedDocument) => {
+
+            // Make sure the document isn't null
+            if (updatedDocument != null) {
+              this.replaceDoc(doc, updatedDocument);
+            } else {
+              this.showMessageBox('File does not exist!');
+            }
+          });
+        }, error => this.showMessageBox(error.detail));
+      }
+    });
+  }
+
+  //
   // Helpers
+  //
+
+  replaceDoc(originalDoc: Doc, newDocument: PDFWebEditAPI.Document) {
+
+    let index = this.documents.findIndex(item => item.name === originalDoc.name);
+
+    if (index > -1) {
+      let newDoc = this.loadDocument(newDocument);
+      this.documents[index] = newDoc;
+    }
+  }
 
   loadDocuments(files: PDFWebEditAPI.Document[]) {
 
@@ -241,7 +325,10 @@ export class HomeComponent {
       lastModified: file.lastModified,
       pages: [],
       hasSelectedPages: false,
-      downloadUrl: this.getDownloadUrl(file.name)
+      downloadUrl: this.getDownloadUrl(file.name),
+      canRevertChanges: file.hasChanges,
+      corrupt: file.status == PDFWebEditAPI.DocumentStatus.Corrupted,
+      passwordProtected: file.status == PDFWebEditAPI.DocumentStatus.PasswordProtected,
     };
 
     this.loadDocumentPages(doc);
@@ -251,45 +338,46 @@ export class HomeComponent {
 
   loadDocumentPages(doc: Doc, pages?: number[] ) {
 
-    let api = this.api;
+    if ((!doc.corrupt) && (!doc.passwordProtected)) {
 
-    if (pages == undefined) {
+      if (pages == undefined) {
 
-      // Load all pages
-      doc.pages = [];
+        // Load all pages
+        doc.pages = [];
 
-      api.getPageCount(doc.name).subscribe((pageCount) => {
+        this.api.getPageCount(this.directory, doc.name).subscribe((pageCount) => {
 
-        // Get page previews
-        for (let i = 1; i <= pageCount; i++) {
+          // Get page previews
+          for (let i = 1; i <= pageCount; i++) {
 
-          let page: Page = {
-            number: i,
-            active: false,
-            url: this.getPagePreviewUrl(doc, i, this.pageWidth, this.pageHeight),
-            loaded: false
-          };
+            let page: Page = {
+              number: i,
+              active: false,
+              url: this.getPagePreviewUrl(doc, i, this.pageWidth, this.pageHeight),
+              loaded: false
+            };
 
-          doc.pages.push(page);
-        }
-      }, error => this.showMessageBox(error));
+            doc.pages.push(page);
+          }
+        }, error => this.showMessageBox(error));
 
-    } else {
+      } else {
 
-      // Load defined pages
-      pages.forEach(page => {
+        // Load defined pages
+        pages.forEach(page => {
 
-        doc.pages[page - 1].url = this.getPagePreviewUrl(doc, page, this.pageWidth, this.pageHeight);
-      })
+          doc.pages[page - 1].url = this.getPagePreviewUrl(doc, page, this.pageWidth, this.pageHeight);
+        })
+      }
     }
   }
 
   getPagePreviewUrl(doc: Doc, page: number, width: number, height: number) {
-    return '/api/documents/' + doc.name + '/preview/' + page + '?width=' + width + '&height=' + height + '&t=' + new Date().getTime();
+    return '/api/documents/' + this.directory + '/' + doc.name + '/preview/' + page + '?width=' + width + '&height=' + height + '&t=' + new Date().getTime();
   }
 
   getDownloadUrl(name: string) {
-    return '/api/documents/' + name + '/download';
+    return '/api/documents/' + this.directory + '/' + name + '/download';
   }
 
   reloadDocumentsPages(documents: Doc[]) {
@@ -319,10 +407,23 @@ export class HomeComponent {
     })
   }
 
+  setDocumentModifiedState(doc: Doc, state: boolean) {
+    doc.canRevertChanges = state;
+  }
+
   showMessageBox(message: string, title = 'An Error Occurred') {
     const modalRef = this.modalService.open(MessageBoxComponent);
     modalRef.componentInstance.title = title;
     modalRef.componentInstance.message = message;
+  }
+
+  showInputBox(message: string, title: string, password: boolean): Promise<string> {
+    const modalRef = this.modalService.open(InputBoxComponent);
+    modalRef.componentInstance.title = title;
+    modalRef.componentInstance.message = message;
+    modalRef.componentInstance.password = password;
+
+    return modalRef.result;
   }
 }
 
@@ -333,6 +434,9 @@ interface Doc {
   pages: Page[];
   hasSelectedPages: boolean;
   downloadUrl?: string;
+  canRevertChanges: boolean;
+  corrupt: boolean;
+  passwordProtected: boolean;
 }
 
 interface Page {

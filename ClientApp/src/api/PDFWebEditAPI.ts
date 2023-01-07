@@ -31,10 +31,14 @@ export class DocumentClient {
 
     /**
      * Gets the documents in the input folder.
+     * @param targetDirectory The target directory.
      * @return An enumerator that allows foreach to be used to process the documents in this collection.
      */
-    getDocuments(): Observable<Document[] | null> {
-        let url_ = this.baseUrl + "/api/documents/list";
+    getDocuments(targetDirectory: TargetDirectory): Observable<Document[] | null> {
+        let url_ = this.baseUrl + "/api/documents/list/{targetDirectory}";
+        if (targetDirectory === undefined || targetDirectory === null)
+            throw new Error("The parameter 'targetDirectory' must be defined.");
+        url_ = url_.replace("{targetDirectory}", encodeURIComponent("" + targetDirectory));
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -91,11 +95,15 @@ export class DocumentClient {
 
     /**
      * Gets a document.
+     * @param targetDirectory The target directory.
      * @param document The document.
      * @return The document.
      */
-    getDocument(document: string): Observable<FileResponse | null> {
-        let url_ = this.baseUrl + "/api/documents/{document}/download";
+    getDocument(targetDirectory: TargetDirectory, document: string): Observable<Document | null> {
+        let url_ = this.baseUrl + "/api/documents/list/{targetDirectory}/{document}";
+        if (targetDirectory === undefined || targetDirectory === null)
+            throw new Error("The parameter 'targetDirectory' must be defined.");
+        url_ = url_.replace("{targetDirectory}", encodeURIComponent("" + targetDirectory));
         if (document === undefined || document === null)
             throw new Error("The parameter 'document' must be defined.");
         url_ = url_.replace("{document}", encodeURIComponent("" + document));
@@ -117,6 +125,67 @@ export class DocumentClient {
                 try {
                     return this.processGetDocument(response_ as any);
                 } catch (e) {
+                    return _observableThrow(e) as any as Observable<Document | null>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<Document | null>;
+        }));
+    }
+
+    protected processGetDocument(response: HttpResponseBase): Observable<Document | null> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? Document.fromJS(resultData200) : <any>null;
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<Document | null>(null as any);
+    }
+
+    /**
+     * Gets a document.
+     * @param targetDirectory The target directory.
+     * @param document The document.
+     * @return The document.
+     */
+    downloadDocument(targetDirectory: TargetDirectory, document: string): Observable<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/documents/{targetDirectory}/{document}/download";
+        if (targetDirectory === undefined || targetDirectory === null)
+            throw new Error("The parameter 'targetDirectory' must be defined.");
+        url_ = url_.replace("{targetDirectory}", encodeURIComponent("" + targetDirectory));
+        if (document === undefined || document === null)
+            throw new Error("The parameter 'document' must be defined.");
+        url_ = url_.replace("{document}", encodeURIComponent("" + document));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDownloadDocument(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDownloadDocument(response_ as any);
+                } catch (e) {
                     return _observableThrow(e) as any as Observable<FileResponse | null>;
                 }
             } else
@@ -124,7 +193,7 @@ export class DocumentClient {
         }));
     }
 
-    protected processGetDocument(response: HttpResponseBase): Observable<FileResponse | null> {
+    protected processDownloadDocument(response: HttpResponseBase): Observable<FileResponse | null> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -152,11 +221,15 @@ export class DocumentClient {
 
     /**
      * Gets page count of the specified document.
+     * @param targetDirectory The target directory.
      * @param document The document.
      * @return The page count.
      */
-    getPageCount(document: string): Observable<number> {
-        let url_ = this.baseUrl + "/api/documents/{document}/page-count";
+    getPageCount(targetDirectory: TargetDirectory, document: string): Observable<number> {
+        let url_ = this.baseUrl + "/api/documents/{targetDirectory}/{document}/page-count";
+        if (targetDirectory === undefined || targetDirectory === null)
+            throw new Error("The parameter 'targetDirectory' must be defined.");
+        url_ = url_.replace("{targetDirectory}", encodeURIComponent("" + targetDirectory));
         if (document === undefined || document === null)
             throw new Error("The parameter 'document' must be defined.");
         url_ = url_.replace("{document}", encodeURIComponent("" + document));
@@ -210,14 +283,18 @@ export class DocumentClient {
 
     /**
      * Gets page preview in the specified document.
+     * @param targetDirectory The target directory.
      * @param document The document.
      * @param pageNumber The page number (starting at 1).
      * @param width The page width.
      * @param height The page height.
      * @return The page preview.
      */
-    getPagePreview(document: string, pageNumber: number, width: number, height: number): Observable<FileResponse | null> {
-        let url_ = this.baseUrl + "/api/documents/{document}/preview/{pageNumber}?";
+    getPagePreview(targetDirectory: TargetDirectory, document: string, pageNumber: number, width: number, height: number): Observable<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/documents/{targetDirectory}/{document}/preview/{pageNumber}?";
+        if (targetDirectory === undefined || targetDirectory === null)
+            throw new Error("The parameter 'targetDirectory' must be defined.");
+        url_ = url_.replace("{targetDirectory}", encodeURIComponent("" + targetDirectory));
         if (document === undefined || document === null)
             throw new Error("The parameter 'document' must be defined.");
         url_ = url_.replace("{document}", encodeURIComponent("" + document));
@@ -285,12 +362,16 @@ export class DocumentClient {
 
     /**
      * Renames a document.
+     * @param targetDirectory The target directory.
      * @param document The document.
      * @param newDocumentName New name of the document.
      * @return An IActionResult.
      */
-    rename(document: string, newDocumentName: string): Observable<FileResponse | null> {
-        let url_ = this.baseUrl + "/api/documents/{document}/rename/{newDocumentName}";
+    rename(targetDirectory: TargetDirectory, document: string, newDocumentName: string): Observable<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/documents/{targetDirectory}/{document}/rename/{newDocumentName}";
+        if (targetDirectory === undefined || targetDirectory === null)
+            throw new Error("The parameter 'targetDirectory' must be defined.");
+        url_ = url_.replace("{targetDirectory}", encodeURIComponent("" + targetDirectory));
         if (document === undefined || document === null)
             throw new Error("The parameter 'document' must be defined.");
         url_ = url_.replace("{document}", encodeURIComponent("" + document));
@@ -350,12 +431,16 @@ export class DocumentClient {
 
     /**
      * Rotates pages in the specified document.
+     * @param targetDirectory The target directory.
      * @param document The document.
      * @param pageNumbers The page numbers (1-based).
      * @return An IActionResult.
      */
-    rotatePages(document: string, pageNumbers: number[]): Observable<FileResponse | null> {
-        let url_ = this.baseUrl + "/api/documents/{document}/rotate-pages";
+    rotatePages(targetDirectory: TargetDirectory, document: string, pageNumbers: number[]): Observable<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/documents/{targetDirectory}/{document}/rotate-pages";
+        if (targetDirectory === undefined || targetDirectory === null)
+            throw new Error("The parameter 'targetDirectory' must be defined.");
+        url_ = url_.replace("{targetDirectory}", encodeURIComponent("" + targetDirectory));
         if (document === undefined || document === null)
             throw new Error("The parameter 'document' must be defined.");
         url_ = url_.replace("{document}", encodeURIComponent("" + document));
@@ -416,12 +501,16 @@ export class DocumentClient {
 
     /**
      * Deletes the pages in the specified document.
+     * @param targetDirectory The target directory.
      * @param document The document.
      * @param pageNumbers The page numbers (1-based).
      * @return An IActionResult.
      */
-    deletePages(document: string, pageNumbers: number[]): Observable<FileResponse | null> {
-        let url_ = this.baseUrl + "/api/documents/{document}/delete-pages";
+    deletePages(targetDirectory: TargetDirectory, document: string, pageNumbers: number[]): Observable<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/documents/{targetDirectory}/{document}/delete-pages";
+        if (targetDirectory === undefined || targetDirectory === null)
+            throw new Error("The parameter 'targetDirectory' must be defined.");
+        url_ = url_.replace("{targetDirectory}", encodeURIComponent("" + targetDirectory));
         if (document === undefined || document === null)
             throw new Error("The parameter 'document' must be defined.");
         url_ = url_.replace("{document}", encodeURIComponent("" + document));
@@ -482,12 +571,16 @@ export class DocumentClient {
 
     /**
      * Reorder pages in the specified document.
+     * @param targetDirectory The target directory.
      * @param document The document.
      * @param newPageOrder The new page order.
      * @return An IActionResult.
      */
-    reorderPages(document: string, newPageOrder: number[]): Observable<FileResponse | null> {
-        let url_ = this.baseUrl + "/api/documents/{document}/reorder-pages";
+    reorderPages(targetDirectory: TargetDirectory, document: string, newPageOrder: number[]): Observable<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/documents/{targetDirectory}/{document}/reorder-pages";
+        if (targetDirectory === undefined || targetDirectory === null)
+            throw new Error("The parameter 'targetDirectory' must be defined.");
+        url_ = url_.replace("{targetDirectory}", encodeURIComponent("" + targetDirectory));
         if (document === undefined || document === null)
             throw new Error("The parameter 'document' must be defined.");
         url_ = url_.replace("{document}", encodeURIComponent("" + document));
@@ -548,11 +641,15 @@ export class DocumentClient {
 
     /**
      * Revert changes to the specified document.
+     * @param targetDirectory The target directory.
      * @param document The document.
      * @return An IActionResult.
      */
-    revertChanges(document: string): Observable<FileResponse | null> {
-        let url_ = this.baseUrl + "/api/documents/{document}/revert";
+    revertChanges(targetDirectory: TargetDirectory, document: string): Observable<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/documents/{targetDirectory}/{document}/revert";
+        if (targetDirectory === undefined || targetDirectory === null)
+            throw new Error("The parameter 'targetDirectory' must be defined.");
+        url_ = url_.replace("{targetDirectory}", encodeURIComponent("" + targetDirectory));
         if (document === undefined || document === null)
             throw new Error("The parameter 'document' must be defined.");
         url_ = url_.replace("{document}", encodeURIComponent("" + document));
@@ -609,11 +706,15 @@ export class DocumentClient {
 
     /**
      * Deletes the specified document.
+     * @param targetDirectory The target directory.
      * @param document The document.
      * @return An IActionResult.
      */
-    delete(document: string): Observable<FileResponse | null> {
-        let url_ = this.baseUrl + "/api/documents/{document}/delete";
+    delete(targetDirectory: TargetDirectory, document: string): Observable<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/documents/{targetDirectory}/{document}/delete";
+        if (targetDirectory === undefined || targetDirectory === null)
+            throw new Error("The parameter 'targetDirectory' must be defined.");
+        url_ = url_.replace("{targetDirectory}", encodeURIComponent("" + targetDirectory));
         if (document === undefined || document === null)
             throw new Error("The parameter 'document' must be defined.");
         url_ = url_.replace("{document}", encodeURIComponent("" + document));
@@ -669,7 +770,137 @@ export class DocumentClient {
     }
 
     /**
-     * Saves the specified document to the output directory.
+     * Unlocks the document.
+     * @param targetDirectory The target directory.
+     * @param document The document.
+     * @param password The password.
+     * @return An IActionResult.
+     */
+    unlock(targetDirectory: TargetDirectory, document: string, password: string): Observable<void> {
+        let url_ = this.baseUrl + "/api/documents/{targetDirectory}/{document}/unlock?";
+        if (targetDirectory === undefined || targetDirectory === null)
+            throw new Error("The parameter 'targetDirectory' must be defined.");
+        url_ = url_.replace("{targetDirectory}", encodeURIComponent("" + targetDirectory));
+        if (document === undefined || document === null)
+            throw new Error("The parameter 'document' must be defined.");
+        url_ = url_.replace("{document}", encodeURIComponent("" + document));
+        if (password === undefined || password === null)
+            throw new Error("The parameter 'password' must be defined and cannot be null.");
+        else
+            url_ += "password=" + encodeURIComponent("" + password) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUnlock(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUnlock(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<void>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<void>;
+        }));
+    }
+
+    protected processUnlock(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(null as any);
+            }));
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = resultData400 ? ProblemDetails.fromJS(resultData400) : <any>null;
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(null as any);
+    }
+
+    /**
+     * Restores a document from trash.
+     * @param document The document.
+     * @return An IActionResult.
+     */
+    restore(document: string): Observable<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/documents/{document}/restore";
+        if (document === undefined || document === null)
+            throw new Error("The parameter 'document' must be defined.");
+        url_ = url_.replace("{document}", encodeURIComponent("" + document));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processRestore(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processRestore(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<FileResponse | null>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<FileResponse | null>;
+        }));
+    }
+
+    protected processRestore(response: HttpResponseBase): Observable<FileResponse | null> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return _observableOf({ fileName: fileName, data: responseBlob as any, status: status, headers: _headers });
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<FileResponse | null>(null as any);
+    }
+
+    /**
+     * Saves the specified document in the input directory to the output directory.
      * @param document The document.
      * @return An IActionResult.
      */
@@ -738,6 +969,10 @@ export class Document implements IDocument {
     created!: Date;
     /** Gets or sets the Date/Time of the last modified. */
     lastModified!: Date;
+    /** Gets or sets a value indicating whether this object has changes. */
+    hasChanges!: boolean;
+    /** Gets or sets the document status. */
+    status!: DocumentStatus;
 
     constructor(data?: IDocument) {
         if (data) {
@@ -753,6 +988,8 @@ export class Document implements IDocument {
             this.name = _data["name"] !== undefined ? _data["name"] : <any>null;
             this.created = _data["created"] ? new Date(_data["created"].toString()) : <any>null;
             this.lastModified = _data["lastModified"] ? new Date(_data["lastModified"].toString()) : <any>null;
+            this.hasChanges = _data["hasChanges"] !== undefined ? _data["hasChanges"] : <any>null;
+            this.status = _data["status"] !== undefined ? _data["status"] : <any>null;
         }
     }
 
@@ -768,6 +1005,8 @@ export class Document implements IDocument {
         data["name"] = this.name !== undefined ? this.name : <any>null;
         data["created"] = this.created ? this.created.toISOString() : <any>null;
         data["lastModified"] = this.lastModified ? this.lastModified.toISOString() : <any>null;
+        data["hasChanges"] = this.hasChanges !== undefined ? this.hasChanges : <any>null;
+        data["status"] = this.status !== undefined ? this.status : <any>null;
         return data;
     }
 }
@@ -780,6 +1019,110 @@ export interface IDocument {
     created: Date;
     /** Gets or sets the Date/Time of the last modified. */
     lastModified: Date;
+    /** Gets or sets a value indicating whether this object has changes. */
+    hasChanges: boolean;
+    /** Gets or sets the document status. */
+    status: DocumentStatus;
+}
+
+/** Values that represent document status. 0 = Ok 1 = Corrupted 2 = PasswordProtected */
+export enum DocumentStatus {
+    Ok = 0,
+    Corrupted = 1,
+    PasswordProtected = 2,
+}
+
+/** Values that represent target directories. 0 = Input 1 = Output 2 = Trash */
+export enum TargetDirectory {
+    Input = 0,
+    Output = 1,
+    Trash = 2,
+}
+
+export class ProblemDetails implements IProblemDetails {
+    type?: string | null;
+    title?: string | null;
+    status?: number | null;
+    detail?: string | null;
+    instance?: string | null;
+    extensions!: { [key: string]: any; };
+
+    [key: string]: any;
+
+    constructor(data?: IProblemDetails) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+        if (!data) {
+            this.extensions = {};
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.type = _data["type"] !== undefined ? _data["type"] : <any>null;
+            this.title = _data["title"] !== undefined ? _data["title"] : <any>null;
+            this.status = _data["status"] !== undefined ? _data["status"] : <any>null;
+            this.detail = _data["detail"] !== undefined ? _data["detail"] : <any>null;
+            this.instance = _data["instance"] !== undefined ? _data["instance"] : <any>null;
+            if (_data["extensions"]) {
+                this.extensions = {} as any;
+                for (let key in _data["extensions"]) {
+                    if (_data["extensions"].hasOwnProperty(key))
+                        (<any>this.extensions)![key] = _data["extensions"][key] !== undefined ? _data["extensions"][key] : <any>null;
+                }
+            }
+            else {
+                this.extensions = <any>null;
+            }
+        }
+    }
+
+    static fromJS(data: any): ProblemDetails {
+        data = typeof data === 'object' ? data : {};
+        let result = new ProblemDetails();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["type"] = this.type !== undefined ? this.type : <any>null;
+        data["title"] = this.title !== undefined ? this.title : <any>null;
+        data["status"] = this.status !== undefined ? this.status : <any>null;
+        data["detail"] = this.detail !== undefined ? this.detail : <any>null;
+        data["instance"] = this.instance !== undefined ? this.instance : <any>null;
+        if (this.extensions) {
+            data["extensions"] = {};
+            for (let key in this.extensions) {
+                if (this.extensions.hasOwnProperty(key))
+                    (<any>data["extensions"])[key] = this.extensions[key] !== undefined ? this.extensions[key] : <any>null;
+            }
+        }
+        return data;
+    }
+}
+
+export interface IProblemDetails {
+    type?: string | null;
+    title?: string | null;
+    status?: number | null;
+    detail?: string | null;
+    instance?: string | null;
+    extensions: { [key: string]: any; };
+
+    [key: string]: any;
 }
 
 export interface FileResponse {

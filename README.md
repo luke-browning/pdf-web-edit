@@ -11,6 +11,7 @@ PDF Web Edit is a web-based application for manipulating PDF files. It's main pu
 :heavy_check_mark: Reorder pages  
 :heavy_check_mark: Multi-select for quick manipulation  
 :heavy_check_mark: Delete document  
+:heavy_check_mark: Unlock encrypted/password protected documents  
 :heavy_check_mark: Move documents to output directory
 
 ### :hammer: Built With

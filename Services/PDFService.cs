@@ -1,4 +1,7 @@
-﻿using PDFWebEdit.Models;
+﻿using Docnet.Core.Exceptions;
+using PDFWebEdit.Enumerations;
+using PDFWebEdit.Helpers;
+using PDFWebEdit.Models;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
@@ -17,10 +20,53 @@ namespace PDFWebEdit.Services
         /// <summary>
         /// Initialises a new instance of the <see cref="PDFWebEdit.Services.PDFService"/> class.
         /// </summary>
-        /// <param name="docNet">The document net.</param>
+        /// <param name="docNet">The DocNet service.</param>
         public PDFService(DocNetSingleton docNet)
         {
             _docNet = docNet;
+        }
+
+        /// <summary>
+        /// Gets document status.
+        /// </summary>
+        /// <param name="path">Full pathname of the file.</param>
+        /// <returns>
+        /// The document status.
+        /// </returns>
+        public DocumentStatus GetDocumentStatus(string path)
+        {
+            var status = DocumentStatus.Ok;
+
+            // Get the file 
+            byte[] file = FileHelpers.LoadFile(path);
+
+            try
+            {
+                using (var reader = _docNet.Instance.GetDocReader(file, new Docnet.Core.Models.PageDimensions()))
+                {
+                    // We're just testing we can read the document
+                }
+            }
+            catch (DocnetLoadDocumentException ex)
+            {
+                switch (ex.ErrorCode)
+                {
+                    default:
+                    case 3:
+                        status = DocumentStatus.Corrupted;
+                        break;
+
+                    case 4:
+                        status = DocumentStatus.PasswordProtected;
+                        break;
+                }
+            }
+            catch (Exception x)
+            {
+                status = DocumentStatus.Corrupted;
+            }
+
+            return status;
         }
 
         /// <summary>
@@ -35,7 +81,7 @@ namespace PDFWebEdit.Services
             int pages = 0;
 
             // Get the file 
-            byte[] file = LoadFile(path);
+            byte[] file = FileHelpers.LoadFile(path);
 
             using (var reader = _docNet.Instance.GetDocReader(file, new Docnet.Core.Models.PageDimensions()))
             {
@@ -64,7 +110,7 @@ namespace PDFWebEdit.Services
             int pageHeight;
 
             // Get the file 
-            byte[] file = LoadFile(path);
+            byte[] file = FileHelpers.LoadFile(path);
 
             // Open the document
             using (var doc = _docNet.Instance.GetDocReader(file, new Docnet.Core.Models.PageDimensions(width, height)))
@@ -87,27 +133,6 @@ namespace PDFWebEdit.Services
             }
 
             return result;
-        }
-
-        /// <summary>
-        /// Loads a file.
-        /// </summary>
-        /// <param name="path">Full pathname of the file.</param>
-        /// <returns>
-        /// An array of byte.
-        /// </returns>
-        private static byte[] LoadFile(string path)
-        {
-            byte[] file;
-
-            using (var ms = new MemoryStream())
-            using (FileStream fs = File.OpenRead(path))
-            {
-                fs.CopyTo(ms);
-                file = ms.ToArray();
-            }
-
-            return file;
         }
     }
 }
