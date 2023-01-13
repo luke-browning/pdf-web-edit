@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PDFWebEdit.Enumerations;
+using PDFWebEdit.Helpers;
 using PDFWebEdit.Models;
 using PDFWebEdit.Services;
 using System.Drawing.Imaging;
@@ -15,9 +16,20 @@ namespace PDFWebEdit.Controllers
     [ApiController]
     public class DocumentController : ControllerBase
     {
+        /// <summary>
+        /// The directory service.
+        /// </summary>
         private readonly DirectoryService _directoryService;
-        private readonly PDFService _pdfService;
-        private readonly PDFManipulationService _pdfManipulationService;
+
+        /// <summary>
+        /// The PDF service.
+        /// </summary>
+        private readonly IPDFService _pdfService;
+
+        /// <summary>
+        /// The PDF manipulation service.
+        /// </summary>
+        private readonly IPDFManipulationService _pdfManipulationService;
 
         /// <summary>
         /// Initialises a new instance of the <see cref="PDFWebEdit.Controllers.DocumentController"/>
@@ -26,7 +38,7 @@ namespace PDFWebEdit.Controllers
         /// <param name="directoryService">The directory service.</param>
         /// <param name="pdfService">The PDF service.</param>
         /// <param name="pdfManipulationService">The PDF manipulation service.</param>
-        public DocumentController(DirectoryService directoryService, PDFService pdfService, PDFManipulationService pdfManipulationService)
+        public DocumentController(DirectoryService directoryService, IPDFService pdfService, IPDFManipulationService pdfManipulationService)
         {
             _directoryService = directoryService;
             _pdfService = pdfService;
@@ -71,6 +83,8 @@ namespace PDFWebEdit.Controllers
         /// The document.
         /// </returns>
         [HttpGet]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.InternalServerError)]
         [Route("{targetDirectory}/{document}/download")]
         public IActionResult DownloadDocument(TargetDirectory targetDirectory, string document)
         {
@@ -80,9 +94,16 @@ namespace PDFWebEdit.Controllers
 
             if (downloadFilePath != null)
             {
-                var bytes = _directoryService.GetDocumentBytes(targetDirectory, document);
+                try
+                {
+                    var bytes = _directoryService.GetDocumentBytes(targetDirectory, document);
 
-                return File(bytes, "application/pdf", Path.GetFileName(originalFilePath));
+                    return File(bytes, "application/pdf", Path.GetFileName(originalFilePath));
+                }
+                catch (Exception x)
+                {
+                    return ExceptionHelpers.GetErrorObjectResult("Download", HttpContext, x);
+                }
             }
             else
             {
@@ -129,6 +150,8 @@ namespace PDFWebEdit.Controllers
         /// The page preview.
         /// </returns>
         [HttpGet]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.InternalServerError)]
         [Route("{targetDirectory}/{document}/preview/{pageNumber}")]
         public IActionResult GetPagePreview(TargetDirectory targetDirectory, string document, int pageNumber, int width, int height)
         {
@@ -147,9 +170,16 @@ namespace PDFWebEdit.Controllers
                 }
                 else
                 {
-                    var img = _pdfService.GetPagePreview(path, pageNumber, width, height);
+                    try
+                    {
+                        var img = _pdfService.GetPagePreview(path, pageNumber, width, height);
 
-                    return File(img, "image/png");
+                        return File(img, "image/png");
+                    }
+                    catch (Exception x)
+                    {
+                        return ExceptionHelpers.GetErrorObjectResult("Preview", HttpContext, x);
+                    }
                 }
             }
             else
@@ -168,6 +198,8 @@ namespace PDFWebEdit.Controllers
         /// An IActionResult.
         /// </returns>
         [HttpPost]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.InternalServerError)]
         [Route("{targetDirectory}/{document}/rename/{newDocumentName}")]
         public IActionResult Rename(TargetDirectory targetDirectory, string document, string newDocumentName)
         {
@@ -176,9 +208,16 @@ namespace PDFWebEdit.Controllers
 
             if (path != null)
             {
-                _directoryService.Rename(targetDirectory, document, newDocumentName);
+                try
+                { 
+                    _directoryService.Rename(targetDirectory, document, newDocumentName);
 
-                return Ok();
+                    return Ok();
+                }
+                catch (Exception x)
+                {
+                    return ExceptionHelpers.GetErrorObjectResult("Rename", HttpContext, x);
+                }
             }
             else
             {
@@ -196,6 +235,8 @@ namespace PDFWebEdit.Controllers
         /// An IActionResult.
         /// </returns>
         [HttpPost]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.InternalServerError)]
         [Route("{targetDirectory}/{document}/rotate-pages")]
         public IActionResult RotatePages(TargetDirectory targetDirectory, string document, [FromBody] List<int> pageNumbers)
         {
@@ -204,9 +245,16 @@ namespace PDFWebEdit.Controllers
 
             if (path != null)
             {
-                _pdfManipulationService.RotateClockwise(targetDirectory, document, pageNumbers);
+                try
+                { 
+                    _pdfManipulationService.RotateClockwise(targetDirectory, document, pageNumbers);
 
-                return Ok();
+                    return Ok();
+                }
+                catch (Exception x)
+                {
+                    return ExceptionHelpers.GetErrorObjectResult("Rotate", HttpContext, x);
+                }
             }
             else
             {
@@ -224,6 +272,8 @@ namespace PDFWebEdit.Controllers
         /// An IActionResult.
         /// </returns>
         [HttpPost]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.InternalServerError)]
         [Route("{targetDirectory}/{document}/delete-pages")]
         public IActionResult DeletePages(TargetDirectory targetDirectory, string document, [FromBody] List<int> pageNumbers)
         {
@@ -232,9 +282,16 @@ namespace PDFWebEdit.Controllers
 
             if (path != null)
             {
-                _pdfManipulationService.DeletePage(targetDirectory, document, pageNumbers);
+                try
+                { 
+                    _pdfManipulationService.DeletePage(targetDirectory, document, pageNumbers);
 
-                return Ok();
+                    return Ok();
+                }
+                catch (Exception x)
+                {
+                    return ExceptionHelpers.GetErrorObjectResult("Remove", HttpContext, x);
+                }
             }
             else
             {
@@ -252,6 +309,8 @@ namespace PDFWebEdit.Controllers
         /// An IActionResult.
         /// </returns>
         [HttpPost]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.InternalServerError)]
         [Route("{targetDirectory}/{document}/reorder-pages")]
         public IActionResult ReorderPages(TargetDirectory targetDirectory, string document, [FromBody] List<int> newPageOrder)
         {
@@ -260,9 +319,16 @@ namespace PDFWebEdit.Controllers
 
             if (path != null)
             {
-                _pdfManipulationService.ReorderPages(targetDirectory, document, newPageOrder);
+                try
+                { 
+                    _pdfManipulationService.ReorderPages(targetDirectory, document, newPageOrder);
 
-                return Ok();
+                    return Ok();
+                }
+                catch (Exception x)
+                {
+                    return ExceptionHelpers.GetErrorObjectResult("Reorder", HttpContext, x);
+                }
             }
             else
             {
@@ -279,6 +345,8 @@ namespace PDFWebEdit.Controllers
         /// An IActionResult.
         /// </returns>
         [HttpPost]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.InternalServerError)]
         [Route("{targetDirectory}/{document}/revert")]
         public IActionResult RevertChanges(TargetDirectory targetDirectory, string document)
         {
@@ -287,9 +355,16 @@ namespace PDFWebEdit.Controllers
 
             if (path != null)
             {
-                _pdfManipulationService.RevertChanges(targetDirectory, document);
+                try
+                { 
+                    _pdfManipulationService.RevertChanges(targetDirectory, document);
 
-                return Ok();
+                    return Ok();
+                }
+                catch (Exception x)
+                {
+                    return ExceptionHelpers.GetErrorObjectResult("Revert", HttpContext, x);
+                }
             }
             else
             {
@@ -306,6 +381,8 @@ namespace PDFWebEdit.Controllers
         /// An IActionResult.
         /// </returns>
         [HttpPost]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.InternalServerError)]
         [Route("{targetDirectory}/{document}/delete")]
         public IActionResult Delete(TargetDirectory targetDirectory, string document)
         {
@@ -314,9 +391,16 @@ namespace PDFWebEdit.Controllers
 
             if (path != null)
             {
-                _directoryService.Delete(targetDirectory, document);
+                try
+                { 
+                    _directoryService.Delete(targetDirectory, document);
 
-                return Ok();
+                    return Ok();
+                }
+                catch (Exception x)
+                {
+                    return ExceptionHelpers.GetErrorObjectResult("Delete", HttpContext, x);
+                }
             }
             else
             {
@@ -344,28 +428,15 @@ namespace PDFWebEdit.Controllers
 
             if (path != null)
             {
-                var result = _pdfManipulationService.Unlock(targetDirectory, document, password);
+                try
+                { 
+                    _pdfManipulationService.Unlock(targetDirectory, document, password);
 
-                if (result.Success)
-                {
                     return Ok();
                 }
-                else
+                catch (Exception x)
                 {
-                    var problemDetails = new ProblemDetails
-                    {
-                        Status = (int)HttpStatusCode.BadRequest,
-                        Type = "",
-                        Title = "Unlock",
-                        Detail = result.Message,
-                        Instance = HttpContext.Request.Path
-                    };
-
-                    return new ObjectResult(problemDetails)
-                    {
-                        ContentTypes = { "application/problem+json" },
-                        StatusCode = (int)HttpStatusCode.BadRequest,
-                    };
+                    return ExceptionHelpers.GetErrorObjectResult("Unlock", HttpContext, x, statusCode: HttpStatusCode.BadRequest);
                 }
             }
             else
@@ -377,20 +448,21 @@ namespace PDFWebEdit.Controllers
         /// <summary>
         /// Restores a document from trash.
         /// </summary>
+        /// <param name="targetDirectory">The target directory.</param>
         /// <param name="document">The document.</param>
         /// <returns>
         /// An IActionResult.
         /// </returns>
         [HttpPost]
         [Route("{document}/restore")]
-        public IActionResult Restore(string document)
+        public IActionResult Restore(TargetDirectory targetDirectory, string document)
         {
             // Get the path to the document
-            var path = _directoryService.GetDocumentPath(TargetDirectory.Trash, document);
+            var path = _directoryService.GetDocumentPath(targetDirectory, document);
 
             if (path != null)
             {
-                _directoryService.Restore(document);
+                _directoryService.Restore(targetDirectory, document);
 
                 return Ok();
             }

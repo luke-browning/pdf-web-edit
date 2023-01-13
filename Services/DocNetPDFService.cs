@@ -8,9 +8,9 @@ using SixLabors.ImageSharp.PixelFormats;
 namespace PDFWebEdit.Services
 {
     /// <summary>
-    /// A PDF service.
+    /// A DocNet PDF service.
     /// </summary>
-    public class PDFService
+    public class DocNetPDFService : IPDFService
     {
         /// <summary>
         /// The document net.
@@ -18,10 +18,10 @@ namespace PDFWebEdit.Services
         private readonly DocNetSingleton _docNet;
 
         /// <summary>
-        /// Initialises a new instance of the <see cref="PDFWebEdit.Services.PDFService"/> class.
+        /// Initialises a new instance of the <see cref="PDFWebEdit.Services.DocNetPDFService"/> class.
         /// </summary>
         /// <param name="docNet">The DocNet service.</param>
-        public PDFService(DocNetSingleton docNet)
+        public DocNetPDFService(DocNetSingleton docNet)
         {
             _docNet = docNet;
         }

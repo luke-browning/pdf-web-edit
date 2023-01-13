@@ -24,6 +24,27 @@
         }
 
         /// <summary>
+        /// Loads file to memory stream.
+        /// </summary>
+        /// <param name="path">Full pathname of the file.</param>
+        /// <returns>
+        /// The file to stream.
+        /// </returns>
+        public static Stream LoadFileToMemoryStream(string path)
+        {
+            var ms = new MemoryStream();
+
+            using (FileStream fs = File.OpenRead(path))
+            {
+                fs.CopyTo(ms);
+            }
+
+            ms.Position = 0;
+
+            return ms;
+        }
+
+        /// <summary>
         /// Writes a file.
         /// </summary>
         /// <param name="path">Full pathname of the file.</param>

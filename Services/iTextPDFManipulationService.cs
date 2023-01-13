@@ -7,9 +7,9 @@ using PDFWebEdit.Models;
 namespace PDFWebEdit.Services
 {
     /// <summary>
-    /// A PDF manipulation service.
+    /// A PDF manipulation service using iText.
     /// </summary>
-    public class PDFManipulationService
+    public class iTextPDFManipulationService : IPDFManipulationService
     {
         /// <summary>
         /// The directory service.
@@ -22,12 +22,12 @@ namespace PDFWebEdit.Services
         private readonly DocNetSingleton _docNet;
 
         /// <summary>
-        /// Initialises a new instance of the <see cref="PDFWebEdit.Services.PDFManipulationService"/>
+        /// Initialises a new instance of the <see cref="PDFWebEdit.Services.iTextPDFManipulationService"/>
         /// class.
         /// </summary>
         /// <param name="directoryService">The directory service.</param>
         /// <param name="docNet">The DocNet service.</param>
-        public PDFManipulationService(DirectoryService directoryService, DocNetSingleton docNet)
+        public iTextPDFManipulationService(DirectoryService directoryService, DocNetSingleton docNet)
         {
             _directoryService = directoryService;
             _docNet = docNet;
@@ -44,11 +44,11 @@ namespace PDFWebEdit.Services
             var path = _directoryService.GetDocumentPath(targetDirectory, document);
             var outPath = _directoryService.GetEditingDocumentPath(targetDirectory, document);
 
-            using (var ms = new MemoryStream())
+            using (var open = File.OpenRead(path))
+            using (var save = new MemoryStream())
             { 
-
                 // Open the document
-                var pdfDocument = new PdfDocument(new PdfReader(path), new PdfWriter(ms));
+                var pdfDocument = new PdfDocument(new PdfReader(open), new PdfWriter(save));
 
                 // Rotate the requested pages
                 foreach (var pageNumber in pageNumbers)
@@ -62,7 +62,7 @@ namespace PDFWebEdit.Services
                 // otherwise the output file is corrupt
                 pdfDocument.Close();
 
-                var bytes = ms.ToArray();
+                var bytes = save.ToArray();
 
                 // Write the file
                 FileHelpers.WriteFile(outPath, bytes);
@@ -80,13 +80,20 @@ namespace PDFWebEdit.Services
             var path = _directoryService.GetDocumentPath(targetDirectory, document);
             var outPath = _directoryService.GetEditingDocumentPath(targetDirectory, document);
 
-            using (var ms = new MemoryStream())
-            { 
+            using (var open = File.OpenRead(path))
+            using (var save = new MemoryStream())
+            {
                 // Open the document
-                var pdfDocument = new PdfDocument(new PdfReader(path), new PdfWriter(ms));
+                var pdfDocument = new PdfDocument(new PdfReader(open), new PdfWriter(save));
 
                 // Sort the page numbers so we go start to finish
                 pageNumbers.Sort();
+
+                // Check we will leave the document with at least 1 page
+                if (pdfDocument.GetNumberOfPages() == 1)
+                {
+                    throw new Exception("Unable to remove page. A document must contain at least 1 page.");
+                }
 
                 // Keep track of how many pages we remove so we can update the index
                 // when multiple pages are being removed
@@ -105,7 +112,7 @@ namespace PDFWebEdit.Services
                 // otherwise the output file is corrupt
                 pdfDocument.Close();
 
-                var bytes = ms.ToArray();
+                var bytes = save.ToArray();
 
                 // Write the file
                 FileHelpers.WriteFile(outPath, bytes);
@@ -123,11 +130,12 @@ namespace PDFWebEdit.Services
             var path = _directoryService.GetDocumentPath(targetDirectory, document);
             var outPath = _directoryService.GetEditingDocumentPath(targetDirectory, document);
 
-            using (var ms = new MemoryStream())
+            using (var open = File.OpenRead(path))
+            using (var save = new MemoryStream())
             {
                 // Open the document
-                var sourceDocument = new PdfDocument(new PdfReader(path));
-                var targetDocument = new PdfDocument(new PdfWriter(ms));
+                var sourceDocument = new PdfDocument(new PdfReader(open));
+                var targetDocument = new PdfDocument(new PdfWriter(save));
 
                 // Copy the pages into the new document
                 sourceDocument.CopyPagesTo(newPageOrder, targetDocument);
@@ -137,7 +145,7 @@ namespace PDFWebEdit.Services
                 targetDocument.Close();
                 sourceDocument.Close();
 
-                var bytes = ms.ToArray();
+                var bytes = save.ToArray();
 
                 // Write the file
                 FileHelpers.WriteFile(outPath, bytes);
@@ -165,42 +173,35 @@ namespace PDFWebEdit.Services
         /// <param name="targetDirectory">Target directory.</param>
         /// <param name="document">The document.</param>
         /// <param name="password">The password.</param>
-        public Status Unlock(TargetDirectory targetDirectory, string document, string password)
+        public void Unlock(TargetDirectory targetDirectory, string document, string password)
         {
             var path = _directoryService.GetDocumentPath(targetDirectory, document);
             var outPath = _directoryService.GetEditingDocumentPath(targetDirectory, document);
 
-            // Get the file 
+            // Get the file contents 
             var file = FileHelpers.LoadFile(path);
-
-            var result = new Status();
 
             try
             {
+                // Decrypt the file
                 var decryptedFile = _docNet.Instance.Unlock(file, password);
 
                 // Write the file
                 FileHelpers.WriteFile(outPath, decryptedFile);
-
-                result.Success = true;
             }
-            catch (DocnetLoadDocumentException ex)
+            catch (DocnetLoadDocumentException x)
             {
-                switch (ex.ErrorCode)
+                switch (x.ErrorCode)
                 {
                     case 4:
-                        result.Message = "Incorrect password";
-                        result.Success = false;
+                        throw new Exception("Incorrect password.");
                         break;
                 }
             }
             catch (Exception x)
             {
-                result.Message = "An unknown error occurred";
-                result.Success = false;
+                throw new Exception("An unknown error occurred.");
             }
-
-            return result;
         }
     }
 }

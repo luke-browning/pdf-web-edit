@@ -11,12 +11,12 @@ export class InputBoxComponent implements OnInit {
   @Input() title!: string;
   @Input() message!: string;
   @Input() password!: boolean;
-
-  value = '';
+  @Input() value!: string;
 
   constructor(private activeModal: NgbActiveModal) { }
 
   ngOnInit(): void {
+
   }
 
   ok() {

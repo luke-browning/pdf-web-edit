@@ -195,7 +195,10 @@ export class HomeComponent {
         this.loadDocumentPages(doc, pagesToRotate);
         this.setDocumentModifiedState(doc, true);
 
-      }, error => this.showMessageBox(error));
+      }, error => {
+        this.loadDocumentPages(doc);
+        this.showMessageBox(error);
+      });
 
     } else {
       this.showMessageBox('No pages selected. Please select a page to rotate.');
@@ -215,7 +218,10 @@ export class HomeComponent {
         this.loadDocumentPages(doc);
         this.setDocumentModifiedState(doc, true);
 
-      }, error => this.showMessageBox(error));
+      }, error => {
+        this.loadDocumentPages(doc);
+        this.showMessageBox(error);
+      });
 
     } else {
       this.showMessageBox('No pages selected. Please select a page to remove.');
@@ -237,7 +243,10 @@ export class HomeComponent {
       this.loadDocumentPages(doc);
       this.setDocumentModifiedState(doc, true);
       
-    }, error => this.showMessageBox(error));
+    }, error => {
+      this.loadDocumentPages(doc);
+      this.showMessageBox(error);
+    });
   }
 
   revert(doc: Doc) {
@@ -267,9 +276,32 @@ export class HomeComponent {
   }
 
   restore(doc: Doc) {
-    this.api.restore(doc.name).subscribe(() => {
+    this.api.restore(this.directory, doc.name).subscribe(() => {
       this.documents = this.documents.filter(item => item.name !== doc.name);
     }, error => this.showMessageBox(error));
+  }
+
+  rename(doc: Doc) {
+
+    this.showInputBox('Enter new name.', 'Rename Document', false, doc.name).then(result => {
+      if (result) {
+        this.api.rename(this.directory, doc.name, result).subscribe(() => {
+          this.api.getDocument(this.directory, result).subscribe((updatedDocument) => {
+
+            // Make sure the document isn't null
+            if (updatedDocument != null) {
+              this.replaceDoc(doc, updatedDocument);
+            } else {
+              this.showMessageBox('File does not exist!');
+            }
+          });
+        }, error => this.showMessageBox(error.detail));
+      }
+    }, () => {
+
+      // Dismissed
+      return;
+    });
   }
 
   unlock(doc: Doc) {
@@ -288,6 +320,10 @@ export class HomeComponent {
           });
         }, error => this.showMessageBox(error.detail));
       }
+    }, () => {
+
+      // Dismissed
+      return;
     });
   }
 
@@ -411,17 +447,39 @@ export class HomeComponent {
     doc.canRevertChanges = state;
   }
 
-  showMessageBox(message: string, title = 'An Error Occurred') {
-    const modalRef = this.modalService.open(MessageBoxComponent);
-    modalRef.componentInstance.title = title;
-    modalRef.componentInstance.message = message;
+  pageLoaded(page: Page) {
+    page.loaded = true;
   }
 
-  showInputBox(message: string, title: string, password: boolean): Promise<string> {
+  showMessageBox(message: any, title = 'An Error Occurred') {
+
+    let error: string | undefined | null;
+
+    if (typeof message === 'string') {
+      error = message;
+    }
+
+    if (typeof message === 'object') {
+
+      if (message instanceof PDFWebEditAPI.ProblemDetails) {
+        error = message.detail;
+      }
+      else {
+        error = 'Unhandled exception!';
+      }
+    }
+
+    const modalRef = this.modalService.open(MessageBoxComponent);
+    modalRef.componentInstance.title = title;
+    modalRef.componentInstance.message = error;
+  }
+
+  showInputBox(message: string, title: string, password: boolean, defaultValue?: string): Promise<string> {
     const modalRef = this.modalService.open(InputBoxComponent);
     modalRef.componentInstance.title = title;
     modalRef.componentInstance.message = message;
     modalRef.componentInstance.password = password;
+    modalRef.componentInstance.value = defaultValue;
 
     return modalRef.result;
   }

@@ -47,16 +47,16 @@ namespace PDFWebEdit.Services
         /// <summary>
         /// The PDF service.
         /// </summary>
-        private readonly PDFService _pdfService;
+        private readonly IPDFService _pdfService;
 
         /// <summary>
         /// Initialises a new instance of the <see cref="PDFWebEdit.Services.DirectoryService"/> class.
         /// </summary>
         /// <exception cref="Exception">Thrown when an exception error condition occurs.</exception>
         /// <param name="configuration">The configuration.</param>
-        /// <param name="configService">The configuration service</param>
-        /// <param name="pdfService">The PDF service</param>
-        public DirectoryService(IConfiguration configuration, ConfigService configService, PDFService pdfService)
+        /// <param name="configService">The configuration service.</param>
+        /// <param name="pdfService">The PDF service.</param>
+        public DirectoryService(IConfiguration configuration, ConfigService configService, IPDFService pdfService)
         {
             // Get directory paths
             _inputDirectory = configuration["Directories:Input"];
@@ -345,25 +345,28 @@ namespace PDFWebEdit.Services
         /// <summary>
         /// Restores a deleted document to the input directory.
         /// </summary>
+        /// <param name="targetDirectory">The target directory.</param>
         /// <param name="name">The name.</param>
-        public void Restore(string name)
+        public void Restore(TargetDirectory targetDirectory, string name)
         {
+            string directory = GetTargetDirectoryPath(targetDirectory);
+
             lock (__lock)
             {
-                var editedPDFTrashPath = Path.Combine(_trashDirectory, name) + EDITING_PDF_EXTENSION;
-                var originalPDFTrashPath = Path.Combine(_trashDirectory, name) + PDF_EXTENSION;
+                var editedPDFPath = Path.Combine(directory, name) + EDITING_PDF_EXTENSION;
+                var originalPDFPath = Path.Combine(directory, name) + PDF_EXTENSION;
 
-                var editedPDFPath = Path.Combine(_inputDirectory, name) + EDITING_PDF_EXTENSION;
-                var originalPDFPath = Path.Combine(_inputDirectory, name) + PDF_EXTENSION;
+                var editedPDFInputDirectoryPath = Path.Combine(_inputDirectory, name) + EDITING_PDF_EXTENSION;
+                var originalPDFInputDirectoryPath = Path.Combine(_inputDirectory, name) + PDF_EXTENSION;
 
-                if (File.Exists(editedPDFTrashPath))
+                if (File.Exists(editedPDFPath))
                 {
-                    File.Move(editedPDFTrashPath, editedPDFPath);
+                    File.Move(editedPDFPath, editedPDFInputDirectoryPath);
                 }
 
-                if (File.Exists(originalPDFTrashPath))
+                if (File.Exists(originalPDFPath))
                 {
-                    File.Move(originalPDFTrashPath, originalPDFPath);
+                    File.Move(originalPDFPath, originalPDFInputDirectoryPath);
                 }
             }
         }

@@ -74,8 +74,12 @@
 
           <span class="separator"></span>
 
-          <a [href]="document.downloadUrl" target="_blank" class="btn btn-primary">Download</a>
+          <button type="button" class="btn btn-primary" (click)="rename(document)">Rename</button>
           <button type="button" class="btn btn-primary" (click)="delete(document)">Delete</button>
+          <a [href]="document.downloadUrl" target="_blank" class="btn btn-primary">Download</a>
+
+          <span class="separator"></span>
+
           <button type="button" class="btn btn-primary" [disabled]="!document.canRevertChanges" (click)="revert(document)">Revert Changes</button>
           <button type="button" class="btn btn-primary" (click)="save(document)">Save</button>
         </div>
@@ -83,27 +87,40 @@
         <!-- Output Toolbar -->
         <div class="toolbar mb-3" *ngIf="directory == targetDirectories.Output && !document.corrupt && !document.passwordProtected">
           <a [href]="document.downloadUrl" target="_blank" class="btn btn-primary">Download</a>
+
+          <span class="separator"></span>
+
+          <button type="button" class="btn btn-primary" (click)="restore(document)">Restore</button>
         </div>
 
         <!-- Trash Toolbar -->
         <div class="toolbar mb-3" *ngIf="directory == targetDirectories.Trash && !document.corrupt && !document.passwordProtected">
-          <a [href]="document.downloadUrl" target="_blank" class="btn btn-primary">Download</a>
           <button type="button" class="btn btn-primary" (click)="delete(document)">Delete</button>
+          <a [href]="document.downloadUrl" target="_blank" class="btn btn-primary">Download</a>
+
+          <span class="separator"></span>
+
           <button type="button" class="btn btn-primary" (click)="restore(document)">Restore</button>
         </div>
 
         <!-- Password Protected Toolbar -->
         <div class="toolbar mb-3" *ngIf="document.passwordProtected">
-          <a [href]="document.downloadUrl" target="_blank" class="btn btn-primary">Download</a>
           <button type="button" class="btn btn-primary" (click)="delete(document)">Delete</button>
+          <a [href]="document.downloadUrl" target="_blank" class="btn btn-primary">Download</a>
+
+          <span class="separator"></span>
+
           <button type="button" class="btn btn-primary" (click)="unlock(document)">Unlock</button>
         </div>
 
         <!-- Corrupt Toolbar -->
         <div class="toolbar mb-3" *ngIf="document.corrupt">
-          <a [href]="document.downloadUrl" target="_blank" class="btn btn-primary">Download</a>
-          <button *ngIf="document.canRevertChanges" type="button" class="btn btn-primary" (click)="revert(document)">Revert Changes</button>
           <button type="button" class="btn btn-primary" (click)="delete(document)">Delete</button>
+          <a [href]="document.downloadUrl" target="_blank" class="btn btn-primary">Download</a>
+
+          <span class="separator" *ngIf="document.canRevertChanges || directory == targetDirectories.Trash"></span>
+
+          <button *ngIf="document.canRevertChanges" type="button" class="btn btn-primary" (click)="revert(document)">Revert Changes</button>
           <button *ngIf="directory == targetDirectories.Trash" type="button" class="btn btn-primary" (click)="restore(document)">Restore</button>
         </div>
 
@@ -115,7 +132,7 @@
                   <span class="visually-hidden">Loading...</span>
                 </div>
               </div>
-              <img [src]="page.url" class="thumb" [class.active]="page.active" (load)="page.loaded = true;" />
+              <img [src]="page.url" class="thumb" [class.active]="page.active" (load)="pageLoaded(page)" />
               <div class="page-number">{{ page.number }}</div>
             </div>
           </ng-container>
