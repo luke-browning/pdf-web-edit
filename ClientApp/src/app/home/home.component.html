@@ -1,7 +1,37 @@
 <div class="row mb-3">
+
+  <div class="col">
+    <div ngbDropdown class="d-inline-block">
+      <button type="button" class="btn btn-primary" id="folder" ngbDropdownToggle>
+        <span *ngIf="directory == targetDirectories.Input">Input</span>
+        <span *ngIf="directory == targetDirectories.Output">Output</span>
+        <span *ngIf="directory == targetDirectories.Trash">Trash</span>
+      </button>
+      <div ngbDropdownMenu aria-labelledby="folder">
+        <a routerLink="/" ngbDropdownItem>Input</a>
+        <a routerLink="/output" ngbDropdownItem>Output</a>
+        <div class="dropdown-divider"></div>
+        <a routerLink="/trash" ngbDropdownItem>Trash</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="col text-center">
+    <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+      <input type="radio" class="btn-check" name="size" id="size-small" value="small" autocomplete="off" [(ngModel)]="size" (change)="setSize($event)">
+      <label class="btn btn-outline-primary" for="size-small">Small</label>
+
+      <input type="radio" class="btn-check" name="size" id="size-medium" value="medium" autocomplete="off" [(ngModel)]="size" (change)="setSize($event)">
+      <label class="btn btn-outline-primary" for="size-medium">Medium</label>
+
+      <input type="radio" class="btn-check" name="size" id="size-large" value="large" autocomplete="off" [(ngModel)]="size" (change)="setSize($event)">
+      <label class="btn btn-outline-primary" for="size-large">Large</label>
+    </div>
+  </div>
+
   <div class="col">
 
-    <div class="btn-group me-3">
+    <div class="btn-group me-3 float-end">
       <div class="btn-group" ngbDropdown role="group">
         <button type="button" class="btn btn-secondary" ngbDropdownToggle>{{ sort }}</button>
         <div class="dropdown-menu" ngbDropdownMenu>
@@ -20,23 +50,6 @@
     </div>
 
   </div>
-
-  <div class="col text-center">
-    <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-      <input type="radio" class="btn-check" name="size" id="size-small" value="small" autocomplete="off" [(ngModel)]="size" (change)="setSize($event)">
-      <label class="btn btn-outline-primary" for="size-small">Small</label>
-
-      <input type="radio" class="btn-check" name="size" id="size-medium" value="medium" autocomplete="off" [(ngModel)]="size" (change)="setSize($event)">
-      <label class="btn btn-outline-primary" for="size-medium">Medium</label>
-
-      <input type="radio" class="btn-check" name="size" id="size-large" value="large" autocomplete="off" [(ngModel)]="size" (change)="setSize($event)">
-      <label class="btn btn-outline-primary" for="size-large">Large</label>
-    </div>
-  </div>
-
-  <div class="col">
-    <!--<button type="button" class="btn btn-success float-end">Save All</button>-->
-  </div>
 </div>
 
 
@@ -49,20 +62,69 @@
       </div>
       <div class="card-body">
 
-        <div class="toolbar mb-3">
+        <!-- Input Toolbar -->
+        <div class="toolbar mb-3" *ngIf="directory == targetDirectories.Input && !document.corrupt && !document.passwordProtected">
           <button type="button" class="btn btn-primary" (click)="selectAll(document)">Select All</button>
           <button type="button" class="btn btn-primary" (click)="unselect(document)">Unselect</button>
+
+          <span class="separator"></span>
 
           <button type="button" class="btn btn-primary" [disabled]="!document.hasSelectedPages" (click)="rotate(document)">Rotate</button>
           <button type="button" class="btn btn-primary" [disabled]="!document.hasSelectedPages" (click)="remove(document)">Remove</button>
 
-          <a [href]="document.downloadUrl" target="_blank" class="btn btn-primary">Download</a>
+          <span class="separator"></span>
+
+          <button type="button" class="btn btn-primary" (click)="rename(document)">Rename</button>
           <button type="button" class="btn btn-primary" (click)="delete(document)">Delete</button>
-          <button type="button" class="btn btn-primary" (click)="revert(document)">Revert Changes</button>
+          <a [href]="document.downloadUrl" target="_blank" class="btn btn-primary">Download</a>
+
+          <span class="separator"></span>
+
+          <button type="button" class="btn btn-primary" [disabled]="!document.canRevertChanges" (click)="revert(document)">Revert Changes</button>
           <button type="button" class="btn btn-primary" (click)="save(document)">Save</button>
         </div>
 
-        <div class="scrolling-wrapper" [class]="size" [dragula]="document.name" [dragulaModel]="document.pages" (dragulaModelChange)="reorder(document, $event)">
+        <!-- Output Toolbar -->
+        <div class="toolbar mb-3" *ngIf="directory == targetDirectories.Output && !document.corrupt && !document.passwordProtected">
+          <a [href]="document.downloadUrl" target="_blank" class="btn btn-primary">Download</a>
+
+          <span class="separator"></span>
+
+          <button type="button" class="btn btn-primary" (click)="restore(document)">Restore</button>
+        </div>
+
+        <!-- Trash Toolbar -->
+        <div class="toolbar mb-3" *ngIf="directory == targetDirectories.Trash && !document.corrupt && !document.passwordProtected">
+          <button type="button" class="btn btn-primary" (click)="delete(document)">Delete</button>
+          <a [href]="document.downloadUrl" target="_blank" class="btn btn-primary">Download</a>
+
+          <span class="separator"></span>
+
+          <button type="button" class="btn btn-primary" (click)="restore(document)">Restore</button>
+        </div>
+
+        <!-- Password Protected Toolbar -->
+        <div class="toolbar mb-3" *ngIf="document.passwordProtected">
+          <button type="button" class="btn btn-primary" (click)="delete(document)">Delete</button>
+          <a [href]="document.downloadUrl" target="_blank" class="btn btn-primary">Download</a>
+
+          <span class="separator"></span>
+
+          <button type="button" class="btn btn-primary" (click)="unlock(document)">Unlock</button>
+        </div>
+
+        <!-- Corrupt Toolbar -->
+        <div class="toolbar mb-3" *ngIf="document.corrupt">
+          <button type="button" class="btn btn-primary" (click)="delete(document)">Delete</button>
+          <a [href]="document.downloadUrl" target="_blank" class="btn btn-primary">Download</a>
+
+          <span class="separator" *ngIf="document.canRevertChanges || directory == targetDirectories.Trash"></span>
+
+          <button *ngIf="document.canRevertChanges" type="button" class="btn btn-primary" (click)="revert(document)">Revert Changes</button>
+          <button *ngIf="directory == targetDirectories.Trash" type="button" class="btn btn-primary" (click)="restore(document)">Restore</button>
+        </div>
+
+        <div *ngIf="!document.corrupt && !document.passwordProtected" class="scrolling-wrapper" [class]="size" [dragula]="document.name" [dragulaModel]="document.pages" (dragulaModelChange)="reorder(document, $event)">
           <ng-container *ngFor="let page of document.pages">
             <div class="thumb-container" (click)="setActive(document, page, $event)">
               <div *ngIf="!page.loaded" class="loading d-flex justify-content-center align-items-center">
@@ -70,13 +132,29 @@
                   <span class="visually-hidden">Loading...</span>
                 </div>
               </div>
-              <img [src]="page.url" class="thumb" [class.active]="page.active" (load)="page.loaded = true;" />
+              <img [src]="page.url" class="thumb" [class.active]="page.active" (load)="pageLoaded(page)" />
               <div class="page-number">{{ page.number }}</div>
             </div>
           </ng-container>
+        </div>
+
+        <div *ngIf="document.corrupt">
+          <div class="alert alert-danger" role="alert">
+            <span>This file is corrupt.</span> <span *ngIf="document.canRevertChanges"> You may be able to recover your document by clicking the Revert Changes button above.</span>
+          </div>
+        </div>
+
+        <div *ngIf="document.passwordProtected">
+          <div class="alert alert-warning" role="alert">
+            This file is password protected. Please use the unlock feature to decrypt the document.
+          </div>
         </div>
       </div>
     </div>
   </div>
 
+</div>
+
+<div *ngIf="documents.length == 0" class="text-center text-muted mt-5">
+  No documents found
 </div>

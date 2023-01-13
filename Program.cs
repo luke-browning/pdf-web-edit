@@ -22,16 +22,18 @@ builder.Services.AddSwaggerGen(options =>
     options.SwaggerDoc("V1", new OpenApiInfo
     {
         Version = "V1",
-        Title = "PDFWebEdit API",
-        Description = "PDFWebEdit API"
+        Title = "PDF Web Edit API",
+        Description = "PDF Web Edit API for manipulating PDF files"
     });
 });
 
 builder.Services.AddSingleton<DocNetSingleton>();
+
+builder.Services.AddTransient<IPDFService, DocNetPDFService>();
+builder.Services.AddTransient<IPDFManipulationService, iTextPDFManipulationService>();
+
 builder.Services.AddSingleton<ConfigService>();
-builder.Services.AddTransient<DirectoryService>();
-builder.Services.AddTransient<PDFService>();
-builder.Services.AddTransient<PDFManipulationService>();
+builder.Services.AddSingleton<DirectoryService>();
 
 var app = builder.Build();
 

@@ -1,4 +1,6 @@
-﻿namespace PDFWebEdit.Models
+﻿using PDFWebEdit.Enumerations;
+
+namespace PDFWebEdit.Models
 {
     /// <summary>
     /// A document.
@@ -28,5 +30,21 @@
         /// The last modified.
         /// </value>
         public DateTime LastModified { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this object has changes.
+        /// </summary>
+        /// <value>
+        /// True if this object has changes, false if not.
+        /// </value>
+        public bool HasChanges { get; set; }
+
+        /// <summary>
+        /// Gets or sets the document status.
+        /// </summary>
+        /// <value>
+        /// The document status.
+        /// </value>
+        public DocumentStatus Status { get; set; }
     }
 }
