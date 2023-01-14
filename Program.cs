@@ -28,12 +28,11 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 builder.Services.AddSingleton<DocNetSingleton>();
+builder.Services.AddSingleton<ConfigService>();
+builder.Services.AddSingleton<DirectoryService>();
 
 builder.Services.AddTransient<IPDFService, DocNetPDFService>();
 builder.Services.AddTransient<IPDFManipulationService, iTextPDFManipulationService>();
-
-builder.Services.AddSingleton<ConfigService>();
-builder.Services.AddSingleton<DirectoryService>();
 
 var app = builder.Build();
 
