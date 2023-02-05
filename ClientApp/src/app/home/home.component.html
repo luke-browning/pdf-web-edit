@@ -69,7 +69,8 @@
 
           <span class="separator"></span>
 
-          <button type="button" class="btn btn-primary" [disabled]="!document.hasSelectedPages" (click)="rotate(document)">Rotate</button>
+          <button type="button" class="btn btn-primary" [disabled]="!document.hasSelectedPages" (click)="rotateAntiClockwise(document)">Rotate Anti-Clockwise</button>
+          <button type="button" class="btn btn-primary" [disabled]="!document.hasSelectedPages" (click)="rotateClockwise(document)">Rotate Clockwise</button>
           <button type="button" class="btn btn-primary" [disabled]="!document.hasSelectedPages" (click)="remove(document)">Remove</button>
 
           <span class="separator"></span>
@@ -81,6 +82,7 @@
           <span class="separator"></span>
 
           <button type="button" class="btn btn-primary" [disabled]="!document.canRevertChanges" (click)="revert(document)">Revert Changes</button>
+          <button type="button" class="btn btn-primary" (click)="saveTo(document)">Save To</button>
           <button type="button" class="btn btn-primary" (click)="save(document)">Save</button>
         </div>
 

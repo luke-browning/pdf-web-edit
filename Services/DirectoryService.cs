@@ -74,18 +74,43 @@ namespace PDFWebEdit.Services
         }
 
         /// <summary>
+        /// Gets the folders in the save directory.
+        /// </summary>
+        /// <returns>
+        /// An enumerator that allows foreach to be used to process the folders in this collection.
+        /// </returns>
+        public IEnumerable<Folder> GetFolders()
+        {
+            string directory = GetTargetDirectoryPath(TargetDirectory.Output);
+
+            // Recursively get folders
+            var tree = GetFolders(directory);
+
+            return tree;
+        }
+
+        /// <summary>
         /// Gets the document lists in this collection.
         /// </summary>
         /// <param name="targetDirectory">Target directory.</param>
+        /// <param name="includeSubdirectories">Include documents in subdirectories.</param>
         /// <returns>
         /// An enumerator that allows foreach to be used to process the document lists in this collection.
         /// </returns>
-        public IEnumerable<Document> GetDocumentList(TargetDirectory targetDirectory)
+        public IEnumerable<Document> GetDocumentList(TargetDirectory targetDirectory, bool includeSubdirectories = false)
         {
             string directory = GetTargetDirectoryPath(targetDirectory);
 
+            // Search options
+            var searchOption = SearchOption.TopDirectoryOnly;
+
+            if (includeSubdirectories)
+            {
+                searchOption = SearchOption.AllDirectories;
+            }
+
             // Load docs
-            var documents = Directory.EnumerateFiles(directory, $"*{PDF_EXTENSION}")
+            var documents = Directory.EnumerateFiles(directory, $"*{PDF_EXTENSION}", searchOption)
                 .Where(x => !x.EndsWith(EDITING_PDF_EXTENSION, StringComparison.OrdinalIgnoreCase))
                 .Select(path => {
 
@@ -94,6 +119,7 @@ namespace PDFWebEdit.Services
                     var doc = new Document
                     {
                         Name = Path.GetFileNameWithoutExtension(path),
+                        Directory = Path.GetDirectoryName(path).Replace(directory, string.Empty),
                         Created = File.GetCreationTime(path),
                         LastModified = File.GetLastWriteTime(path),
                         HasChanges = File.Exists(editedPdfPath),
@@ -114,11 +140,11 @@ namespace PDFWebEdit.Services
         /// <returns>
         /// The document.
         /// </returns>
-        public Document GetDocument(TargetDirectory targetDirectory, string name)
+        public Document GetDocument(TargetDirectory targetDirectory, string? subDirectory, string name)
         {
             Document doc = null;
 
-            string pdfPath = GetUnmodifiedDocumentPath(targetDirectory, name);
+            string pdfPath = GetUnmodifiedDocumentPath(targetDirectory, subDirectory, name);
 
             if (pdfPath != null)
             {
@@ -142,13 +168,15 @@ namespace PDFWebEdit.Services
         /// Gets document path.
         /// </summary>
         /// <param name="targetDirectory">The target directory.</param>
+        /// <param name="subDirectory">Subdirectory storing document.</param>
         /// <param name="name">The name.</param>
         /// <returns>
         /// The document path.
         /// </returns>
-        public string? GetDocumentPath(TargetDirectory targetDirectory, string name)
+        public string? GetDocumentPath(TargetDirectory targetDirectory, string? subDirectory, string name)
         {
             string directory = GetTargetDirectoryPath(targetDirectory);
+            directory = Path.Join(directory, subDirectory ?? string.Empty);
 
             var editedPdfPath = Path.Combine(directory, name) + EDITING_PDF_EXTENSION;
             var pdfPath = Path.Combine(directory, name) + PDF_EXTENSION;
@@ -172,13 +200,15 @@ namespace PDFWebEdit.Services
         /// </summary>
         /// <exception cref="Exception">Thrown when an exception error condition occurs.</exception>
         /// <param name="targetDirectory">The target directory.</param>
+        /// <param name="subDirectory">Subdirectory storing document.</param>
         /// <param name="name">The name.</param>
         /// <returns>
         /// The unmodified document path.
         /// </returns>
-        public string GetUnmodifiedDocumentPath(TargetDirectory targetDirectory, string name)
+        public string GetUnmodifiedDocumentPath(TargetDirectory targetDirectory, string? subDirectory, string name)
         {
             string directory = GetTargetDirectoryPath(targetDirectory);
+            directory = Path.Join(directory, subDirectory ?? string.Empty);
 
             var pdfPath = Path.Combine(directory, name) + PDF_EXTENSION;
 
@@ -196,14 +226,16 @@ namespace PDFWebEdit.Services
         /// Gets editing document path.
         /// </summary>
         /// <exception cref="Exception">Thrown when an exception error condition occurs.</exception>
+        /// <param name="subDirectory">Subdirectory storing document.</param>
         /// <param name="targetDirectory">The target directory.</param>
         /// <param name="name">The name.</param>
         /// <returns>
         /// The editing document path.
         /// </returns>
-        public string GetEditingDocumentPath(TargetDirectory targetDirectory, string name)
+        public string GetEditingDocumentPath(TargetDirectory targetDirectory, string? subDirectory, string name)
         {
             string directory = GetTargetDirectoryPath(targetDirectory);
+            directory = Path.Join(directory, subDirectory ?? string.Empty);
 
             var editedPdfPath = Path.Combine(directory, name) + EDITING_PDF_EXTENSION;
             var pdfPath = Path.Combine(directory, name) + PDF_EXTENSION;
@@ -224,11 +256,13 @@ namespace PDFWebEdit.Services
         /// </summary>
         /// <exception cref="Exception">Thrown when an exception error condition occurs.</exception>
         /// <param name="targetDirectory">The target directory.</param>
+        /// <param name="subDirectory">Subdirectory storing document.</param>
         /// <param name="name">The name.</param>
         /// <param name="newName">Name of the new.</param>
-        public void Rename(TargetDirectory targetDirectory, string name, string newName)
+        public void Rename(TargetDirectory targetDirectory, string? subDirectory, string name, string newName)
         {
             string directory = GetTargetDirectoryPath(targetDirectory);
+            directory = Path.Join(directory, subDirectory ?? string.Empty);
 
             lock (__lock)
             {
@@ -270,13 +304,15 @@ namespace PDFWebEdit.Services
         /// Gets document bytes.
         /// </summary>
         /// <param name="targetDirectory">The target directory.</param>
+        /// <param name="subDirectory">Subdirectory storing document.</param>
         /// <param name="name">The name.</param>
         /// <returns>
         /// An array of byte.
         /// </returns>
-        public byte[] GetDocumentBytes(TargetDirectory targetDirectory, string name)
+        public byte[] GetDocumentBytes(TargetDirectory targetDirectory, string? subDirectory, string name)
         {
             string directory = GetTargetDirectoryPath(targetDirectory);
+            directory = Path.Join(directory, subDirectory ?? string.Empty);
 
             byte[] result;
 
@@ -303,10 +339,12 @@ namespace PDFWebEdit.Services
         /// Deletes the document and any modifications.
         /// </summary>
         /// <param name="targetDirectory">The target directory.</param>
+        /// <param name="subDirectory">Subdirectory storing document.</param>
         /// <param name="name">The name.</param>
-        public void Delete(TargetDirectory targetDirectory, string name)
+        public void Delete(TargetDirectory targetDirectory, string? subDirectory, string name)
         {
             string directory = GetTargetDirectoryPath(targetDirectory);
+            directory = Path.Join(directory, subDirectory ?? string.Empty);
 
             lock (__lock)
             {
@@ -346,10 +384,12 @@ namespace PDFWebEdit.Services
         /// Restores a deleted document to the input directory.
         /// </summary>
         /// <param name="targetDirectory">The target directory.</param>
+        /// <param name="subDirectory">Subdirectory storing document.</param>
         /// <param name="name">The name.</param>
-        public void Restore(TargetDirectory targetDirectory, string name)
+        public void Restore(TargetDirectory targetDirectory, string? subDirectory, string name)
         {
             string directory = GetTargetDirectoryPath(targetDirectory);
+            directory = Path.Join(directory, subDirectory ?? string.Empty);
 
             lock (__lock)
             {
@@ -375,14 +415,23 @@ namespace PDFWebEdit.Services
         /// Saves the document to the output directory.
         /// </summary>
         /// <param name="name">The name.</param>
-        public void Save(string name)
+        /// <param name="subDirectory">The sub directory.</param>
+        public void Save(string name, string? subDirectory)
         {
             lock (__lock)
             {
                 var editedPDFPath = Path.Combine(_inputDirectory, name) + EDITING_PDF_EXTENSION;
                 var originalPDFPath = Path.Combine(_inputDirectory, name) + PDF_EXTENSION;
 
-                var outputPath = Path.Combine(_outputDirectory, name) + PDF_EXTENSION;
+                string outputPath = Path.Combine(_outputDirectory, name);
+
+                // Override the output path if there is a directory
+                if (subDirectory != null)
+                {
+                    outputPath = Path.Join(_outputDirectory, subDirectory, name);
+                }
+
+                outputPath += PDF_EXTENSION;
                 var trashOutputPath = Path.Combine(_trashDirectory, name) + PDF_EXTENSION;
 
                 if (File.Exists(editedPDFPath))
@@ -431,6 +480,25 @@ namespace PDFWebEdit.Services
             }
 
             return directory;
+        }
+
+        /// <summary>
+        /// Gets the folders in the defined directory.
+        /// </summary>
+        /// <param name="directory">The directory.</param>
+        /// <returns>
+        /// An enumerator that allows foreach to be used to process the folders in this collection.
+        /// </returns>
+        private IEnumerable<Folder> GetFolders(string directory)
+        {
+            var result = Directory.GetDirectories(directory)
+                .Select(x => new Folder
+                {
+                    Name = Path.GetFileName(x),
+                    SubFolders = GetFolders(Path.Combine(directory, x))
+                });
+
+            return result;
         }
 
         #endregion
