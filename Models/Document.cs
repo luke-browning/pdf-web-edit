@@ -16,6 +16,14 @@ namespace PDFWebEdit.Models
         public string Name { get; set; }
 
         /// <summary>
+        /// Gets or sets the pathname of the directory.
+        /// </summary>
+        /// <value>
+        /// The pathname of the directory.
+        /// </value>
+        public string Directory { get; set; }
+
+        /// <summary>
         /// Gets or sets the Date/Time of the created.
         /// </summary>
         /// <value>

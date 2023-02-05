@@ -12,6 +12,7 @@ import { DragulaModule } from 'ng2-dragula';
 import { MessageBoxComponent } from './message-box/message-box.component';
 import { InputBoxComponent } from './input-box/input-box.component';
 import { AutofocusDirective } from './shared/autofocus.directive';
+import { DirectoryPickerComponent } from './directory-picker/directory-picker.component';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { AutofocusDirective } from './shared/autofocus.directive';
     HomeComponent,
     MessageBoxComponent,
     InputBoxComponent,
-    AutofocusDirective
+    AutofocusDirective,
+    DirectoryPickerComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),

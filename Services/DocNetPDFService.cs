@@ -114,9 +114,8 @@ namespace PDFWebEdit.Services
 
             // Open the document
             using (var doc = _docNet.Instance.GetDocReader(file, new Docnet.Core.Models.PageDimensions(width, height)))
+            using (var pageReader = doc.GetPageReader(pageNumber))
             {
-                var pageReader = doc.GetPageReader(pageNumber);
-
                 // Render the image
                 rawBytes = pageReader.GetImage();
 

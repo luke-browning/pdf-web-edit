@@ -3,8 +3,6 @@ using PDFWebEdit.Enumerations;
 using PDFWebEdit.Helpers;
 using PDFWebEdit.Models;
 using PDFWebEdit.Services;
-using System.Drawing.Imaging;
-using System.Net;
 
 namespace PDFWebEdit.Controllers
 {
@@ -46,6 +44,29 @@ namespace PDFWebEdit.Controllers
         }
 
         /// <summary>
+        /// Gets the directories in this collection.
+        /// </summary>
+        /// <returns>
+        /// An enumerator that allows foreach to be used to process the directories in this collection.
+        /// </returns>
+        [HttpGet]
+        [Route("directories")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<Folder>))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
+        [ProducesErrorResponseType(typeof(ObjectResult))]
+        public IActionResult GetDirectories()
+        {
+            try
+            {
+                return Ok(_directoryService.GetFolders());
+            }
+            catch (Exception x)
+            {
+                return ExceptionHelpers.GetErrorObjectResult("Directories", HttpContext, x);
+            }
+        }
+
+        /// <summary>
         /// Gets the documents in the input folder.
         /// </summary>
         /// <param name="targetDirectory">The target directory.</param>
@@ -54,9 +75,19 @@ namespace PDFWebEdit.Controllers
         /// </returns>
         [HttpGet]
         [Route("list/{targetDirectory}")]
-        public IEnumerable<Document> GetDocuments(TargetDirectory targetDirectory)
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<Document>))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
+        [ProducesErrorResponseType(typeof(ObjectResult))]
+        public IActionResult GetDocuments(TargetDirectory targetDirectory)
         {
-            return _directoryService.GetDocumentList(targetDirectory);
+            try
+            {
+                return Ok(_directoryService.GetDocumentList(targetDirectory, true));
+            }
+            catch (Exception x)
+            {
+                return ExceptionHelpers.GetErrorObjectResult("Documents", HttpContext, x);
+            }
         }
 
         /// <summary>
@@ -64,14 +95,25 @@ namespace PDFWebEdit.Controllers
         /// </summary>
         /// <param name="targetDirectory">The target directory.</param>
         /// <param name="document">The document.</param>
+        /// <param name="subDirectory">The sub directory containing the document.</param>
         /// <returns>
         /// The document.
         /// </returns>
         [HttpGet]
         [Route("list/{targetDirectory}/{document}")]
-        public Document GetDocument(TargetDirectory targetDirectory, string document)
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Document))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
+        [ProducesErrorResponseType(typeof(ObjectResult))]
+        public IActionResult GetDocument(TargetDirectory targetDirectory, string document, string? subDirectory = null)
         {
-            return _directoryService.GetDocument(targetDirectory, document);
+            try
+            { 
+                return Ok(_directoryService.GetDocument(targetDirectory, subDirectory, document));
+            }
+            catch (Exception x)
+            {
+                return ExceptionHelpers.GetErrorObjectResult("Document", HttpContext, x);
+            }
         }
 
         /// <summary>
@@ -79,24 +121,27 @@ namespace PDFWebEdit.Controllers
         /// </summary>
         /// <param name="targetDirectory">The target directory.</param>
         /// <param name="document">The document.</param>
+        /// <param name="subDirectory">The sub directory containing the document.</param>
         /// <returns>
         /// The document.
         /// </returns>
         [HttpGet]
-        [ProducesResponseType((int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.InternalServerError)]
         [Route("{targetDirectory}/{document}/download")]
-        public IActionResult DownloadDocument(TargetDirectory targetDirectory, string document)
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(FileContentResult))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
+        [ProducesErrorResponseType(typeof(ObjectResult))]
+        public IActionResult DownloadDocument(TargetDirectory targetDirectory, string document, string? subDirectory = null)
         {
             // Get the path to the document
-            var downloadFilePath = _directoryService.GetDocumentPath(targetDirectory, document);
-            var originalFilePath = _directoryService.GetUnmodifiedDocumentPath(targetDirectory, document);
+            var downloadFilePath = _directoryService.GetDocumentPath(targetDirectory, subDirectory, document);
+            var originalFilePath = _directoryService.GetUnmodifiedDocumentPath(targetDirectory, subDirectory, document);
 
             if (downloadFilePath != null)
             {
                 try
                 {
-                    var bytes = _directoryService.GetDocumentBytes(targetDirectory, document);
+                    var bytes = _directoryService.GetDocumentBytes(targetDirectory, subDirectory, document);
 
                     return File(bytes, "application/pdf", Path.GetFileName(originalFilePath));
                 }
@@ -116,25 +161,37 @@ namespace PDFWebEdit.Controllers
         /// </summary>
         /// <param name="targetDirectory">The target directory.</param>
         /// <param name="document">The document.</param>
+        /// <param name="subDirectory">The sub directory containing the document.</param>
         /// <returns>
         /// The page count.
         /// </returns>
         [HttpGet]
         [Route("{targetDirectory}/{document}/page-count")]
-        public int GetPageCount(TargetDirectory targetDirectory, string document)
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(int))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
+        [ProducesErrorResponseType(typeof(ObjectResult))]
+        public IActionResult GetPageCount(TargetDirectory targetDirectory, string document, string? subDirectory = null)
         {
             // Get the path to the document
-            var path = _directoryService.GetDocumentPath(targetDirectory, document);
+            var path = _directoryService.GetDocumentPath(targetDirectory, subDirectory, document);
 
             if (path != null)
             {
-                var pageCount = _pdfService.GetPageCount(path);
+                try
+                { 
+                    var pageCount = _pdfService.GetPageCount(path);
 
-                return pageCount;
+                    return Ok(pageCount);
+                }
+                catch (Exception x)
+                {
+                    return ExceptionHelpers.GetErrorObjectResult("Count", HttpContext, x);
+                }
             }
             else
             {
-                return 0;
+                return NotFound();
             }
         }
 
@@ -146,17 +203,20 @@ namespace PDFWebEdit.Controllers
         /// <param name="pageNumber">The page number (starting at 1).</param>
         /// <param name="width">The page width.</param>
         /// <param name="height">The page height.</param>
+        /// <param name="subDirectory">The sub directory containing the document.</param>
         /// <returns>
         /// The page preview.
         /// </returns>
         [HttpGet]
-        [ProducesResponseType((int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.InternalServerError)]
         [Route("{targetDirectory}/{document}/preview/{pageNumber}")]
-        public IActionResult GetPagePreview(TargetDirectory targetDirectory, string document, int pageNumber, int width, int height)
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(FileContentResult))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
+        [ProducesErrorResponseType(typeof(ObjectResult))]
+        public IActionResult GetPagePreview(TargetDirectory targetDirectory, string document, int pageNumber, int width, int height, string? subDirectory = null)
         {
             // Get the path to the document
-            var path = _directoryService.GetDocumentPath(targetDirectory, document);
+            var path = _directoryService.GetDocumentPath(targetDirectory, subDirectory, document);
 
             // Make sure pages are 1 based
             pageNumber = pageNumber - 1;
@@ -194,23 +254,26 @@ namespace PDFWebEdit.Controllers
         /// <param name="targetDirectory">The target directory.</param>
         /// <param name="document">The document.</param>
         /// <param name="newDocumentName">New name of the document.</param>
+        /// <param name="subDirectory">The sub directory containing the document.</param>
         /// <returns>
         /// An IActionResult.
         /// </returns>
         [HttpPost]
-        [ProducesResponseType((int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.InternalServerError)]
         [Route("{targetDirectory}/{document}/rename/{newDocumentName}")]
-        public IActionResult Rename(TargetDirectory targetDirectory, string document, string newDocumentName)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
+        [ProducesErrorResponseType(typeof(ObjectResult))]
+        public IActionResult Rename(TargetDirectory targetDirectory, string document, string newDocumentName, string? subDirectory = null)
         {
             // Get the path to the document
-            var path = _directoryService.GetDocumentPath(targetDirectory, document);
+            var path = _directoryService.GetDocumentPath(targetDirectory, subDirectory, document);
 
             if (path != null)
             {
                 try
                 { 
-                    _directoryService.Rename(targetDirectory, document, newDocumentName);
+                    _directoryService.Rename(targetDirectory, subDirectory, document, newDocumentName);
 
                     return Ok();
                 }
@@ -226,22 +289,25 @@ namespace PDFWebEdit.Controllers
         }
 
         /// <summary>
-        /// Rotates pages in the specified document.
+        /// Rotates pages in the specified document clockwise.
         /// </summary>
         /// <param name="targetDirectory">The target directory.</param>
         /// <param name="document">The document.</param>
         /// <param name="pageNumbers">The page numbers (1-based).</param>
+        /// <param name="subDirectory">The sub directory containing the document.</param>
         /// <returns>
         /// An IActionResult.
         /// </returns>
         [HttpPost]
-        [ProducesResponseType((int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.InternalServerError)]
-        [Route("{targetDirectory}/{document}/rotate-pages")]
-        public IActionResult RotatePages(TargetDirectory targetDirectory, string document, [FromBody] List<int> pageNumbers)
+        [Route("{targetDirectory}/{document}/rotate-pages-clockwise")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
+        [ProducesErrorResponseType(typeof(ObjectResult))]
+        public IActionResult RotatePagesClockwise(TargetDirectory targetDirectory, string document, [FromBody] List<int> pageNumbers, string? subDirectory = null)
         {
             // Get the path to the document
-            var path = _directoryService.GetDocumentPath(targetDirectory, document);
+            var path = _directoryService.GetDocumentPath(targetDirectory, subDirectory, document);
 
             if (path != null)
             {
@@ -253,7 +319,47 @@ namespace PDFWebEdit.Controllers
                 }
                 catch (Exception x)
                 {
-                    return ExceptionHelpers.GetErrorObjectResult("Rotate", HttpContext, x);
+                    return ExceptionHelpers.GetErrorObjectResult("RotateClockwise", HttpContext, x);
+                }
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
+        /// <summary>
+        /// Rotate pages in the specified document anti clockwise.
+        /// </summary>
+        /// <param name="targetDirectory">The target directory.</param>
+        /// <param name="document">The document.</param>
+        /// <param name="pageNumbers">The page numbers (1-based).</param>
+        /// <param name="subDirectory">The sub directory containing the document.</param>
+        /// <returns>
+        /// An IActionResult.
+        /// </returns>
+        [HttpPost]
+        [Route("{targetDirectory}/{document}/rotate-pages-anti-clockwise")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
+        [ProducesErrorResponseType(typeof(ObjectResult))]
+        public IActionResult RotatePagesAntiClockwise(TargetDirectory targetDirectory, string document, [FromBody] List<int> pageNumbers, string? subDirectory = null)
+        {
+            // Get the path to the document
+            var path = _directoryService.GetDocumentPath(targetDirectory, subDirectory, document);
+
+            if (path != null)
+            {
+                try
+                {
+                    _pdfManipulationService.RotateAntiClockwise(targetDirectory, document, pageNumbers);
+
+                    return Ok();
+                }
+                catch (Exception x)
+                {
+                    return ExceptionHelpers.GetErrorObjectResult("RotateAntiClockwise", HttpContext, x);
                 }
             }
             else
@@ -268,17 +374,20 @@ namespace PDFWebEdit.Controllers
         /// <param name="targetDirectory">The target directory.</param>
         /// <param name="document">The document.</param>
         /// <param name="pageNumbers">The page numbers (1-based).</param>
+        /// <param name="subDirectory">The sub directory containing the document.</param>
         /// <returns>
         /// An IActionResult.
         /// </returns>
         [HttpPost]
-        [ProducesResponseType((int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.InternalServerError)]
         [Route("{targetDirectory}/{document}/delete-pages")]
-        public IActionResult DeletePages(TargetDirectory targetDirectory, string document, [FromBody] List<int> pageNumbers)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
+        [ProducesErrorResponseType(typeof(ObjectResult))]
+        public IActionResult DeletePages(TargetDirectory targetDirectory, string document, [FromBody] List<int> pageNumbers, string? subDirectory = null)
         {
             // Get the path to the document
-            var path = _directoryService.GetDocumentPath(targetDirectory, document);
+            var path = _directoryService.GetDocumentPath(targetDirectory, subDirectory, document);
 
             if (path != null)
             {
@@ -305,17 +414,20 @@ namespace PDFWebEdit.Controllers
         /// <param name="targetDirectory">The target directory.</param>
         /// <param name="document">The document.</param>
         /// <param name="newPageOrder">The new page order.</param>
+        /// <param name="subDirectory">The sub directory containing the document.</param>
         /// <returns>
         /// An IActionResult.
         /// </returns>
         [HttpPost]
-        [ProducesResponseType((int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.InternalServerError)]
         [Route("{targetDirectory}/{document}/reorder-pages")]
-        public IActionResult ReorderPages(TargetDirectory targetDirectory, string document, [FromBody] List<int> newPageOrder)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
+        [ProducesErrorResponseType(typeof(ObjectResult))]
+        public IActionResult ReorderPages(TargetDirectory targetDirectory, string document, [FromBody] List<int> newPageOrder, string? subDirectory = null)
         {
             // Get the path to the document
-            var path = _directoryService.GetDocumentPath(targetDirectory, document);
+            var path = _directoryService.GetDocumentPath(targetDirectory, subDirectory, document);
 
             if (path != null)
             {
@@ -341,17 +453,20 @@ namespace PDFWebEdit.Controllers
         /// </summary>
         /// <param name="targetDirectory">The target directory.</param>
         /// <param name="document">The document.</param>
+        /// <param name="subDirectory">The sub directory containing the document.</param>
         /// <returns>
         /// An IActionResult.
         /// </returns>
         [HttpPost]
-        [ProducesResponseType((int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.InternalServerError)]
         [Route("{targetDirectory}/{document}/revert")]
-        public IActionResult RevertChanges(TargetDirectory targetDirectory, string document)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
+        [ProducesErrorResponseType(typeof(ObjectResult))]
+        public IActionResult RevertChanges(TargetDirectory targetDirectory, string document, string? subDirectory = null)
         {
             // Get the path to the document
-            var path = _directoryService.GetDocumentPath(targetDirectory, document);
+            var path = _directoryService.GetDocumentPath(targetDirectory, subDirectory, document);
 
             if (path != null)
             {
@@ -377,23 +492,26 @@ namespace PDFWebEdit.Controllers
         /// </summary>
         /// <param name="targetDirectory">The target directory.</param>
         /// <param name="document">The document.</param>
+        /// <param name="subDirectory">The sub directory containing the document.</param>
         /// <returns>
         /// An IActionResult.
         /// </returns>
         [HttpPost]
-        [ProducesResponseType((int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.InternalServerError)]
         [Route("{targetDirectory}/{document}/delete")]
-        public IActionResult Delete(TargetDirectory targetDirectory, string document)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
+        [ProducesErrorResponseType(typeof(ObjectResult))]
+        public IActionResult Delete(TargetDirectory targetDirectory, string document, string? subDirectory = null)
         {
             // Get the path to the document
-            var path = _directoryService.GetDocumentPath(targetDirectory, document);
+            var path = _directoryService.GetDocumentPath(targetDirectory, subDirectory, document);
 
             if (path != null)
             {
                 try
                 { 
-                    _directoryService.Delete(targetDirectory, document);
+                    _directoryService.Delete(targetDirectory, subDirectory, document);
 
                     return Ok();
                 }
@@ -414,17 +532,20 @@ namespace PDFWebEdit.Controllers
         /// <param name="targetDirectory">The target directory.</param>
         /// <param name="document">The document.</param>
         /// <param name="password">The password.</param>
+        /// <param name="subDirectory">The sub directory containing the document.</param>
         /// <returns>
         /// An IActionResult.
         /// </returns>
         [HttpPost]
-        [ProducesResponseType((int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.BadRequest)]
         [Route("{targetDirectory}/{document}/unlock")]
-        public IActionResult Unlock(TargetDirectory targetDirectory, string document, string password)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
+        [ProducesErrorResponseType(typeof(ObjectResult))]
+        public IActionResult Unlock(TargetDirectory targetDirectory, string document, string password, string? subDirectory = null)
         {
             // Get the path to the document
-            var path = _directoryService.GetDocumentPath(targetDirectory, document);
+            var path = _directoryService.GetDocumentPath(targetDirectory, subDirectory, document);
 
             if (path != null)
             {
@@ -436,7 +557,7 @@ namespace PDFWebEdit.Controllers
                 }
                 catch (Exception x)
                 {
-                    return ExceptionHelpers.GetErrorObjectResult("Unlock", HttpContext, x, statusCode: HttpStatusCode.BadRequest);
+                    return ExceptionHelpers.GetErrorObjectResult("Unlock", HttpContext, x);
                 }
             }
             else
@@ -450,21 +571,33 @@ namespace PDFWebEdit.Controllers
         /// </summary>
         /// <param name="targetDirectory">The target directory.</param>
         /// <param name="document">The document.</param>
+        /// <param name="subDirectory">The sub directory containing the document.</param>
         /// <returns>
         /// An IActionResult.
         /// </returns>
         [HttpPost]
         [Route("{document}/restore")]
-        public IActionResult Restore(TargetDirectory targetDirectory, string document)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
+        [ProducesErrorResponseType(typeof(ObjectResult))]
+        public IActionResult Restore(TargetDirectory targetDirectory, string document, string? subDirectory = null)
         {
             // Get the path to the document
-            var path = _directoryService.GetDocumentPath(targetDirectory, document);
+            var path = _directoryService.GetDocumentPath(targetDirectory, subDirectory, document);
 
             if (path != null)
             {
-                _directoryService.Restore(targetDirectory, document);
+                try
+                {
+                    _directoryService.Restore(targetDirectory, subDirectory, document);
 
-                return Ok();
+                    return Ok();
+                }
+                catch (Exception x)
+                {
+                    return ExceptionHelpers.GetErrorObjectResult("Restore", HttpContext, x);
+                }
             }
             else
             {
@@ -473,7 +606,46 @@ namespace PDFWebEdit.Controllers
         }
 
         /// <summary>
-        /// Saves the specified document in the input directory to the output directory.
+        /// Saves the specified document in the input directory.
+        /// </summary>
+        /// <param name="document">The document.</param>
+        /// <param name="sourceSubDirectory">The subDirectory to move frp,.</param>
+        /// <param name="targetSubDirectory">The subDirectory to save to.</param>
+        /// <returns>
+        /// An IActionResult.
+        /// </returns>
+        [HttpPost]
+        [Route("{document}/saveto")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
+        [ProducesErrorResponseType(typeof(ObjectResult))]
+        public IActionResult SaveTo(string document, string? sourceSubDirectory = null, string? targetSubDirectory = null)
+        {
+            // Get the path to the document
+            var path = _directoryService.GetDocumentPath(TargetDirectory.Input, sourceSubDirectory, document);
+
+            if (path != null)
+            {
+                try
+                {
+                    _directoryService.Save(document, targetSubDirectory);
+
+                    return Ok();
+                }
+                catch (Exception x)
+                {
+                    return ExceptionHelpers.GetErrorObjectResult("SaveTo", HttpContext, x);
+                }
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
+        /// <summary>
+        /// Saves the specified document in the input directory.
         /// </summary>
         /// <param name="document">The document.</param>
         /// <returns>
@@ -481,16 +653,27 @@ namespace PDFWebEdit.Controllers
         /// </returns>
         [HttpPost]
         [Route("{document}/save")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
+        [ProducesErrorResponseType(typeof(ObjectResult))]
         public IActionResult Save(string document)
         {
             // Get the path to the document
-            var path = _directoryService.GetDocumentPath(TargetDirectory.Input, document);
+            var path = _directoryService.GetDocumentPath(TargetDirectory.Input, null, document);
 
             if (path != null)
             {
-                _directoryService.Save(document);
+                try
+                {
+                    _directoryService.Save(document, null);
 
-                return Ok();
+                    return Ok();
+                }
+                catch (Exception x)
+                {
+                    return ExceptionHelpers.GetErrorObjectResult("Save", HttpContext, x);
+                }
             }
             else
             {

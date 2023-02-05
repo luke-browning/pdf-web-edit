@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { PDFWebEditAPI } from '../../api/PDFWebEditAPI';
+import { DirectoryPickerComponent } from '../directory-picker/directory-picker.component';
 import { InputBoxComponent } from '../input-box/input-box.component';
 import { MessageBoxComponent } from '../message-box/message-box.component';
 
@@ -17,6 +18,7 @@ export class HomeComponent {
   // Options
   directory = PDFWebEditAPI.TargetDirectory.Input;
   targetDirectories = PDFWebEditAPI.TargetDirectory;
+  directoryStructure: PDFWebEditAPI.Folder[] = [];
 
   size = 'medium';
   pageHeight = 400;
@@ -49,6 +51,13 @@ export class HomeComponent {
       this.sortDocuments();
 
     }, error => console.error(error));
+
+    // List directories
+    api.getDirectories().subscribe(result => {
+      if (result != null) {
+        this.directoryStructure = result;
+      }
+    })
   }
 
   setActive(doc: Doc, page: Page, $event: MouseEvent) {
@@ -182,7 +191,7 @@ export class HomeComponent {
   // Manipulation
   // 
 
-  rotate(doc: Doc) {
+  rotateClockwise(doc: Doc) {
 
     let pagesToRotate = this.getSelectedPageNumbers(doc);
 
@@ -190,7 +199,30 @@ export class HomeComponent {
 
       this.setPagesUnloaded(doc, pagesToRotate);
 
-      this.api.rotatePages(this.directory, doc.name, pagesToRotate).subscribe(() => {
+      this.api.rotatePagesClockwise(this.directory, doc.name, pagesToRotate, doc.directory).subscribe(() => {
+
+        this.loadDocumentPages(doc, pagesToRotate);
+        this.setDocumentModifiedState(doc, true);
+
+      }, error => {
+        this.loadDocumentPages(doc);
+        this.showMessageBox(error);
+      });
+
+    } else {
+      this.showMessageBox('No pages selected. Please select a page to rotate.');
+    }
+  }
+
+  rotateAntiClockwise(doc: Doc) {
+
+    let pagesToRotate = this.getSelectedPageNumbers(doc);
+
+    if (pagesToRotate.length > 0) {
+
+      this.setPagesUnloaded(doc, pagesToRotate);
+
+      this.api.rotatePagesAntiClockwise(this.directory, doc.name, pagesToRotate, doc.directory).subscribe(() => {
 
         this.loadDocumentPages(doc, pagesToRotate);
         this.setDocumentModifiedState(doc, true);
@@ -213,7 +245,7 @@ export class HomeComponent {
 
       this.setPagesUnloaded(doc, pagesToRemove);
 
-      this.api.deletePages(this.directory, doc.name, pagesToRemove).subscribe(() => {
+      this.api.deletePages(this.directory, doc.name, pagesToRemove, doc.directory).subscribe(() => {
 
         this.loadDocumentPages(doc);
         this.setDocumentModifiedState(doc, true);
@@ -238,7 +270,7 @@ export class HomeComponent {
 
     this.setPagesUnloaded(doc, newPageOrder);
 
-    this.api.reorderPages(this.directory, doc.name, newPageOrder).subscribe(() => {
+    this.api.reorderPages(this.directory, doc.name, newPageOrder, doc.directory).subscribe(() => {
 
       this.loadDocumentPages(doc);
       this.setDocumentModifiedState(doc, true);
@@ -250,8 +282,8 @@ export class HomeComponent {
   }
 
   revert(doc: Doc) {
-    this.api.revertChanges(this.directory, doc.name).subscribe(() => {
-      this.api.getDocument(this.directory, doc.name).subscribe((updatedDocument) => {
+    this.api.revertChanges(this.directory, doc.name, doc.directory).subscribe(() => {
+      this.api.getDocument(this.directory, doc.name, doc.directory).subscribe((updatedDocument) => {
 
         // Make sure the document isn't null
         if (updatedDocument != null) {
@@ -264,9 +296,25 @@ export class HomeComponent {
   }
 
   delete(doc: Doc) {
-    this.api.delete(this.directory, doc.name).subscribe(() => {
+    this.api.delete(this.directory, doc.name, doc.directory).subscribe(() => {
       this.documents = this.documents.filter(item => item.name !== doc.name);
     }, error => this.showMessageBox(error));
+  }
+
+  saveTo(doc: Doc) {
+
+    const modalRef = this.modalService.open(DirectoryPickerComponent);
+    modalRef.componentInstance.folders = this.directoryStructure;
+
+    modalRef.result.then(result => {
+      this.api.saveTo(doc.name, doc.directory, result).subscribe(() => {
+        this.documents = this.documents.filter(item => item.name !== doc.name);
+      }, error => this.showMessageBox(error));
+    }, () => {
+
+      // Dismissed
+      return;
+    });
   }
 
   save(doc: Doc) {
@@ -276,7 +324,7 @@ export class HomeComponent {
   }
 
   restore(doc: Doc) {
-    this.api.restore(this.directory, doc.name).subscribe(() => {
+    this.api.restore(this.directory, doc.name, doc.directory).subscribe(() => {
       this.documents = this.documents.filter(item => item.name !== doc.name);
     }, error => this.showMessageBox(error));
   }
@@ -285,8 +333,8 @@ export class HomeComponent {
 
     this.showInputBox('Enter new name.', 'Rename Document', false, doc.name).then(result => {
       if (result) {
-        this.api.rename(this.directory, doc.name, result).subscribe(() => {
-          this.api.getDocument(this.directory, result).subscribe((updatedDocument) => {
+        this.api.rename(this.directory, doc.name, result, doc.directory).subscribe(() => {
+          this.api.getDocument(this.directory, result, doc.directory).subscribe((updatedDocument) => {
 
             // Make sure the document isn't null
             if (updatedDocument != null) {
@@ -308,8 +356,8 @@ export class HomeComponent {
 
     this.showInputBox('This document is password protected. Please enter the password to unlock it.', 'Unlock Document', true).then(result => {
       if (result) {
-        this.api.unlock(this.directory, doc.name, result).subscribe(() => {
-          this.api.getDocument(this.directory, doc.name).subscribe((updatedDocument) => {
+        this.api.unlock(this.directory, doc.name, result, doc.directory).subscribe(() => {
+          this.api.getDocument(this.directory, doc.name, doc.directory).subscribe((updatedDocument) => {
 
             // Make sure the document isn't null
             if (updatedDocument != null) {
@@ -357,11 +405,12 @@ export class HomeComponent {
 
     let doc: Doc = {
       name: file.name,
+      directory: file.directory,
       created: file.created,
       lastModified: file.lastModified,
       pages: [],
       hasSelectedPages: false,
-      downloadUrl: this.getDownloadUrl(file.name),
+      downloadUrl: this.getDownloadUrl(file.name, file.directory),
       canRevertChanges: file.hasChanges,
       corrupt: file.status == PDFWebEditAPI.DocumentStatus.Corrupted,
       passwordProtected: file.status == PDFWebEditAPI.DocumentStatus.PasswordProtected,
@@ -381,7 +430,7 @@ export class HomeComponent {
         // Load all pages
         doc.pages = [];
 
-        this.api.getPageCount(this.directory, doc.name).subscribe((pageCount) => {
+        this.api.getPageCount(this.directory, doc.name, doc.directory).subscribe((pageCount) => {
 
           // Get page previews
           for (let i = 1; i <= pageCount; i++) {
@@ -409,11 +458,11 @@ export class HomeComponent {
   }
 
   getPagePreviewUrl(doc: Doc, page: number, width: number, height: number) {
-    return '/api/documents/' + this.directory + '/' + doc.name + '/preview/' + page + '?width=' + width + '&height=' + height + '&t=' + new Date().getTime();
+    return '/api/documents/' + this.directory + '/' + doc.name + '/preview/' + page + '?subdirectory=' + encodeURIComponent(doc.directory) + '&width=' + width + '&height=' + height + '&t=' + new Date().getTime();
   }
 
-  getDownloadUrl(name: string) {
-    return '/api/documents/' + this.directory + '/' + name + '/download';
+  getDownloadUrl(name: string, directory: string) {
+    return '/api/documents/' + this.directory + '/' + name + '/download?subdirectory=' + encodeURIComponent(directory);
   }
 
   reloadDocumentsPages(documents: Doc[]) {
@@ -463,8 +512,7 @@ export class HomeComponent {
 
       if (message instanceof PDFWebEditAPI.ProblemDetails) {
         error = message.detail;
-      }
-      else {
+      } else {
         error = 'Unhandled exception!';
       }
     }
@@ -487,6 +535,7 @@ export class HomeComponent {
 
 interface Doc {
   name: string;
+  directory: string;
   created: Date,
   lastModified: Date,
   pages: Page[];

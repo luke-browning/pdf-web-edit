@@ -13,7 +13,17 @@ namespace PDFWebEdit.Services
         /// <param name="targetDirectory">Target directory.</param>
         /// <param name="document">The document.</param>
         /// <param name="pageNumbers">The page numbers.</param>
-        public void RotateClockwise(TargetDirectory targetDirectory, string document, List<int> pageNumbers);
+        /// <param name="subDirectory">Subdirectory storing document.</param>
+        public void RotateClockwise(TargetDirectory targetDirectory, string document, List<int> pageNumbers, string? subDirectory = null);
+
+        /// <summary>
+        /// Rotate anti clockwise.
+        /// </summary>
+        /// <param name="targetDirectory">Target directory.</param>
+        /// <param name="document">The document.</param>
+        /// <param name="pageNumbers">The page numbers.</param>
+        /// <param name="subDirectory">Subdirectory storing document.</param>
+        public void RotateAntiClockwise(TargetDirectory targetDirectory, string document, List<int> pageNumbers, string? subDirectory = null);
 
         /// <summary>
         /// Deletes the page.
@@ -21,7 +31,8 @@ namespace PDFWebEdit.Services
         /// <param name="targetDirectory">Target directory.</param>
         /// <param name="document">The document.</param>
         /// <param name="pageNumbers">The page numbers.</param>
-        public void DeletePage(TargetDirectory targetDirectory, string document, List<int> pageNumbers);
+        /// <param name="subDirectory">Subdirectory storing document.</param>
+        public void DeletePage(TargetDirectory targetDirectory, string document, List<int> pageNumbers, string? subDirectory = null);
 
         /// <summary>
         /// Reorder pages.
@@ -29,14 +40,16 @@ namespace PDFWebEdit.Services
         /// <param name="targetDirectory">Target directory.</param>
         /// <param name="document">The document.</param>
         /// <param name="newPageOrder">The new page order.</param>
-        public void ReorderPages(TargetDirectory targetDirectory, string document, List<int> newPageOrder);
+        /// <param name="subDirectory">Subdirectory storing document.</param>
+        public void ReorderPages(TargetDirectory targetDirectory, string document, List<int> newPageOrder, string? subDirectory = null);
 
         /// <summary>
         /// Revert changes.
         /// </summary>
         /// <param name="targetDirectory">Target directory.</param>
         /// <param name="document">The document.</param>
-        public void RevertChanges(TargetDirectory targetDirectory, string document);
+        /// <param name="subDirectory">Subdirectory storing document.</param>
+        public void RevertChanges(TargetDirectory targetDirectory, string document, string? subDirectory = null);
 
         /// <summary>
         /// Unlocks an encrypted file.
@@ -44,6 +57,7 @@ namespace PDFWebEdit.Services
         /// <param name="targetDirectory">Target directory.</param>
         /// <param name="document">The document.</param>
         /// <param name="password">The password.</param>
-        public void Unlock(TargetDirectory targetDirectory, string document, string password);
+        /// <param name="subDirectory">Subdirectory storing document.</param>
+        public void Unlock(TargetDirectory targetDirectory, string document, string password, string? subDirectory = null);
     }
 }

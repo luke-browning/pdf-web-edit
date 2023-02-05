@@ -39,34 +39,71 @@ namespace PDFWebEdit.Services
         /// <param name="targetDirectory">Target directory.</param>
         /// <param name="document">The document.</param>
         /// <param name="pageNumbers">The page numbers to rotate.</param>
-        public void RotateClockwise(TargetDirectory targetDirectory, string document, List<int> pageNumbers)
+        /// <param name="subDirectory">Subdirectory storing document.</param>
+        public void RotateClockwise(TargetDirectory targetDirectory, string document, List<int> pageNumbers, string? subDirectory = null)
         {
-            var path = _directoryService.GetDocumentPath(targetDirectory, document);
-            var outPath = _directoryService.GetEditingDocumentPath(targetDirectory, document);
+            Rotate(targetDirectory, document, pageNumbers, 90, subDirectory);
+        }
+
+        /// <summary>
+        /// Rotates pages anti clockwise.
+        /// </summary>
+        /// <param name="targetDirectory">Target directory.</param>
+        /// <param name="document">The document.</param>
+        /// <param name="pageNumbers">The page numbers to rotate.</param>
+        /// <param name="subDirectory">Subdirectory storing document.</param>
+        public void RotateAntiClockwise(TargetDirectory targetDirectory, string document, List<int> pageNumbers, string? subDirectory = null)
+        {
+            Rotate(targetDirectory, document, pageNumbers, -90, subDirectory);
+        }
+
+        /// <summary>
+        /// Rotates pages.
+        /// </summary>
+        /// <exception cref="Exception">Thrown when an exception error condition occurs.</exception>
+        /// <param name="targetDirectory">Target directory.</param>
+        /// <param name="document">The document.</param>
+        /// <param name="pageNumbers">The page numbers to rotate.</param>
+        /// <param name="degree">The degree.</param>
+        /// <param name="subDirectory">Subdirectory storing document.</param>
+        public void Rotate(TargetDirectory targetDirectory, string document, List<int> pageNumbers, int degree, string? subDirectory = null)
+        {
+            var path = _directoryService.GetDocumentPath(targetDirectory, subDirectory, document);
+            var outPath = _directoryService.GetEditingDocumentPath(targetDirectory, subDirectory, document);
+
+            // Check if the doc exists
+            if (path == null)
+            {
+                throw new Exception($"The document does not exist: {path}");
+            }
+
+            byte[]? bytes = null;
 
             using (var open = File.OpenRead(path))
             using (var save = new MemoryStream())
-            { 
+            {
                 // Open the document
-                var pdfDocument = new PdfDocument(new PdfReader(open), new PdfWriter(save));
-
-                // Rotate the requested pages
-                foreach (var pageNumber in pageNumbers)
+                using (var pdfDocument = new PdfDocument(new PdfReader(open), new PdfWriter(save)))
                 {
-                    var page = pdfDocument.GetPage(pageNumber);
-                    var rotation = page.GetRotation();
-                    page.SetRotation((rotation + 90) % 360);
+                    // Rotate the requested pages
+                    foreach (var pageNumber in pageNumbers)
+                    {
+                        var page = pdfDocument.GetPage(pageNumber);
+                        var rotation = page.GetRotation();
+                        page.SetRotation((rotation + degree) % 360);
+                    }
+
+                    // Close the doc before getting the bytes from the memory stream
+                    // otherwise the output file is corrupt
+                    pdfDocument.Close();
+
+                    // Store the doc 
+                    bytes = save.ToArray();
                 }
-
-                // Close the doc before getting the bytes from the memory stream
-                // otherwise the output file is corrupt
-                pdfDocument.Close();
-
-                var bytes = save.ToArray();
-
-                // Write the file
-                FileHelpers.WriteFile(outPath, bytes);
             }
+
+            // Write the file
+            FileHelpers.WriteFile(outPath, bytes);
         }
 
         /// <summary>
@@ -75,48 +112,59 @@ namespace PDFWebEdit.Services
         /// <param name="targetDirectory">Target directory.</param>
         /// <param name="document">The document.</param>
         /// <param name="pageNumbers">The page numbers.</param>
-        public void DeletePage(TargetDirectory targetDirectory, string document, List<int> pageNumbers)
+        /// <param name="subDirectory">Subdirectory storing document.</param>
+        public void DeletePage(TargetDirectory targetDirectory, string document, List<int> pageNumbers, string? subDirectory = null)
         {
-            var path = _directoryService.GetDocumentPath(targetDirectory, document);
-            var outPath = _directoryService.GetEditingDocumentPath(targetDirectory, document);
+            var path = _directoryService.GetDocumentPath(targetDirectory, subDirectory, document);
+            var outPath = _directoryService.GetEditingDocumentPath(targetDirectory, subDirectory, document);
+
+            // Check if the doc exists
+            if (path == null)
+            {
+                throw new Exception($"The document does not exist: {path}");
+            }
+
+            byte[]? bytes = null;
 
             using (var open = File.OpenRead(path))
             using (var save = new MemoryStream())
             {
                 // Open the document
-                var pdfDocument = new PdfDocument(new PdfReader(open), new PdfWriter(save));
-
-                // Sort the page numbers so we go start to finish
-                pageNumbers.Sort();
-
-                // Check we will leave the document with at least 1 page
-                if (pdfDocument.GetNumberOfPages() == 1)
+                using (var pdfDocument = new PdfDocument(new PdfReader(open), new PdfWriter(save)))
                 {
-                    throw new Exception("Unable to remove page. A document must contain at least 1 page.");
+                    // Sort the page numbers so we go start to finish
+                    pageNumbers.Sort();
+
+                    // Check we will leave the document with at least 1 page
+                    if (pdfDocument.GetNumberOfPages() == 1)
+                    {
+                        throw new Exception("Unable to remove page. A document must contain at least 1 page.");
+                    }
+
+                    // Keep track of how many pages we remove so we can update the index
+                    // when multiple pages are being removed
+                    var pagesRemoved = 0;
+
+                    // Remove the pages
+                    foreach (var pageNumber in pageNumbers)
+                    {
+                        var pageToRemove = pageNumber - pagesRemoved;
+                        pdfDocument.RemovePage(pageToRemove);
+
+                        pagesRemoved++;
+                    }
+
+                    // Close the doc before getting the bytes from the memory stream
+                    // otherwise the output file is corrupt
+                    pdfDocument.Close();
+
+                    // Store the doc 
+                    bytes = save.ToArray();
                 }
-
-                // Keep track of how many pages we remove so we can update the index
-                // when multiple pages are being removed
-                var pagesRemoved = 0;
-
-                // Remove the pages
-                foreach (var pageNumber in pageNumbers)
-                {
-                    var pageToRemove = pageNumber - pagesRemoved;
-                    pdfDocument.RemovePage(pageToRemove);
-
-                    pagesRemoved++;
-                }
-
-                // Close the doc before getting the bytes from the memory stream
-                // otherwise the output file is corrupt
-                pdfDocument.Close();
-
-                var bytes = save.ToArray();
-
-                // Write the file
-                FileHelpers.WriteFile(outPath, bytes);
             }
+
+            // Write the file
+            FileHelpers.WriteFile(outPath, bytes);
         }
 
         /// <summary>
@@ -125,31 +173,42 @@ namespace PDFWebEdit.Services
         /// <param name="targetDirectory">Target directory.</param>
         /// <param name="document">The document.</param>
         /// <param name="newPageOrder">The new page order.</param>
-        public void ReorderPages(TargetDirectory targetDirectory, string document, List<int> newPageOrder)
+        /// <param name="subDirectory">Subdirectory storing document.</param>
+        public void ReorderPages(TargetDirectory targetDirectory, string document, List<int> newPageOrder, string? subDirectory = null)
         {
-            var path = _directoryService.GetDocumentPath(targetDirectory, document);
-            var outPath = _directoryService.GetEditingDocumentPath(targetDirectory, document);
+            var path = _directoryService.GetDocumentPath(targetDirectory, subDirectory, document);
+            var outPath = _directoryService.GetEditingDocumentPath(targetDirectory, subDirectory, document);
+
+            // Check if the doc exists
+            if (path == null)
+            {
+                throw new Exception($"The document does not exist: {path}");
+            }
+
+            byte[]? bytes = null;
 
             using (var open = File.OpenRead(path))
             using (var save = new MemoryStream())
             {
                 // Open the document
-                var sourceDocument = new PdfDocument(new PdfReader(open));
-                var targetDocument = new PdfDocument(new PdfWriter(save));
+                using (var sourceDocument = new PdfDocument(new PdfReader(open)))
+                using (var targetDocument = new PdfDocument(new PdfWriter(save)))
+                {
+                    // Copy the pages into the new document
+                    sourceDocument.CopyPagesTo(newPageOrder, targetDocument);
 
-                // Copy the pages into the new document
-                sourceDocument.CopyPagesTo(newPageOrder, targetDocument);
+                    // Close the doc before getting the bytes from the memory stream
+                    // otherwise the output file is corrupt
+                    targetDocument.Close();
+                    sourceDocument.Close();
 
-                // Close the doc before getting the bytes from the memory stream
-                // otherwise the output file is corrupt
-                targetDocument.Close();
-                sourceDocument.Close();
-
-                var bytes = save.ToArray();
-
-                // Write the file
-                FileHelpers.WriteFile(outPath, bytes);
+                    // Store the doc 
+                    bytes = save.ToArray();
+                }
             }
+
+            // Write the file
+            FileHelpers.WriteFile(outPath, bytes);
         }
 
         /// <summary>
@@ -157,9 +216,10 @@ namespace PDFWebEdit.Services
         /// </summary>
         /// <param name="targetDirectory">Target directory.</param>
         /// <param name="document">The document.</param>
-        public void RevertChanges(TargetDirectory targetDirectory, string document)
+        /// <param name="subDirectory">Subdirectory storing document.</param>
+        public void RevertChanges(TargetDirectory targetDirectory, string document, string? subDirectory = null)
         {
-            var outPath = _directoryService.GetEditingDocumentPath(targetDirectory, document);
+            var outPath = _directoryService.GetEditingDocumentPath(targetDirectory, subDirectory, document);
 
             if (File.Exists(outPath))
             {
@@ -173,10 +233,17 @@ namespace PDFWebEdit.Services
         /// <param name="targetDirectory">Target directory.</param>
         /// <param name="document">The document.</param>
         /// <param name="password">The password.</param>
-        public void Unlock(TargetDirectory targetDirectory, string document, string password)
+        /// <param name="subDirectory">Subdirectory storing document.</param>
+        public void Unlock(TargetDirectory targetDirectory, string document, string password, string? subDirectory = null)
         {
-            var path = _directoryService.GetDocumentPath(targetDirectory, document);
-            var outPath = _directoryService.GetEditingDocumentPath(targetDirectory, document);
+            var path = _directoryService.GetDocumentPath(targetDirectory, subDirectory, document);
+            var outPath = _directoryService.GetEditingDocumentPath(targetDirectory, subDirectory, document);
+
+            // Check if the doc exists
+            if (path == null)
+            {
+                throw new Exception($"The document does not exist: {path}");
+            }
 
             // Get the file contents 
             var file = FileHelpers.LoadFile(path);
