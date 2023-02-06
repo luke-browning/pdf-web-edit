@@ -462,7 +462,7 @@ export class HomeComponent {
   }
 
   getDownloadUrl(name: string, directory: string) {
-    return '/api/documents/' + this.directory + '/' + name + '/download?subdirectory=' + encodeURIComponent(directory);
+    return '/api/documents/' + this.directory + '/' + name + '/download?subdirectory=' + encodeURIComponent(directory || '');
   }
 
   reloadDocumentsPages(documents: Doc[]) {
