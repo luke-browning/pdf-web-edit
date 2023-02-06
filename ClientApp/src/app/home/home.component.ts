@@ -458,7 +458,7 @@ export class HomeComponent {
   }
 
   getPagePreviewUrl(doc: Doc, page: number, width: number, height: number) {
-    return '/api/documents/' + this.directory + '/' + doc.name + '/preview/' + page + '?subdirectory=' + encodeURIComponent(doc.directory) + '&width=' + width + '&height=' + height + '&t=' + new Date().getTime();
+    return '/api/documents/' + this.directory + '/' + doc.name + '/preview/' + page + '?subdirectory=' + encodeURIComponent(doc.directory || '') + '&width=' + width + '&height=' + height + '&t=' + new Date().getTime();
   }
 
   getDownloadUrl(name: string, directory: string) {
