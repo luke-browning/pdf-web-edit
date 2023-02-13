@@ -4,7 +4,10 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { PDFWebEditAPI } from '../../api/PDFWebEditAPI';
 import { DirectoryPickerComponent } from '../directory-picker/directory-picker.component';
 import { InputBoxComponent } from '../input-box/input-box.component';
+import { MergeDocmentComponent } from '../merge-docment/merge-docment.component';
 import { MessageBoxComponent } from '../message-box/message-box.component';
+import { Doc } from '../../models/Doc';
+import { Page } from '../../models/Page';
 
 @Component({
   selector: 'app-home',
@@ -80,13 +83,7 @@ export class HomeComponent {
     page.active = activatePage;
 
     // Check if any pages are active and update the doc flag
-    doc.hasSelectedPages = false;
-
-    doc.pages.forEach(p => {
-      if (p.active) {
-        doc.hasSelectedPages = true;
-      }
-    });
+    this.setHasSelectedPages(doc);
   }
 
   //
@@ -249,6 +246,7 @@ export class HomeComponent {
 
         this.loadDocumentPages(doc);
         this.setDocumentModifiedState(doc, true);
+        this.setHasSelectedPages(doc);
 
       }, error => {
         this.loadDocumentPages(doc);
@@ -278,6 +276,57 @@ export class HomeComponent {
     }, error => {
       this.loadDocumentPages(doc);
       this.showMessageBox(error);
+    });
+  }
+
+  split(doc: Doc) {
+
+    let pages: number[] = [];
+
+    doc.pages.forEach(page => {
+      if (page.active) {
+        pages.push(page.number);
+      }
+    });
+
+    this.api.splitPages(this.directory, doc.name, pages, doc.directory).subscribe((newDocument) => {
+
+      if (newDocument != null) {
+
+        // Load the doc and push it to the screen
+        let newDoc = this.loadDocument(newDocument);
+        this.documents.push(newDoc);
+        this.sortDocuments();
+
+      } else {
+        this.showMessageBox('Unable to load new document!');
+      }
+
+    }, error => {
+      this.loadDocumentPages(doc);
+      this.showMessageBox(error);
+    });
+  }
+
+  merge(doc: Doc) {
+
+    const modalRef = this.modalService.open(MergeDocmentComponent);
+    modalRef.componentInstance.documents = this.documents;
+
+    modalRef.result.then((result: Doc) => {
+      this.api.merge(this.directory, doc.name, result.name, doc.directory, result.directory).subscribe((updatedDocument) => {
+
+        if (updatedDocument != null) {
+          this.replaceDoc(doc, updatedDocument);
+        } else {
+          this.showMessageBox('Unable to load updated document!');
+        }
+
+      }, error => this.showMessageBox(error));
+    }, () => {
+
+      // Dismissed
+      return;
     });
   }
 
@@ -483,6 +532,17 @@ export class HomeComponent {
     return selectedPagesNumbers;
   }
 
+  setHasSelectedPages(doc: Doc) {
+
+    doc.hasSelectedPages = false;
+
+    doc.pages.forEach(p => {
+      if (p.active) {
+        doc.hasSelectedPages = true;
+      }
+    });
+  }
+
   setPagesUnloaded(doc: Doc, pages: number[]) {
 
     doc.pages.forEach(page => {
@@ -531,24 +591,4 @@ export class HomeComponent {
 
     return modalRef.result;
   }
-}
-
-interface Doc {
-  name: string;
-  directory: string;
-  created: Date,
-  lastModified: Date,
-  pages: Page[];
-  hasSelectedPages: boolean;
-  downloadUrl?: string;
-  canRevertChanges: boolean;
-  corrupt: boolean;
-  passwordProtected: boolean;
-}
-
-interface Page {
-  number: number;
-  url?: string;
-  loaded: boolean;
-  active: boolean;
 }

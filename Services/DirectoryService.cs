@@ -252,6 +252,59 @@ namespace PDFWebEdit.Services
         }
 
         /// <summary>
+        /// Gets the next document version number path (E.g. document.pdf returns document_1.pdf).
+        /// </summary>
+        /// <param name="targetDirectory">The target directory.</param>
+        /// <param name="subDirectory">Subdirectory storing document.</param>
+        /// <param name="name">The name.</param>
+        /// <returns>
+        /// The next document version number path.
+        /// </returns>
+        public string GetNextDocumentVersionNumberPath(TargetDirectory targetDirectory, string? subDirectory, string name)
+        {
+            string directory = GetTargetDirectoryPath(targetDirectory);
+            directory = Path.Join(directory, subDirectory ?? string.Empty);
+
+            var newName = name;
+            var index = 1;
+
+            // Find all the files that match the name of the document
+            var dir = new DirectoryInfo(directory);
+            var files = dir.GetFiles($"{name}*", SearchOption.TopDirectoryOnly);
+
+            foreach (var file in files)
+            {
+                var filename = Path.GetFileNameWithoutExtension(file.FullName);
+                var fileEnding = filename.Remove(0, name.Length);
+
+                if (fileEnding.Contains("_"))
+                {
+                    fileEnding = fileEnding.Remove(0, fileEnding.LastIndexOf('_') + 1);
+                }
+
+                int value;
+
+                int.TryParse(fileEnding, out value);
+
+                if (value > index)
+                {
+                    index = value + 1;
+                }
+                else if (value == index)
+                {
+                    index = index + 1;
+                }
+            }
+
+            if (index > 0)
+            {
+                newName = $"{name}_{index}" + PDF_EXTENSION;
+            }
+
+            return Path.Combine(directory, newName);
+        }
+
+        /// <summary>
         /// Renames a file.
         /// </summary>
         /// <exception cref="Exception">Thrown when an exception error condition occurs.</exception>

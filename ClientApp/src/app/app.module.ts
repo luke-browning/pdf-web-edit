@@ -13,6 +13,7 @@ import { MessageBoxComponent } from './message-box/message-box.component';
 import { InputBoxComponent } from './input-box/input-box.component';
 import { AutofocusDirective } from './shared/autofocus.directive';
 import { DirectoryPickerComponent } from './directory-picker/directory-picker.component';
+import { MergeDocmentComponent } from './merge-docment/merge-docment.component';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { DirectoryPickerComponent } from './directory-picker/directory-picker.co
     MessageBoxComponent,
     InputBoxComponent,
     AutofocusDirective,
-    DirectoryPickerComponent
+    DirectoryPickerComponent,
+    MergeDocmentComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),

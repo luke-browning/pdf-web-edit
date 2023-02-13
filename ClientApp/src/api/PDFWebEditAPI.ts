@@ -866,6 +866,168 @@ export class DocumentClient {
     }
 
     /**
+     * Splits the pages into a new document.
+     * @param targetDirectory The target directory.
+     * @param document The document.
+     * @param pages The pages.
+     * @param subDirectory (optional) The sub directory containing the document.
+     * @return An IActionResult.
+     */
+    splitPages(targetDirectory: TargetDirectory, document: string, pages: number[], subDirectory?: string | null | undefined): Observable<Document | null> {
+        let url_ = this.baseUrl + "/api/documents/{targetDirectory}/{document}/split-pages?";
+        if (targetDirectory === undefined || targetDirectory === null)
+            throw new Error("The parameter 'targetDirectory' must be defined.");
+        url_ = url_.replace("{targetDirectory}", encodeURIComponent("" + targetDirectory));
+        if (document === undefined || document === null)
+            throw new Error("The parameter 'document' must be defined.");
+        url_ = url_.replace("{document}", encodeURIComponent("" + document));
+        if (subDirectory !== undefined && subDirectory !== null)
+            url_ += "subDirectory=" + encodeURIComponent("" + subDirectory) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(pages);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processSplitPages(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processSplitPages(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<Document | null>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<Document | null>;
+        }));
+    }
+
+    protected processSplitPages(response: HttpResponseBase): Observable<Document | null> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? Document.fromJS(resultData200) : <any>null;
+            return _observableOf(result200);
+            }));
+        } else if (status === 404) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("A server side error occurred.", status, _responseText, _headers);
+            }));
+        } else if (status === 500) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result500: any = null;
+            let resultData500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result500 = resultData500 ? ProblemDetails.fromJS(resultData500) : <any>null;
+            return throwException("A server side error occurred.", status, _responseText, _headers, result500);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<Document | null>(null as any);
+    }
+
+    /**
+     * Merges another document into the defined document.
+     * @param targetDirectory The target directory.
+     * @param document The document.
+     * @param mergeDocument The merge document.
+     * @param subDirectory (optional) The sub directory containing the document.
+     * @param mergeDocumentSubDirectory (optional) Pathname of the merge document sub directory.
+     * @return An IActionResult.
+     */
+    merge(targetDirectory: TargetDirectory, document: string, mergeDocument: string, subDirectory?: string | null | undefined, mergeDocumentSubDirectory?: string | null | undefined): Observable<Document | null> {
+        let url_ = this.baseUrl + "/api/documents/{targetDirectory}/{document}/merge/{mergeDocument}?";
+        if (targetDirectory === undefined || targetDirectory === null)
+            throw new Error("The parameter 'targetDirectory' must be defined.");
+        url_ = url_.replace("{targetDirectory}", encodeURIComponent("" + targetDirectory));
+        if (document === undefined || document === null)
+            throw new Error("The parameter 'document' must be defined.");
+        url_ = url_.replace("{document}", encodeURIComponent("" + document));
+        if (mergeDocument === undefined || mergeDocument === null)
+            throw new Error("The parameter 'mergeDocument' must be defined.");
+        url_ = url_.replace("{mergeDocument}", encodeURIComponent("" + mergeDocument));
+        if (subDirectory !== undefined && subDirectory !== null)
+            url_ += "subDirectory=" + encodeURIComponent("" + subDirectory) + "&";
+        if (mergeDocumentSubDirectory !== undefined && mergeDocumentSubDirectory !== null)
+            url_ += "mergeDocumentSubDirectory=" + encodeURIComponent("" + mergeDocumentSubDirectory) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processMerge(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processMerge(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<Document | null>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<Document | null>;
+        }));
+    }
+
+    protected processMerge(response: HttpResponseBase): Observable<Document | null> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? Document.fromJS(resultData200) : <any>null;
+            return _observableOf(result200);
+            }));
+        } else if (status === 404) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("A server side error occurred.", status, _responseText, _headers);
+            }));
+        } else if (status === 500) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result500: any = null;
+            let resultData500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result500 = resultData500 ? ProblemDetails.fromJS(resultData500) : <any>null;
+            return throwException("A server side error occurred.", status, _responseText, _headers, result500);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<Document | null>(null as any);
+    }
+
+    /**
      * Revert changes to the specified document.
      * @param targetDirectory The target directory.
      * @param document The document.

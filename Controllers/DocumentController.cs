@@ -449,6 +449,88 @@ namespace PDFWebEdit.Controllers
         }
 
         /// <summary>
+        /// Splits the pages into a new document.
+        /// </summary>
+        /// <param name="targetDirectory">The target directory.</param>
+        /// <param name="document">The document.</param>
+        /// <param name="pages">The pages.</param>
+        /// <param name="subDirectory">The sub directory containing the document.</param>
+        /// <returns>
+        /// An IActionResult.
+        /// </returns>
+        [HttpPost]
+        [Route("{targetDirectory}/{document}/split-pages")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Document))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
+        [ProducesErrorResponseType(typeof(ObjectResult))]
+        public IActionResult SplitPages(TargetDirectory targetDirectory, string document, [FromBody] List<int> pages, string? subDirectory = null)
+        {
+            // Get the path to the document
+            var path = _directoryService.GetDocumentPath(targetDirectory, subDirectory, document);
+
+            if (path != null)
+            {
+                try
+                {
+                    var newDocumentName = _pdfManipulationService.SplitPages(targetDirectory, document, pages);
+
+                    return Ok(_directoryService.GetDocument(targetDirectory, subDirectory, newDocumentName));
+                }
+                catch (Exception x)
+                {
+                    return ExceptionHelpers.GetErrorObjectResult("Split", HttpContext, x);
+                }
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
+        /// <summary>
+        /// Merges another document into the defined document.
+        /// </summary>
+        /// <param name="targetDirectory">The target directory.</param>
+        /// <param name="document">The document.</param>
+        /// <param name="mergeDocument">The merge document.</param>
+        /// <param name="subDirectory">The sub directory containing the document.</param>
+        /// <param name="mergeDocumentSubDirectory">Pathname of the merge document sub directory.</param>
+        /// <returns>
+        /// An IActionResult.
+        /// </returns>
+        [HttpPost]
+        [Route("{targetDirectory}/{document}/merge/{mergeDocument}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Document))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
+        [ProducesErrorResponseType(typeof(ObjectResult))]
+        public IActionResult Merge(TargetDirectory targetDirectory, string document, string mergeDocument, string? subDirectory = null, string? mergeDocumentSubDirectory = null)
+        {
+            // Get the path to the document
+            var sourcePath = _directoryService.GetDocumentPath(targetDirectory, subDirectory, document);
+            var targetPath = _directoryService.GetDocumentPath(targetDirectory, mergeDocumentSubDirectory, mergeDocument);
+
+            if ((sourcePath != null) && (targetPath != null))
+            {
+                try
+                {
+                    _pdfManipulationService.MergeDocument(targetDirectory, document, mergeDocument, subDirectory, mergeDocumentSubDirectory);
+
+                    return Ok(_directoryService.GetDocument(targetDirectory, subDirectory, document));
+                }
+                catch (Exception x)
+                {
+                    return ExceptionHelpers.GetErrorObjectResult("Merge", HttpContext, x);
+                }
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
+        /// <summary>
         /// Revert changes to the specified document.
         /// </summary>
         /// <param name="targetDirectory">The target directory.</param>
