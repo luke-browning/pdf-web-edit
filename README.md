@@ -52,9 +52,9 @@ docker run -p 10000:80 -v /host/config:/config -v /host/input:/input -v /host/ou
 Congratulations, PDF Web Edit should now be running on port 10000!
 
 ### :wrench: Configuration
-A configuration file named conf.json is created in the Config directory on first launch. This file can be modified by the user to change any settings. 
+A configuration file named conf.json is created in the Config directory on first launch. You can edit the config through the web based interface (cog on the right hand side of the navigation) or you can be modify the config file to change any settings.
 
-**Please note: the application must be restarted for any changes to take affect!**
+**Please note: if you edit the config file manually the application must be restarted for any changes to take affect!**
 
 ## :computer: Development
 PDF Web Edit has been developed using Visual Studio. If you would like to run the project yourself follow these simple steps;
