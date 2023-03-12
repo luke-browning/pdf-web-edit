@@ -2,13 +2,13 @@
 
   <div class="col">
     <div ngbDropdown class="d-inline-block">
-      <button type="button" class="btn btn-primary" id="folder" ngbDropdownToggle>
+      <button type="button" class="btn btn-primary" id="folder" ngbDropdownToggle tourAnchor="folder">
         <span *ngIf="directory == targetDirectories.Input">Input</span>
         <span *ngIf="directory == targetDirectories.Output">Output</span>
         <span *ngIf="directory == targetDirectories.Trash">Trash</span>
       </button>
       <div ngbDropdownMenu aria-labelledby="folder">
-        <a routerLink="/" ngbDropdownItem>Input</a>
+        <a routerLink="/input" ngbDropdownItem>Input</a>
         <a routerLink="/output" ngbDropdownItem>Output</a>
         <div class="dropdown-divider"></div>
         <a routerLink="/trash" ngbDropdownItem>Trash</a>
@@ -17,7 +17,7 @@
   </div>
 
   <div class="col text-center">
-    <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+    <div class="btn-group" role="group" aria-label="Basic radio toggle button group" tourAnchor="size">
       <input type="radio" class="btn-check" name="size" id="size-small" value="small" autocomplete="off" [(ngModel)]="size" (change)="setSize($event)">
       <label class="btn btn-outline-primary" for="size-small">Small</label>
 
@@ -31,7 +31,7 @@
 
   <div class="col">
 
-    <div class="btn-group me-3 float-end">
+    <div class="btn-group float-end" tourAnchor="order">
       <div class="btn-group" ngbDropdown role="group">
         <button type="button" class="btn btn-secondary" ngbDropdownToggle>{{ sort }}</button>
         <div class="dropdown-menu" ngbDropdownMenu>
@@ -59,52 +59,53 @@
     <div class="card mb-3">
       <div class="card-header">
         <strong>{{ document.name }}</strong>
+        <span class="directory">{{ document.directory }}</span>
       </div>
       <div class="card-body">
 
         <!-- Input Toolbar -->
         <div class="toolbar mb-3" *ngIf="directory == targetDirectories.Input && !document.corrupt && !document.passwordProtected">
-          <button type="button" class="btn btn-primary" (click)="selectAll(document)">Select All</button>
-          <button type="button" class="btn btn-primary" (click)="unselect(document)">Unselect</button>
+          <button type="button" class="btn btn-primary" (click)="selectAll(document)" *ngIf="config?.inputConfig?.showSelectAll">Select All</button>
+          <button type="button" class="btn btn-primary" (click)="unselect(document)" *ngIf="config?.inputConfig?.showUnselect">Unselect</button>
 
           <span class="separator"></span>
 
-          <button type="button" class="btn btn-primary" [disabled]="!document.hasSelectedPages" (click)="rotateAntiClockwise(document)">Rotate Anti-Clockwise</button>
-          <button type="button" class="btn btn-primary" [disabled]="!document.hasSelectedPages" (click)="rotateClockwise(document)">Rotate Clockwise</button>
-          <button type="button" class="btn btn-primary" [disabled]="!document.hasSelectedPages" (click)="remove(document)">Remove</button>
-          <button type="button" class="btn btn-primary" [disabled]="!document.hasSelectedPages" (click)="split(document)">Split</button>
-          <button type="button" class="btn btn-primary" (click)="merge(document)">Merge</button>
+          <button type="button" class="btn btn-primary" [disabled]="!document.hasSelectedPages" (click)="rotateAntiClockwise(document)" *ngIf="config?.inputConfig?.showRotateAntiClockwise">Rotate Anti-Clockwise</button>
+          <button type="button" class="btn btn-primary" [disabled]="!document.hasSelectedPages" (click)="rotateClockwise(document)" *ngIf="config?.inputConfig?.showRotateClockwise">Rotate Clockwise</button>
+          <button type="button" class="btn btn-primary" [disabled]="!document.hasSelectedPages" (click)="remove(document)" *ngIf="config?.inputConfig?.showRemove">Remove</button>
+          <button type="button" class="btn btn-primary" [disabled]="!document.hasSelectedPages" (click)="split(document)" *ngIf="config?.inputConfig?.showSplit">Split</button>
+          <button type="button" class="btn btn-primary" (click)="merge(document)" *ngIf="config?.inputConfig?.showMerge">Merge</button>
 
           <span class="separator"></span>
 
-          <button type="button" class="btn btn-primary" (click)="rename(document)">Rename</button>
-          <button type="button" class="btn btn-primary" (click)="delete(document)">Delete</button>
-          <a [href]="document.downloadUrl" target="_blank" class="btn btn-primary">Download</a>
+          <button type="button" class="btn btn-primary" (click)="rename(document)" *ngIf="config?.inputConfig?.showRename">Rename</button>
+          <button type="button" class="btn btn-primary" (click)="delete(document)" *ngIf="config?.inputConfig?.showDelete">Delete</button>
+          <a [href]="document.downloadUrl" target="_blank" class="btn btn-primary" *ngIf="config?.inputConfig?.showDownload">Download</a>
 
           <span class="separator"></span>
 
-          <button type="button" class="btn btn-primary" [disabled]="!document.canRevertChanges" (click)="revert(document)">Revert Changes</button>
-          <button type="button" class="btn btn-primary" (click)="saveTo(document)">Save To</button>
-          <button type="button" class="btn btn-primary" (click)="save(document)">Save</button>
+          <button type="button" class="btn btn-primary" [disabled]="!document.canRevertChanges" (click)="revert(document)" *ngIf="config?.inputConfig?.showRevert">Revert Changes</button>
+          <button type="button" class="btn btn-primary" (click)="saveTo(document)" *ngIf="config?.inputConfig?.showSaveTo">Save To</button>
+          <button type="button" class="btn btn-primary" (click)="save(document)" *ngIf="config?.inputConfig?.showSave">Save</button>
         </div>
 
         <!-- Output Toolbar -->
         <div class="toolbar mb-3" *ngIf="directory == targetDirectories.Output && !document.corrupt && !document.passwordProtected">
-          <a [href]="document.downloadUrl" target="_blank" class="btn btn-primary">Download</a>
+          <a [href]="document.downloadUrl" target="_blank" class="btn btn-primary" *ngIf="config?.outputConfig?.showDownload">Download</a>
 
           <span class="separator"></span>
 
-          <button type="button" class="btn btn-primary" (click)="restore(document)">Restore</button>
+          <button type="button" class="btn btn-primary" (click)="restore(document)" *ngIf="config?.outputConfig?.showRestore">Restore</button>
         </div>
 
         <!-- Trash Toolbar -->
         <div class="toolbar mb-3" *ngIf="directory == targetDirectories.Trash && !document.corrupt && !document.passwordProtected">
-          <button type="button" class="btn btn-primary" (click)="delete(document)">Delete</button>
-          <a [href]="document.downloadUrl" target="_blank" class="btn btn-primary">Download</a>
+          <button type="button" class="btn btn-primary" (click)="delete(document)" *ngIf="config?.trashConfig?.showDelete">Delete</button>
+          <a [href]="document.downloadUrl" target="_blank" class="btn btn-primary" *ngIf="config?.trashConfig?.showDownload">Download</a>
 
           <span class="separator"></span>
 
-          <button type="button" class="btn btn-primary" (click)="restore(document)">Restore</button>
+          <button type="button" class="btn btn-primary" (click)="restore(document)" *ngIf="config?.trashConfig?.showRestore">Restore</button>
         </div>
 
         <!-- Password Protected Toolbar -->
@@ -136,8 +137,11 @@
                   <span class="visually-hidden">Loading...</span>
                 </div>
               </div>
-              <img [src]="page.url" class="thumb" [class.active]="page.active" (load)="pageLoaded(page)" />
-              <div class="page-number">{{ page.number }}</div>
+              <img *ngIf="page.show" [src]="page.url" class="thumb" [class.active]="page.active" (load)="pageLoaded(page)" (error)="pageNotLoaded(page, $event)" />
+              <div *ngIf="!page.show" class="thumb failover-thumb d-flex align-items-center justify-content-center" [class.active]="page.active">
+                Failed to Load Preview
+              </div>
+              <div class="page-number" *ngIf="config?.previewConfig?.showPageNumber">{{ page.number }}</div>
             </div>
           </ng-container>
         </div>

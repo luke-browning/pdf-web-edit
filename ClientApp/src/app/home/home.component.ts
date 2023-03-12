@@ -8,6 +8,7 @@ import { MergeDocmentComponent } from '../merge-docment/merge-docment.component'
 import { MessageBoxComponent } from '../message-box/message-box.component';
 import { Doc } from '../../models/Doc';
 import { Page } from '../../models/Page';
+import { AppConfigService } from '../services/app-config.service';
 
 @Component({
   selector: 'app-home',
@@ -18,22 +19,41 @@ export class HomeComponent {
 
   documents: Doc[] = [];
 
+  // Config
+  config: PDFWebEditAPI.Config | null | undefined;
+
   // Options
   directory = PDFWebEditAPI.TargetDirectory.Input;
   targetDirectories = PDFWebEditAPI.TargetDirectory;
   directoryStructure: PDFWebEditAPI.Folder[] = [];
 
-  size = 'medium';
+  size: string = 'medium';
   pageHeight = 400;
   pageWidth = 282;
 
-  sort = 'Name';
-  sortDirection = 'Asc';
+  sort: string = 'Name';
+  sortDirection: string = 'Asc';
 
-  constructor(private api: PDFWebEditAPI.DocumentClient, private modalService: NgbModal, private route: ActivatedRoute, private router: Router) {
+  constructor(private api: PDFWebEditAPI.DocumentClient, private modalService: NgbModal, private route: ActivatedRoute,
+    private router: Router, private configService: AppConfigService) {
 
+    // Load the app config
+    configService.getConfig().subscribe(config => {
+      this.config = config;
+
+      this.size = this.config?.previewConfig?.defaultSize!;
+
+      this.sort = this.config?.generalConfig?.defaultSortColumn!;
+      this.sortDirection = this.config?.generalConfig?.defaultSortDirection!;
+    });
+
+    // Work out the current directory
     switch (router.url) {
       default:
+        router.navigateByUrl('/' + this.config?.generalConfig?.defaultFolder.toLowerCase() || 'input');
+        break;
+
+      case '/input':
         this.directory = PDFWebEditAPI.TargetDirectory.Input
         break;
 
@@ -60,7 +80,7 @@ export class HomeComponent {
       if (result != null) {
         this.directoryStructure = result;
       }
-    })
+    });
   }
 
   setActive(doc: Doc, page: Page, $event: MouseEvent) {
@@ -367,7 +387,7 @@ export class HomeComponent {
   }
 
   save(doc: Doc) {
-    this.api.save(doc.name).subscribe(() => {
+    this.api.save(doc.name, doc.directory).subscribe(() => {
       this.documents = this.documents.filter(item => item.name !== doc.name);
     }, error => this.showMessageBox(error));
   }
@@ -488,7 +508,8 @@ export class HomeComponent {
               number: i,
               active: false,
               url: this.getPagePreviewUrl(doc, i, this.pageWidth, this.pageHeight),
-              loaded: false
+              loaded: false,
+              show: true
             };
 
             doc.pages.push(page);
@@ -557,6 +578,11 @@ export class HomeComponent {
   }
 
   pageLoaded(page: Page) {
+    page.loaded = true;
+  }
+
+  pageNotLoaded(page: Page, $event: Event) {
+    page.show = false;
     page.loaded = true;
   }
 

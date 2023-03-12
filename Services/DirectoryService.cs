@@ -144,6 +144,8 @@ namespace PDFWebEdit.Services
         {
             Document doc = null;
 
+            string directory = GetTargetDirectoryPath(targetDirectory);
+
             string pdfPath = GetUnmodifiedDocumentPath(targetDirectory, subDirectory, name);
 
             if (pdfPath != null)
@@ -154,6 +156,7 @@ namespace PDFWebEdit.Services
                 doc = new Document
                 {
                     Name = Path.GetFileNameWithoutExtension(pdfPath),
+                    Directory = Path.GetDirectoryName(pdfPath).Replace(directory, string.Empty),
                     Created = File.GetCreationTime(pdfPath),
                     LastModified = File.GetLastWriteTime(pdfPath),
                     HasChanges = File.Exists(editedPdfPath),
@@ -407,9 +410,21 @@ namespace PDFWebEdit.Services
                 var editedPDFTrashPath = Path.Combine(_trashDirectory, name) + EDITING_PDF_EXTENSION;
                 var originalPDFTrashPath = Path.Combine(_trashDirectory, name) + PDF_EXTENSION;
 
+                // Make sure a file doesn't already exist in the input location
+                if (File.Exists(editedPDFTrashPath))
+                {
+                    throw new Exception("A file with the same name already exists in the trash directory.");
+                }
+
+                if (File.Exists(originalPDFTrashPath))
+                {
+                    throw new Exception("A file with the same name already exists in the trash directory.");
+                }
+
+                // Move the files
                 if (File.Exists(editedPDFPath))
                 {
-                    if ((_configService.Settings.MoveFilesToTrashOnDelete) && (targetDirectory != TargetDirectory.Trash))
+                    if ((_configService.Settings.InputConfig.MoveFilesToTrashOnDelete) && (targetDirectory != TargetDirectory.Trash))
                     {
                         File.Move(editedPDFPath, editedPDFTrashPath);
                     }
@@ -421,7 +436,7 @@ namespace PDFWebEdit.Services
 
                 if (File.Exists(originalPDFPath))
                 {
-                    if ((_configService.Settings.MoveFilesToTrashOnDelete) && (targetDirectory != TargetDirectory.Trash))
+                    if ((_configService.Settings.InputConfig.MoveFilesToTrashOnDelete) && (targetDirectory != TargetDirectory.Trash))
                     {
                         File.Move(originalPDFPath, originalPDFTrashPath);
                     }
@@ -452,6 +467,18 @@ namespace PDFWebEdit.Services
                 var editedPDFInputDirectoryPath = Path.Combine(_inputDirectory, name) + EDITING_PDF_EXTENSION;
                 var originalPDFInputDirectoryPath = Path.Combine(_inputDirectory, name) + PDF_EXTENSION;
 
+                // Make sure a file doesn't already exist in the input location
+                if (File.Exists(editedPDFInputDirectoryPath))
+                {
+                    throw new Exception("A file with the same name already exists in the input directory.");
+                }
+
+                if (File.Exists(originalPDFInputDirectoryPath))
+                {
+                    throw new Exception("A file with the same name already exists in the input directory.");
+                }
+
+                // Move the files
                 if (File.Exists(editedPDFPath))
                 {
                     File.Move(editedPDFPath, editedPDFInputDirectoryPath);
@@ -468,30 +495,49 @@ namespace PDFWebEdit.Services
         /// Saves the document to the output directory.
         /// </summary>
         /// <param name="name">The name.</param>
-        /// <param name="subDirectory">The sub directory.</param>
-        public void Save(string name, string? subDirectory)
+        /// <param name="sourceSubDirectory">The source sub directory.</param>
+        /// <param name="targetSubDirectory">The target sub directory.</param>
+        public void Save(string name, string? sourceSubDirectory, string? targetSubDirectory)
         {
+            string sourceDirectory = GetTargetDirectoryPath(TargetDirectory.Input);
+            sourceDirectory = Path.Join(sourceDirectory, sourceSubDirectory ?? string.Empty);
+
+            string outputDirectory = GetTargetDirectoryPath(TargetDirectory.Output);
+            outputDirectory = Path.Join(outputDirectory, targetSubDirectory ?? string.Empty);
+
             lock (__lock)
             {
-                var editedPDFPath = Path.Combine(_inputDirectory, name) + EDITING_PDF_EXTENSION;
-                var originalPDFPath = Path.Combine(_inputDirectory, name) + PDF_EXTENSION;
+                var editedPDFPath = Path.Combine(sourceDirectory, name) + EDITING_PDF_EXTENSION;
+                var originalPDFPath = Path.Combine(sourceDirectory, name) + PDF_EXTENSION;
 
-                string outputPath = Path.Combine(_outputDirectory, name);
-
-                // Override the output path if there is a directory
-                if (subDirectory != null)
-                {
-                    outputPath = Path.Join(_outputDirectory, subDirectory, name);
-                }
+                string outputPath = Path.Combine(outputDirectory, name);
 
                 outputPath += PDF_EXTENSION;
                 var trashOutputPath = Path.Combine(_trashDirectory, name) + PDF_EXTENSION;
 
+                // Make sure a file doesn't already exist in the output location
+                if (File.Exists(outputPath))
+                {
+                    throw new Exception("A file with the same name already exists in the output directory.");
+                }
+
+                // Move the file
                 if (File.Exists(editedPDFPath))
                 {
+                    // If we're going to be deleting the original file on save, make sure that 
+                    // we don't continue if it already exists in the trash folder
+                    if ((!_configService.Settings.InputConfig.DeleteOriginalFileOnSave) && (File.Exists(trashOutputPath)))
+                    {
+                        throw new Exception("A file with the same name already exists in the trash directory. Save aborted.");
+                    }
+
                     File.Move(editedPDFPath, outputPath);
 
-                    if (_configService.Settings.DeleteOriginalFileOnSave)
+                    if (_configService.Settings.InputConfig.DeleteOriginalFileOnSave)
+                    {
+                        File.Delete(originalPDFPath);
+                    }
+                    else
                     {
                         File.Move(originalPDFPath, trashOutputPath);
                     }

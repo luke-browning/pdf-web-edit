@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
@@ -14,6 +14,10 @@ import { InputBoxComponent } from './input-box/input-box.component';
 import { AutofocusDirective } from './shared/autofocus.directive';
 import { DirectoryPickerComponent } from './directory-picker/directory-picker.component';
 import { MergeDocmentComponent } from './merge-docment/merge-docment.component';
+import { SearchPipe } from './shared/filter.pipe';
+import { AppConfigService } from './services/app-config.service';
+import { SettingsComponent } from './settings/settings.component';
+import { TourNgBootstrapModule } from 'ngx-ui-tour-ng-bootstrap';
 
 @NgModule({
   declarations: [
@@ -24,7 +28,9 @@ import { MergeDocmentComponent } from './merge-docment/merge-docment.component';
     InputBoxComponent,
     AutofocusDirective,
     DirectoryPickerComponent,
-    MergeDocmentComponent
+    MergeDocmentComponent,
+    SearchPipe,
+    SettingsComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -32,13 +38,22 @@ import { MergeDocmentComponent } from './merge-docment/merge-docment.component';
     FormsModule,
     RouterModule.forRoot([
       { path: '', component: HomeComponent, pathMatch: 'full' },
+      { path: 'input', component: HomeComponent, pathMatch: 'full' },
       { path: 'output', component: HomeComponent, pathMatch: 'full' },
       { path: 'trash', component: HomeComponent, pathMatch: 'full' },
     ]),
     NgbModule,
-    DragulaModule.forRoot()
+    DragulaModule.forRoot(),
+    TourNgBootstrapModule.forRoot(),
   ],
-  providers: [],
+  providers: [
+    {
+      provide: APP_INITIALIZER,
+      multi: true,
+      deps: [AppConfigService],
+      useFactory: (appConfigService: AppConfigService) => () => appConfigService.loadAppConfig()
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

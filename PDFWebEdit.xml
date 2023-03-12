@@ -4,6 +4,49 @@
         <name>PDFWebEdit</name>
     </assembly>
     <members>
+        <member name="T:PDFWebEdit.Controllers.ConfigurationController">
+            <summary>
+            A controller for handling configurations.
+            </summary>
+            <seealso cref="T:Microsoft.AspNetCore.Mvc.ControllerBase"/>
+        </member>
+        <member name="F:PDFWebEdit.Controllers.ConfigurationController._configService">
+            <summary>
+            The configuration service.
+            </summary>
+        </member>
+        <member name="M:PDFWebEdit.Controllers.ConfigurationController.#ctor(PDFWebEdit.Services.ConfigService)">
+            <summary>
+            Initialises a new instance of the
+            <see cref="T:PDFWebEdit.Controllers.ConfigurationController"/> class.
+            </summary>
+            <param name="configService">The configuration service.</param>
+        </member>
+        <member name="M:PDFWebEdit.Controllers.ConfigurationController.GetConfiguration">
+            <summary>
+            Gets the configuration.
+            </summary>
+            <returns>
+            The configuration.
+            </returns>
+        </member>
+        <member name="M:PDFWebEdit.Controllers.ConfigurationController.SaveConfiguration(PDFWebEdit.Models.Config.Config)">
+            <summary>
+            Saves a configuration.
+            </summary>
+            <param name="config">The configuration.</param>
+            <returns>
+            The updated config
+            </returns>
+        </member>
+        <member name="M:PDFWebEdit.Controllers.ConfigurationController.ReloadConfiguration">
+            <summary>
+            Reload configuration.
+            </summary>
+            <returns>
+            A status code indicating success or failure.
+            </returns>
+        </member>
         <member name="T:PDFWebEdit.Controllers.DocumentController">
             <summary>
             A controller for handling documents.
@@ -233,17 +276,18 @@
             Saves the specified document in the input directory.
             </summary>
             <param name="document">The document.</param>
-            <param name="sourceSubDirectory">The subDirectory to move frp,.</param>
+            <param name="sourceSubDirectory">The subDirectory to move from.</param>
             <param name="targetSubDirectory">The subDirectory to save to.</param>
             <returns>
             An IActionResult.
             </returns>
         </member>
-        <member name="M:PDFWebEdit.Controllers.DocumentController.Save(System.String)">
+        <member name="M:PDFWebEdit.Controllers.DocumentController.Save(System.String,System.String)">
             <summary>
             Saves the specified document in the input directory.
             </summary>
             <param name="document">The document.</param>
+            <param name="sourceSubDirectory">The subDirectory to move from.</param>
             <returns>
             An IActionResult.
             </returns>
@@ -369,12 +413,198 @@
             <param name="tempFilePath">Full pathname of the temporary file.</param>
             <param name="destinationFilePath">Full pathname of the destination file.</param>
         </member>
-        <member name="T:PDFWebEdit.Models.Config">
+        <member name="T:PDFWebEdit.Models.Config.Config">
             <summary>
             A configuration.
             </summary>
         </member>
-        <member name="P:PDFWebEdit.Models.Config.DeleteOriginalFileOnSave">
+        <member name="P:PDFWebEdit.Models.Config.Config.GeneralConfig">
+            <summary>
+            Gets or sets the general configuration.
+            </summary>
+            <value>
+            The general configuration.
+            </value>
+        </member>
+        <member name="P:PDFWebEdit.Models.Config.Config.PreviewConfig">
+            <summary>
+            Gets or sets the preview configuration.
+            </summary>
+            <value>
+            The preview configuration.
+            </value>
+        </member>
+        <member name="P:PDFWebEdit.Models.Config.Config.InputConfig">
+            <summary>
+            Gets or sets the input configuration.
+            </summary>
+            <value>
+            The input configuration.
+            </value>
+        </member>
+        <member name="P:PDFWebEdit.Models.Config.Config.OutputConfig">
+            <summary>
+            Gets or sets the output configuration.
+            </summary>
+            <value>
+            The output configuration.
+            </value>
+        </member>
+        <member name="P:PDFWebEdit.Models.Config.Config.TrashConfig">
+            <summary>
+            Gets or sets the trash configuration.
+            </summary>
+            <value>
+            The trash configuration.
+            </value>
+        </member>
+        <member name="T:PDFWebEdit.Models.Config.GeneralConfig">
+            <summary>
+            A general configuration.
+            </summary>
+        </member>
+        <member name="P:PDFWebEdit.Models.Config.GeneralConfig.EnableTour">
+            <summary>
+            Gets or sets a value indicating whether the tour is enabled.
+            </summary>
+            <value>
+            True if enable tour, false if not.
+            </value>
+        </member>
+        <member name="P:PDFWebEdit.Models.Config.GeneralConfig.DefaultFolder">
+            <summary>
+            Gets or sets the default folder.
+            </summary>
+            <value>
+            The default folder.
+            </value>
+        </member>
+        <member name="P:PDFWebEdit.Models.Config.GeneralConfig.DefaultSortColumn">
+            <summary>
+            Gets or sets the default sort column.
+            </summary>
+            <value>
+            The default sort column.
+            </value>
+        </member>
+        <member name="P:PDFWebEdit.Models.Config.GeneralConfig.DefaultSortDirection">
+            <summary>
+            Gets or sets the default sort direction.
+            </summary>
+            <value>
+            The default sort direction.
+            </value>
+        </member>
+        <member name="T:PDFWebEdit.Models.Config.InputConfig">
+            <summary>
+            A input configuration.
+            </summary>
+        </member>
+        <member name="P:PDFWebEdit.Models.Config.InputConfig.ShowSaveTo">
+            <summary>
+            Gets or sets a value indicating whether the save to is shown.
+            </summary>
+            <value>
+            True if show save to, false if not.
+            </value>
+        </member>
+        <member name="P:PDFWebEdit.Models.Config.InputConfig.ShowSave">
+            <summary>
+            Gets or sets a value indicating whether the save is shown.
+            </summary>
+            <value>
+            True if show save, false if not.
+            </value>
+        </member>
+        <member name="P:PDFWebEdit.Models.Config.InputConfig.ShowRevert">
+            <summary>
+            Gets or sets a value indicating whether the revert is shown.
+            </summary>
+            <value>
+            True if show revert, false if not.
+            </value>
+        </member>
+        <member name="P:PDFWebEdit.Models.Config.InputConfig.ShowDownload">
+            <summary>
+            Gets or sets a value indicating whether the download is shown.
+            </summary>
+            <value>
+            True if show download, false if not.
+            </value>
+        </member>
+        <member name="P:PDFWebEdit.Models.Config.InputConfig.ShowDelete">
+            <summary>
+            Gets or sets a value indicating whether the delete is shown.
+            </summary>
+            <value>
+            True if show delete, false if not.
+            </value>
+        </member>
+        <member name="P:PDFWebEdit.Models.Config.InputConfig.ShowRename">
+            <summary>
+            Gets or sets a value indicating whether the rename is shown.
+            </summary>
+            <value>
+            True if show rename, false if not.
+            </value>
+        </member>
+        <member name="P:PDFWebEdit.Models.Config.InputConfig.ShowMerge">
+            <summary>
+            Gets or sets a value indicating whether the merge is shown.
+            </summary>
+            <value>
+            True if show merge, false if not.
+            </value>
+        </member>
+        <member name="P:PDFWebEdit.Models.Config.InputConfig.ShowSplit">
+            <summary>
+            Gets or sets a value indicating whether the split is shown.
+            </summary>
+            <value>
+            True if show split, false if not.
+            </value>
+        </member>
+        <member name="P:PDFWebEdit.Models.Config.InputConfig.ShowRemove">
+            <summary>
+            Gets or sets a value indicating whether the remove is shown.
+            </summary>
+            <value>
+            True if show remove, false if not.
+            </value>
+        </member>
+        <member name="P:PDFWebEdit.Models.Config.InputConfig.ShowRotateClockwise">
+            <summary>
+            Gets or sets a value indicating whether the rotate clockwise is shown.
+            </summary>
+            <value>
+            True if show rotate clockwise, false if not.
+            </value>
+        </member>
+        <member name="P:PDFWebEdit.Models.Config.InputConfig.ShowRotateAntiClockwise">
+            <summary>
+            Gets or sets a value indicating whether the rotate anti clockwise is shown.
+            </summary>
+            <value>
+            True if show rotate anti clockwise, false if not.
+            </value>
+        </member>
+        <member name="P:PDFWebEdit.Models.Config.InputConfig.ShowSelectAll">
+            <summary>
+            Gets or sets a value indicating whether the select all is shown.
+            </summary>
+            <value>
+            True if show select all, false if not.
+            </value>
+        </member>
+        <member name="P:PDFWebEdit.Models.Config.InputConfig.ShowUnselect">
+            <summary>
+            Gets or sets a value indicating whether the unselect is shown.
+            </summary>
+            <value>
+            True if show unselect, false if not.
+            </value>
+        </member>
+        <member name="P:PDFWebEdit.Models.Config.InputConfig.DeleteOriginalFileOnSave">
             <summary>
             Gets or sets a value indicating whether the original file on save wil be deleted.
             </summary>
@@ -382,12 +612,91 @@
             True if delete original file on save, false if not.
             </value>
         </member>
-        <member name="P:PDFWebEdit.Models.Config.MoveFilesToTrashOnDelete">
+        <member name="P:PDFWebEdit.Models.Config.InputConfig.MoveFilesToTrashOnDelete">
             <summary>
             Gets or sets a value indicating whether the move files to trash on delete.
             </summary>
             <value>
             True if move files to trash on delete, false if not.
+            </value>
+        </member>
+        <member name="T:PDFWebEdit.Models.Config.OutputConfig">
+            <summary>
+            A save configuration.
+            </summary>
+        </member>
+        <member name="P:PDFWebEdit.Models.Config.OutputConfig.ShowRestore">
+            <summary>
+            Gets or sets a value indicating whether the restore is shown.
+            </summary>
+            <value>
+            True if show restore, false if not.
+            </value>
+        </member>
+        <member name="P:PDFWebEdit.Models.Config.OutputConfig.ShowDownload">
+            <summary>
+            Gets or sets a value indicating whether the download is shown.
+            </summary>
+            <value>
+            True if show download, false if not.
+            </value>
+        </member>
+        <member name="T:PDFWebEdit.Models.Config.PreviewConfig">
+            <summary>
+            A preview configuration.
+            </summary>
+        </member>
+        <member name="P:PDFWebEdit.Models.Config.PreviewConfig.DefaultSize">
+            <summary>
+            Gets or sets the default size.
+            </summary>
+            <value>
+            The default size.
+            </value>
+        </member>
+        <member name="P:PDFWebEdit.Models.Config.PreviewConfig.ShowPageNumber">
+            <summary>
+            Gets or sets a value indicating whether the page number is shown.
+            </summary>
+            <value>
+            True if show page number, false if not.
+            </value>
+        </member>
+        <member name="T:PDFWebEdit.Models.Config.TrashConfig">
+            <summary>
+            A trash configuration.
+            </summary>
+        </member>
+        <member name="P:PDFWebEdit.Models.Config.TrashConfig.ShowRestore">
+            <summary>
+            Gets or sets a value indicating whether the restore is shown.
+            </summary>
+            <value>
+            True if show restore, false if not.
+            </value>
+        </member>
+        <member name="P:PDFWebEdit.Models.Config.TrashConfig.ShowDownload">
+            <summary>
+            Gets or sets a value indicating whether the download is shown.
+            </summary>
+            <value>
+            True if show download, false if not.
+            </value>
+        </member>
+        <member name="P:PDFWebEdit.Models.Config.TrashConfig.ShowDelete">
+            <summary>
+            Gets or sets a value indicating whether the delete is shown.
+            </summary>
+            <value>
+            True if show delete, false if not.
+            </value>
+        </member>
+        <member name="P:PDFWebEdit.Models.Config.TrashConfig.PermenentlyDeleteDeletedDocuments">
+            <summary>
+            Gets or sets a value indicating whether the permenently delete deleted documents.
+            </summary>
+            <value>
+            True if permenently delete deleted documents, false if not.
             </value>
         </member>
         <member name="T:PDFWebEdit.Models.DocNetSingleton">
@@ -569,14 +878,14 @@
             Full pathname of the configuration file.
             </summary>
         </member>
-        <member name="F:PDFWebEdit.Services.ConfigService.Settings">
-            <summary>
-            The configuration.
-            </summary>
-        </member>
         <member name="F:PDFWebEdit.Services.ConfigService.LatestRelease">
             <summary>
             The release.
+            </summary>
+        </member>
+        <member name="F:PDFWebEdit.Services.ConfigService.Settings">
+            <summary>
+            The configuration.
             </summary>
         </member>
         <member name="M:PDFWebEdit.Services.ConfigService.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
@@ -585,10 +894,27 @@
             </summary>
             <param name="configuration">The configuration.</param>
         </member>
-        <member name="M:PDFWebEdit.Services.ConfigService.CreateDefaultConfig">
+        <member name="M:PDFWebEdit.Services.ConfigService.UpdateConfiguration(PDFWebEdit.Models.Config.Config)">
             <summary>
-            Creates default configuration.
+            Updates the configuration described by updatedConfig.
             </summary>
+            <param name="updatedConfig">The updated configuration.</param>
+        </member>
+        <member name="M:PDFWebEdit.Services.ConfigService.ReloadConfiguration">
+            <summary>
+            Reload configuration.
+            </summary>
+        </member>
+        <member name="M:PDFWebEdit.Services.ConfigService.LoadConfiguration">
+            <summary>
+            Loads the configuration.
+            </summary>
+        </member>
+        <member name="M:PDFWebEdit.Services.ConfigService.SaveConfig(PDFWebEdit.Models.Config.Config)">
+            <summary>
+            Saves a configuration.
+            </summary>
+            <param name="config">The configuration.</param>
         </member>
         <member name="M:PDFWebEdit.Services.ConfigService.GetLatestRelease(System.String,System.String,System.String)">
             <summary>
@@ -763,12 +1089,13 @@
             <param name="subDirectory">Subdirectory storing document.</param>
             <param name="name">The name.</param>
         </member>
-        <member name="M:PDFWebEdit.Services.DirectoryService.Save(System.String,System.String)">
+        <member name="M:PDFWebEdit.Services.DirectoryService.Save(System.String,System.String,System.String)">
             <summary>
             Saves the document to the output directory.
             </summary>
             <param name="name">The name.</param>
-            <param name="subDirectory">The sub directory.</param>
+            <param name="sourceSubDirectory">The source sub directory.</param>
+            <param name="targetSubDirectory">The target sub directory.</param>
         </member>
         <member name="M:PDFWebEdit.Services.DirectoryService.GetTargetDirectoryPath(PDFWebEdit.Enumerations.TargetDirectory)">
             <summary>

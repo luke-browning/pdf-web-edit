@@ -12,6 +12,7 @@ export class MergeDocmentComponent implements OnInit {
   @Input() documents: Doc[] = [];
 
   selected: Doc | undefined;
+  search = '';
 
   constructor(private activeModal: NgbActiveModal) { }
 

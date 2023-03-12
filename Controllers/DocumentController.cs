@@ -313,7 +313,7 @@ namespace PDFWebEdit.Controllers
             {
                 try
                 { 
-                    _pdfManipulationService.RotateClockwise(targetDirectory, document, pageNumbers);
+                    _pdfManipulationService.RotateClockwise(targetDirectory, document, pageNumbers, subDirectory);
 
                     return Ok();
                 }
@@ -353,7 +353,7 @@ namespace PDFWebEdit.Controllers
             {
                 try
                 {
-                    _pdfManipulationService.RotateAntiClockwise(targetDirectory, document, pageNumbers);
+                    _pdfManipulationService.RotateAntiClockwise(targetDirectory, document, pageNumbers, subDirectory);
 
                     return Ok();
                 }
@@ -393,7 +393,7 @@ namespace PDFWebEdit.Controllers
             {
                 try
                 { 
-                    _pdfManipulationService.DeletePage(targetDirectory, document, pageNumbers);
+                    _pdfManipulationService.DeletePage(targetDirectory, document, pageNumbers, subDirectory);
 
                     return Ok();
                 }
@@ -433,7 +433,7 @@ namespace PDFWebEdit.Controllers
             {
                 try
                 { 
-                    _pdfManipulationService.ReorderPages(targetDirectory, document, newPageOrder);
+                    _pdfManipulationService.ReorderPages(targetDirectory, document, newPageOrder, subDirectory);
 
                     return Ok();
                 }
@@ -473,7 +473,7 @@ namespace PDFWebEdit.Controllers
             {
                 try
                 {
-                    var newDocumentName = _pdfManipulationService.SplitPages(targetDirectory, document, pages);
+                    var newDocumentName = _pdfManipulationService.SplitPages(targetDirectory, document, pages, subDirectory);
 
                     return Ok(_directoryService.GetDocument(targetDirectory, subDirectory, newDocumentName));
                 }
@@ -554,7 +554,7 @@ namespace PDFWebEdit.Controllers
             {
                 try
                 { 
-                    _pdfManipulationService.RevertChanges(targetDirectory, document);
+                    _pdfManipulationService.RevertChanges(targetDirectory, document, subDirectory);
 
                     return Ok();
                 }
@@ -633,7 +633,7 @@ namespace PDFWebEdit.Controllers
             {
                 try
                 { 
-                    _pdfManipulationService.Unlock(targetDirectory, document, password);
+                    _pdfManipulationService.Unlock(targetDirectory, document, password, subDirectory);
 
                     return Ok();
                 }
@@ -691,7 +691,7 @@ namespace PDFWebEdit.Controllers
         /// Saves the specified document in the input directory.
         /// </summary>
         /// <param name="document">The document.</param>
-        /// <param name="sourceSubDirectory">The subDirectory to move frp,.</param>
+        /// <param name="sourceSubDirectory">The subDirectory to move from.</param>
         /// <param name="targetSubDirectory">The subDirectory to save to.</param>
         /// <returns>
         /// An IActionResult.
@@ -711,7 +711,7 @@ namespace PDFWebEdit.Controllers
             {
                 try
                 {
-                    _directoryService.Save(document, targetSubDirectory);
+                    _directoryService.Save(document, sourceSubDirectory, targetSubDirectory);
 
                     return Ok();
                 }
@@ -730,6 +730,7 @@ namespace PDFWebEdit.Controllers
         /// Saves the specified document in the input directory.
         /// </summary>
         /// <param name="document">The document.</param>
+        /// <param name="sourceSubDirectory">The subDirectory to move from.</param>
         /// <returns>
         /// An IActionResult.
         /// </returns>
@@ -739,16 +740,16 @@ namespace PDFWebEdit.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
         [ProducesErrorResponseType(typeof(ObjectResult))]
-        public IActionResult Save(string document)
+        public IActionResult Save(string document, string? sourceSubDirectory = null)
         {
             // Get the path to the document
-            var path = _directoryService.GetDocumentPath(TargetDirectory.Input, null, document);
+            var path = _directoryService.GetDocumentPath(TargetDirectory.Input, sourceSubDirectory, document);
 
             if (path != null)
             {
                 try
                 {
-                    _directoryService.Save(document, null);
+                    _directoryService.Save(document, sourceSubDirectory, null);
 
                     return Ok();
                 }

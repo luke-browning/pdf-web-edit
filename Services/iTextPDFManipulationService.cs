@@ -228,7 +228,7 @@ namespace PDFWebEdit.Services
             // Check if the doc exists
             if (path == null)
             {
-                throw new Exception($"The document does not exist: {path}");
+                throw new Exception($"The document does not exist: {document}");
             }
 
             byte[]? bytes = null;
@@ -271,7 +271,7 @@ namespace PDFWebEdit.Services
         public void MergeDocument(TargetDirectory targetDirectory, string document, string mergeDocument, string? subDirectory = null, string? mergeDocumentSubDirectory = null)
         {
             var sourcePath = _directoryService.GetDocumentPath(targetDirectory, subDirectory, document);
-            var targetPath = _directoryService.GetDocumentPath(targetDirectory, subDirectory, mergeDocument);
+            var targetPath = _directoryService.GetDocumentPath(targetDirectory, mergeDocumentSubDirectory, mergeDocument);
             var outPath = _directoryService.GetEditingDocumentPath(targetDirectory, subDirectory, document);
 
             // Check if the doc exists
