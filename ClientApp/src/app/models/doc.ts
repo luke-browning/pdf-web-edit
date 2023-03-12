@@ -1,4 +1,4 @@
-import { Page } from "./Page";
+import { Page } from "./page";
 
 export interface Doc {
     name: string;
