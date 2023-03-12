@@ -1,4 +1,5 @@
 ﻿using PDFWebEdit.Enumerations;
+using PDFWebEdit.Models;
 
 namespace PDFWebEdit.Services
 {
@@ -42,6 +43,26 @@ namespace PDFWebEdit.Services
         /// <param name="newPageOrder">The new page order.</param>
         /// <param name="subDirectory">Subdirectory storing document.</param>
         public void ReorderPages(TargetDirectory targetDirectory, string document, List<int> newPageOrder, string? subDirectory = null);
+
+        /// <summary>
+        /// Splits the pages into a new document.
+        /// </summary>
+        /// <param name="targetDirectory">Target directory.</param>
+        /// <param name="document">The document.</param>
+        /// <param name="pages">The pages.</param>
+        /// <param name="subDirectory">Subdirectory storing document.</param>
+        /// <returns>The name of the new document.</returns>
+        public string SplitPages(TargetDirectory targetDirectory, string document, List<int> pages, string? subDirectory = null);
+
+        /// <summary>
+        /// Merge a document into another document.
+        /// </summary>
+        /// <param name="targetDirectory">Target directory.</param>
+        /// <param name="document">The source document.</param>
+        /// <param name="mergeDocument">The document to append.</param>
+        /// <param name="subDirectory">Subdirectory storing the source document.</param>
+        /// <param name="mergeDocumentSubDirectory">Subdirectory storing the merge document.</param>
+        public void MergeDocument(TargetDirectory targetDirectory, string document, string mergeDocument, string? subDirectory = null, string? mergeDocumentSubDirectory = null);
 
         /// <summary>
         /// Revert changes.

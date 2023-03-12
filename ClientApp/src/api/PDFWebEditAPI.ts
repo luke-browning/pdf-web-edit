@@ -19,6 +19,205 @@ export const BASE_URL = new InjectionToken<string>('BASE_URL');
 @Injectable({
     providedIn: 'root'
 })
+export class ConfigurationClient {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
+    }
+
+    /**
+     * Gets the configuration.
+     * @return The configuration.
+     */
+    getConfiguration(): Observable<Config | null> {
+        let url_ = this.baseUrl + "/api/configuration";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetConfiguration(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetConfiguration(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<Config | null>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<Config | null>;
+        }));
+    }
+
+    protected processGetConfiguration(response: HttpResponseBase): Observable<Config | null> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? Config.fromJS(resultData200) : <any>null;
+            return _observableOf(result200);
+            }));
+        } else if (status === 500) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result500: any = null;
+            let resultData500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result500 = resultData500 ? ProblemDetails.fromJS(resultData500) : <any>null;
+            return throwException("A server side error occurred.", status, _responseText, _headers, result500);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<Config | null>(null as any);
+    }
+
+    /**
+     * Saves a configuration.
+     * @param config The configuration.
+     * @return The updated config
+     */
+    saveConfiguration(config: Config): Observable<Config | null> {
+        let url_ = this.baseUrl + "/api/configuration";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(config);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processSaveConfiguration(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processSaveConfiguration(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<Config | null>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<Config | null>;
+        }));
+    }
+
+    protected processSaveConfiguration(response: HttpResponseBase): Observable<Config | null> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? Config.fromJS(resultData200) : <any>null;
+            return _observableOf(result200);
+            }));
+        } else if (status === 500) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result500: any = null;
+            let resultData500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result500 = resultData500 ? ProblemDetails.fromJS(resultData500) : <any>null;
+            return throwException("A server side error occurred.", status, _responseText, _headers, result500);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<Config | null>(null as any);
+    }
+
+    /**
+     * Reload configuration.
+     * @return A status code indicating success or failure.
+     */
+    reloadConfiguration(): Observable<Config | null> {
+        let url_ = this.baseUrl + "/api/configuration";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("patch", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processReloadConfiguration(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processReloadConfiguration(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<Config | null>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<Config | null>;
+        }));
+    }
+
+    protected processReloadConfiguration(response: HttpResponseBase): Observable<Config | null> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? Config.fromJS(resultData200) : <any>null;
+            return _observableOf(result200);
+            }));
+        } else if (status === 500) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result500: any = null;
+            let resultData500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result500 = resultData500 ? ProblemDetails.fromJS(resultData500) : <any>null;
+            return throwException("A server side error occurred.", status, _responseText, _headers, result500);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<Config | null>(null as any);
+    }
+}
+
+@Injectable({
+    providedIn: 'root'
+})
 export class DocumentClient {
     private http: HttpClient;
     private baseUrl: string;
@@ -866,6 +1065,168 @@ export class DocumentClient {
     }
 
     /**
+     * Splits the pages into a new document.
+     * @param targetDirectory The target directory.
+     * @param document The document.
+     * @param pages The pages.
+     * @param subDirectory (optional) The sub directory containing the document.
+     * @return An IActionResult.
+     */
+    splitPages(targetDirectory: TargetDirectory, document: string, pages: number[], subDirectory?: string | null | undefined): Observable<Document | null> {
+        let url_ = this.baseUrl + "/api/documents/{targetDirectory}/{document}/split-pages?";
+        if (targetDirectory === undefined || targetDirectory === null)
+            throw new Error("The parameter 'targetDirectory' must be defined.");
+        url_ = url_.replace("{targetDirectory}", encodeURIComponent("" + targetDirectory));
+        if (document === undefined || document === null)
+            throw new Error("The parameter 'document' must be defined.");
+        url_ = url_.replace("{document}", encodeURIComponent("" + document));
+        if (subDirectory !== undefined && subDirectory !== null)
+            url_ += "subDirectory=" + encodeURIComponent("" + subDirectory) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(pages);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processSplitPages(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processSplitPages(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<Document | null>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<Document | null>;
+        }));
+    }
+
+    protected processSplitPages(response: HttpResponseBase): Observable<Document | null> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? Document.fromJS(resultData200) : <any>null;
+            return _observableOf(result200);
+            }));
+        } else if (status === 404) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("A server side error occurred.", status, _responseText, _headers);
+            }));
+        } else if (status === 500) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result500: any = null;
+            let resultData500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result500 = resultData500 ? ProblemDetails.fromJS(resultData500) : <any>null;
+            return throwException("A server side error occurred.", status, _responseText, _headers, result500);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<Document | null>(null as any);
+    }
+
+    /**
+     * Merges another document into the defined document.
+     * @param targetDirectory The target directory.
+     * @param document The document.
+     * @param mergeDocument The merge document.
+     * @param subDirectory (optional) The sub directory containing the document.
+     * @param mergeDocumentSubDirectory (optional) Pathname of the merge document sub directory.
+     * @return An IActionResult.
+     */
+    merge(targetDirectory: TargetDirectory, document: string, mergeDocument: string, subDirectory?: string | null | undefined, mergeDocumentSubDirectory?: string | null | undefined): Observable<Document | null> {
+        let url_ = this.baseUrl + "/api/documents/{targetDirectory}/{document}/merge/{mergeDocument}?";
+        if (targetDirectory === undefined || targetDirectory === null)
+            throw new Error("The parameter 'targetDirectory' must be defined.");
+        url_ = url_.replace("{targetDirectory}", encodeURIComponent("" + targetDirectory));
+        if (document === undefined || document === null)
+            throw new Error("The parameter 'document' must be defined.");
+        url_ = url_.replace("{document}", encodeURIComponent("" + document));
+        if (mergeDocument === undefined || mergeDocument === null)
+            throw new Error("The parameter 'mergeDocument' must be defined.");
+        url_ = url_.replace("{mergeDocument}", encodeURIComponent("" + mergeDocument));
+        if (subDirectory !== undefined && subDirectory !== null)
+            url_ += "subDirectory=" + encodeURIComponent("" + subDirectory) + "&";
+        if (mergeDocumentSubDirectory !== undefined && mergeDocumentSubDirectory !== null)
+            url_ += "mergeDocumentSubDirectory=" + encodeURIComponent("" + mergeDocumentSubDirectory) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processMerge(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processMerge(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<Document | null>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<Document | null>;
+        }));
+    }
+
+    protected processMerge(response: HttpResponseBase): Observable<Document | null> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? Document.fromJS(resultData200) : <any>null;
+            return _observableOf(result200);
+            }));
+        } else if (status === 404) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("A server side error occurred.", status, _responseText, _headers);
+            }));
+        } else if (status === 500) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result500: any = null;
+            let resultData500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result500 = resultData500 ? ProblemDetails.fromJS(resultData500) : <any>null;
+            return throwException("A server side error occurred.", status, _responseText, _headers, result500);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<Document | null>(null as any);
+    }
+
+    /**
      * Revert changes to the specified document.
      * @param targetDirectory The target directory.
      * @param document The document.
@@ -1158,7 +1519,7 @@ export class DocumentClient {
     /**
      * Saves the specified document in the input directory.
      * @param document The document.
-     * @param sourceSubDirectory (optional) The subDirectory to move frp,.
+     * @param sourceSubDirectory (optional) The subDirectory to move from.
      * @param targetSubDirectory (optional) The subDirectory to save to.
      * @return An IActionResult.
      */
@@ -1228,13 +1589,16 @@ export class DocumentClient {
     /**
      * Saves the specified document in the input directory.
      * @param document The document.
+     * @param sourceSubDirectory (optional) The subDirectory to move from.
      * @return An IActionResult.
      */
-    save(document: string): Observable<void> {
-        let url_ = this.baseUrl + "/api/documents/{document}/save";
+    save(document: string, sourceSubDirectory?: string | null | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/documents/{document}/save?";
         if (document === undefined || document === null)
             throw new Error("The parameter 'document' must be defined.");
         url_ = url_.replace("{document}", encodeURIComponent("" + document));
+        if (sourceSubDirectory !== undefined && sourceSubDirectory !== null)
+            url_ += "sourceSubDirectory=" + encodeURIComponent("" + sourceSubDirectory) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -1290,14 +1654,20 @@ export class DocumentClient {
     }
 }
 
-/** A folder. */
-export class Folder implements IFolder {
-    /** Gets or sets the name. */
-    name!: string;
-    /** Gets or sets the sub folders. */
-    subFolders!: Folder[];
+/** A configuration. */
+export class Config implements IConfig {
+    /** Gets or sets the general configuration. */
+    generalConfig!: GeneralConfig;
+    /** Gets or sets the preview configuration. */
+    previewConfig!: PreviewConfig;
+    /** Gets or sets the input configuration. */
+    inputConfig!: InputConfig;
+    /** Gets or sets the output configuration. */
+    outputConfig!: OutputConfig;
+    /** Gets or sets the trash configuration. */
+    trashConfig!: TrashConfig;
 
-    constructor(data?: IFolder) {
+    constructor(data?: IConfig) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -1305,49 +1675,386 @@ export class Folder implements IFolder {
             }
         }
         if (!data) {
-            this.subFolders = [];
+            this.generalConfig = new GeneralConfig();
+            this.previewConfig = new PreviewConfig();
+            this.inputConfig = new InputConfig();
+            this.outputConfig = new OutputConfig();
+            this.trashConfig = new TrashConfig();
         }
     }
 
     init(_data?: any) {
         if (_data) {
-            this.name = _data["name"] !== undefined ? _data["name"] : <any>null;
-            if (Array.isArray(_data["subFolders"])) {
-                this.subFolders = [] as any;
-                for (let item of _data["subFolders"])
-                    this.subFolders!.push(Folder.fromJS(item));
-            }
-            else {
-                this.subFolders = <any>null;
-            }
+            this.generalConfig = _data["generalConfig"] ? GeneralConfig.fromJS(_data["generalConfig"]) : new GeneralConfig();
+            this.previewConfig = _data["previewConfig"] ? PreviewConfig.fromJS(_data["previewConfig"]) : new PreviewConfig();
+            this.inputConfig = _data["inputConfig"] ? InputConfig.fromJS(_data["inputConfig"]) : new InputConfig();
+            this.outputConfig = _data["outputConfig"] ? OutputConfig.fromJS(_data["outputConfig"]) : new OutputConfig();
+            this.trashConfig = _data["trashConfig"] ? TrashConfig.fromJS(_data["trashConfig"]) : new TrashConfig();
         }
     }
 
-    static fromJS(data: any): Folder {
+    static fromJS(data: any): Config {
         data = typeof data === 'object' ? data : {};
-        let result = new Folder();
+        let result = new Config();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["name"] = this.name !== undefined ? this.name : <any>null;
-        if (Array.isArray(this.subFolders)) {
-            data["subFolders"] = [];
-            for (let item of this.subFolders)
-                data["subFolders"].push(item.toJSON());
-        }
+        data["generalConfig"] = this.generalConfig ? this.generalConfig.toJSON() : <any>null;
+        data["previewConfig"] = this.previewConfig ? this.previewConfig.toJSON() : <any>null;
+        data["inputConfig"] = this.inputConfig ? this.inputConfig.toJSON() : <any>null;
+        data["outputConfig"] = this.outputConfig ? this.outputConfig.toJSON() : <any>null;
+        data["trashConfig"] = this.trashConfig ? this.trashConfig.toJSON() : <any>null;
         return data;
     }
 }
 
-/** A folder. */
-export interface IFolder {
-    /** Gets or sets the name. */
-    name: string;
-    /** Gets or sets the sub folders. */
-    subFolders: Folder[];
+/** A configuration. */
+export interface IConfig {
+    /** Gets or sets the general configuration. */
+    generalConfig: GeneralConfig;
+    /** Gets or sets the preview configuration. */
+    previewConfig: PreviewConfig;
+    /** Gets or sets the input configuration. */
+    inputConfig: InputConfig;
+    /** Gets or sets the output configuration. */
+    outputConfig: OutputConfig;
+    /** Gets or sets the trash configuration. */
+    trashConfig: TrashConfig;
+}
+
+/** A general configuration. */
+export class GeneralConfig implements IGeneralConfig {
+    /** Gets or sets a value indicating whether the tour is enabled. */
+    enableTour!: boolean;
+    /** Gets or sets the default folder. */
+    defaultFolder!: string;
+    /** Gets or sets the default sort column. */
+    defaultSortColumn!: string;
+    /** Gets or sets the default sort direction. */
+    defaultSortDirection!: string;
+
+    constructor(data?: IGeneralConfig) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.enableTour = _data["enableTour"] !== undefined ? _data["enableTour"] : <any>null;
+            this.defaultFolder = _data["defaultFolder"] !== undefined ? _data["defaultFolder"] : <any>null;
+            this.defaultSortColumn = _data["defaultSortColumn"] !== undefined ? _data["defaultSortColumn"] : <any>null;
+            this.defaultSortDirection = _data["defaultSortDirection"] !== undefined ? _data["defaultSortDirection"] : <any>null;
+        }
+    }
+
+    static fromJS(data: any): GeneralConfig {
+        data = typeof data === 'object' ? data : {};
+        let result = new GeneralConfig();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["enableTour"] = this.enableTour !== undefined ? this.enableTour : <any>null;
+        data["defaultFolder"] = this.defaultFolder !== undefined ? this.defaultFolder : <any>null;
+        data["defaultSortColumn"] = this.defaultSortColumn !== undefined ? this.defaultSortColumn : <any>null;
+        data["defaultSortDirection"] = this.defaultSortDirection !== undefined ? this.defaultSortDirection : <any>null;
+        return data;
+    }
+}
+
+/** A general configuration. */
+export interface IGeneralConfig {
+    /** Gets or sets a value indicating whether the tour is enabled. */
+    enableTour: boolean;
+    /** Gets or sets the default folder. */
+    defaultFolder: string;
+    /** Gets or sets the default sort column. */
+    defaultSortColumn: string;
+    /** Gets or sets the default sort direction. */
+    defaultSortDirection: string;
+}
+
+/** A preview configuration. */
+export class PreviewConfig implements IPreviewConfig {
+    /** Gets or sets the default size. */
+    defaultSize!: string;
+    /** Gets or sets a value indicating whether the page number is shown. */
+    showPageNumber!: boolean;
+
+    constructor(data?: IPreviewConfig) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.defaultSize = _data["defaultSize"] !== undefined ? _data["defaultSize"] : <any>null;
+            this.showPageNumber = _data["showPageNumber"] !== undefined ? _data["showPageNumber"] : <any>null;
+        }
+    }
+
+    static fromJS(data: any): PreviewConfig {
+        data = typeof data === 'object' ? data : {};
+        let result = new PreviewConfig();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["defaultSize"] = this.defaultSize !== undefined ? this.defaultSize : <any>null;
+        data["showPageNumber"] = this.showPageNumber !== undefined ? this.showPageNumber : <any>null;
+        return data;
+    }
+}
+
+/** A preview configuration. */
+export interface IPreviewConfig {
+    /** Gets or sets the default size. */
+    defaultSize: string;
+    /** Gets or sets a value indicating whether the page number is shown. */
+    showPageNumber: boolean;
+}
+
+/** A input configuration. */
+export class InputConfig implements IInputConfig {
+    /** Gets or sets a value indicating whether the save to is shown. */
+    showSaveTo!: boolean;
+    /** Gets or sets a value indicating whether the save is shown. */
+    showSave!: boolean;
+    /** Gets or sets a value indicating whether the revert is shown. */
+    showRevert!: boolean;
+    /** Gets or sets a value indicating whether the download is shown. */
+    showDownload!: boolean;
+    /** Gets or sets a value indicating whether the delete is shown. */
+    showDelete!: boolean;
+    /** Gets or sets a value indicating whether the rename is shown. */
+    showRename!: boolean;
+    /** Gets or sets a value indicating whether the merge is shown. */
+    showMerge!: boolean;
+    /** Gets or sets a value indicating whether the split is shown. */
+    showSplit!: boolean;
+    /** Gets or sets a value indicating whether the remove is shown. */
+    showRemove!: boolean;
+    /** Gets or sets a value indicating whether the rotate clockwise is shown. */
+    showRotateClockwise!: boolean;
+    /** Gets or sets a value indicating whether the rotate anti clockwise is shown. */
+    showRotateAntiClockwise!: boolean;
+    /** Gets or sets a value indicating whether the select all is shown. */
+    showSelectAll!: boolean;
+    /** Gets or sets a value indicating whether the unselect is shown. */
+    showUnselect!: boolean;
+    /** Gets or sets a value indicating whether the original file on save wil be deleted. */
+    deleteOriginalFileOnSave!: boolean;
+    /** Gets or sets a value indicating whether the move files to trash on delete. */
+    moveFilesToTrashOnDelete!: boolean;
+
+    constructor(data?: IInputConfig) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.showSaveTo = _data["showSaveTo"] !== undefined ? _data["showSaveTo"] : <any>null;
+            this.showSave = _data["showSave"] !== undefined ? _data["showSave"] : <any>null;
+            this.showRevert = _data["showRevert"] !== undefined ? _data["showRevert"] : <any>null;
+            this.showDownload = _data["showDownload"] !== undefined ? _data["showDownload"] : <any>null;
+            this.showDelete = _data["showDelete"] !== undefined ? _data["showDelete"] : <any>null;
+            this.showRename = _data["showRename"] !== undefined ? _data["showRename"] : <any>null;
+            this.showMerge = _data["showMerge"] !== undefined ? _data["showMerge"] : <any>null;
+            this.showSplit = _data["showSplit"] !== undefined ? _data["showSplit"] : <any>null;
+            this.showRemove = _data["showRemove"] !== undefined ? _data["showRemove"] : <any>null;
+            this.showRotateClockwise = _data["showRotateClockwise"] !== undefined ? _data["showRotateClockwise"] : <any>null;
+            this.showRotateAntiClockwise = _data["showRotateAntiClockwise"] !== undefined ? _data["showRotateAntiClockwise"] : <any>null;
+            this.showSelectAll = _data["showSelectAll"] !== undefined ? _data["showSelectAll"] : <any>null;
+            this.showUnselect = _data["showUnselect"] !== undefined ? _data["showUnselect"] : <any>null;
+            this.deleteOriginalFileOnSave = _data["deleteOriginalFileOnSave"] !== undefined ? _data["deleteOriginalFileOnSave"] : <any>null;
+            this.moveFilesToTrashOnDelete = _data["moveFilesToTrashOnDelete"] !== undefined ? _data["moveFilesToTrashOnDelete"] : <any>null;
+        }
+    }
+
+    static fromJS(data: any): InputConfig {
+        data = typeof data === 'object' ? data : {};
+        let result = new InputConfig();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["showSaveTo"] = this.showSaveTo !== undefined ? this.showSaveTo : <any>null;
+        data["showSave"] = this.showSave !== undefined ? this.showSave : <any>null;
+        data["showRevert"] = this.showRevert !== undefined ? this.showRevert : <any>null;
+        data["showDownload"] = this.showDownload !== undefined ? this.showDownload : <any>null;
+        data["showDelete"] = this.showDelete !== undefined ? this.showDelete : <any>null;
+        data["showRename"] = this.showRename !== undefined ? this.showRename : <any>null;
+        data["showMerge"] = this.showMerge !== undefined ? this.showMerge : <any>null;
+        data["showSplit"] = this.showSplit !== undefined ? this.showSplit : <any>null;
+        data["showRemove"] = this.showRemove !== undefined ? this.showRemove : <any>null;
+        data["showRotateClockwise"] = this.showRotateClockwise !== undefined ? this.showRotateClockwise : <any>null;
+        data["showRotateAntiClockwise"] = this.showRotateAntiClockwise !== undefined ? this.showRotateAntiClockwise : <any>null;
+        data["showSelectAll"] = this.showSelectAll !== undefined ? this.showSelectAll : <any>null;
+        data["showUnselect"] = this.showUnselect !== undefined ? this.showUnselect : <any>null;
+        data["deleteOriginalFileOnSave"] = this.deleteOriginalFileOnSave !== undefined ? this.deleteOriginalFileOnSave : <any>null;
+        data["moveFilesToTrashOnDelete"] = this.moveFilesToTrashOnDelete !== undefined ? this.moveFilesToTrashOnDelete : <any>null;
+        return data;
+    }
+}
+
+/** A input configuration. */
+export interface IInputConfig {
+    /** Gets or sets a value indicating whether the save to is shown. */
+    showSaveTo: boolean;
+    /** Gets or sets a value indicating whether the save is shown. */
+    showSave: boolean;
+    /** Gets or sets a value indicating whether the revert is shown. */
+    showRevert: boolean;
+    /** Gets or sets a value indicating whether the download is shown. */
+    showDownload: boolean;
+    /** Gets or sets a value indicating whether the delete is shown. */
+    showDelete: boolean;
+    /** Gets or sets a value indicating whether the rename is shown. */
+    showRename: boolean;
+    /** Gets or sets a value indicating whether the merge is shown. */
+    showMerge: boolean;
+    /** Gets or sets a value indicating whether the split is shown. */
+    showSplit: boolean;
+    /** Gets or sets a value indicating whether the remove is shown. */
+    showRemove: boolean;
+    /** Gets or sets a value indicating whether the rotate clockwise is shown. */
+    showRotateClockwise: boolean;
+    /** Gets or sets a value indicating whether the rotate anti clockwise is shown. */
+    showRotateAntiClockwise: boolean;
+    /** Gets or sets a value indicating whether the select all is shown. */
+    showSelectAll: boolean;
+    /** Gets or sets a value indicating whether the unselect is shown. */
+    showUnselect: boolean;
+    /** Gets or sets a value indicating whether the original file on save wil be deleted. */
+    deleteOriginalFileOnSave: boolean;
+    /** Gets or sets a value indicating whether the move files to trash on delete. */
+    moveFilesToTrashOnDelete: boolean;
+}
+
+/** A save configuration. */
+export class OutputConfig implements IOutputConfig {
+    /** Gets or sets a value indicating whether the restore is shown. */
+    showRestore!: boolean;
+    /** Gets or sets a value indicating whether the download is shown. */
+    showDownload!: boolean;
+
+    constructor(data?: IOutputConfig) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.showRestore = _data["showRestore"] !== undefined ? _data["showRestore"] : <any>null;
+            this.showDownload = _data["showDownload"] !== undefined ? _data["showDownload"] : <any>null;
+        }
+    }
+
+    static fromJS(data: any): OutputConfig {
+        data = typeof data === 'object' ? data : {};
+        let result = new OutputConfig();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["showRestore"] = this.showRestore !== undefined ? this.showRestore : <any>null;
+        data["showDownload"] = this.showDownload !== undefined ? this.showDownload : <any>null;
+        return data;
+    }
+}
+
+/** A save configuration. */
+export interface IOutputConfig {
+    /** Gets or sets a value indicating whether the restore is shown. */
+    showRestore: boolean;
+    /** Gets or sets a value indicating whether the download is shown. */
+    showDownload: boolean;
+}
+
+/** A trash configuration. */
+export class TrashConfig implements ITrashConfig {
+    /** Gets or sets a value indicating whether the restore is shown. */
+    showRestore!: boolean;
+    /** Gets or sets a value indicating whether the download is shown. */
+    showDownload!: boolean;
+    /** Gets or sets a value indicating whether the delete is shown. */
+    showDelete!: boolean;
+    /** Gets or sets a value indicating whether the permenently delete deleted documents. */
+    permenentlyDeleteDeletedDocuments!: boolean;
+
+    constructor(data?: ITrashConfig) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.showRestore = _data["showRestore"] !== undefined ? _data["showRestore"] : <any>null;
+            this.showDownload = _data["showDownload"] !== undefined ? _data["showDownload"] : <any>null;
+            this.showDelete = _data["showDelete"] !== undefined ? _data["showDelete"] : <any>null;
+            this.permenentlyDeleteDeletedDocuments = _data["permenentlyDeleteDeletedDocuments"] !== undefined ? _data["permenentlyDeleteDeletedDocuments"] : <any>null;
+        }
+    }
+
+    static fromJS(data: any): TrashConfig {
+        data = typeof data === 'object' ? data : {};
+        let result = new TrashConfig();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["showRestore"] = this.showRestore !== undefined ? this.showRestore : <any>null;
+        data["showDownload"] = this.showDownload !== undefined ? this.showDownload : <any>null;
+        data["showDelete"] = this.showDelete !== undefined ? this.showDelete : <any>null;
+        data["permenentlyDeleteDeletedDocuments"] = this.permenentlyDeleteDeletedDocuments !== undefined ? this.permenentlyDeleteDeletedDocuments : <any>null;
+        return data;
+    }
+}
+
+/** A trash configuration. */
+export interface ITrashConfig {
+    /** Gets or sets a value indicating whether the restore is shown. */
+    showRestore: boolean;
+    /** Gets or sets a value indicating whether the download is shown. */
+    showDownload: boolean;
+    /** Gets or sets a value indicating whether the delete is shown. */
+    showDelete: boolean;
+    /** Gets or sets a value indicating whether the permenently delete deleted documents. */
+    permenentlyDeleteDeletedDocuments: boolean;
 }
 
 export class ProblemDetails implements IProblemDetails {
@@ -1434,6 +2141,66 @@ export interface IProblemDetails {
     extensions: { [key: string]: any; };
 
     [key: string]: any;
+}
+
+/** A folder. */
+export class Folder implements IFolder {
+    /** Gets or sets the name. */
+    name!: string;
+    /** Gets or sets the sub folders. */
+    subFolders!: Folder[];
+
+    constructor(data?: IFolder) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+        if (!data) {
+            this.subFolders = [];
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.name = _data["name"] !== undefined ? _data["name"] : <any>null;
+            if (Array.isArray(_data["subFolders"])) {
+                this.subFolders = [] as any;
+                for (let item of _data["subFolders"])
+                    this.subFolders!.push(Folder.fromJS(item));
+            }
+            else {
+                this.subFolders = <any>null;
+            }
+        }
+    }
+
+    static fromJS(data: any): Folder {
+        data = typeof data === 'object' ? data : {};
+        let result = new Folder();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["name"] = this.name !== undefined ? this.name : <any>null;
+        if (Array.isArray(this.subFolders)) {
+            data["subFolders"] = [];
+            for (let item of this.subFolders)
+                data["subFolders"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+/** A folder. */
+export interface IFolder {
+    /** Gets or sets the name. */
+    name: string;
+    /** Gets or sets the sub folders. */
+    subFolders: Folder[];
 }
 
 /** A document. */

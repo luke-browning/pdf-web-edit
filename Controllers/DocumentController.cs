@@ -313,7 +313,7 @@ namespace PDFWebEdit.Controllers
             {
                 try
                 { 
-                    _pdfManipulationService.RotateClockwise(targetDirectory, document, pageNumbers);
+                    _pdfManipulationService.RotateClockwise(targetDirectory, document, pageNumbers, subDirectory);
 
                     return Ok();
                 }
@@ -353,7 +353,7 @@ namespace PDFWebEdit.Controllers
             {
                 try
                 {
-                    _pdfManipulationService.RotateAntiClockwise(targetDirectory, document, pageNumbers);
+                    _pdfManipulationService.RotateAntiClockwise(targetDirectory, document, pageNumbers, subDirectory);
 
                     return Ok();
                 }
@@ -393,7 +393,7 @@ namespace PDFWebEdit.Controllers
             {
                 try
                 { 
-                    _pdfManipulationService.DeletePage(targetDirectory, document, pageNumbers);
+                    _pdfManipulationService.DeletePage(targetDirectory, document, pageNumbers, subDirectory);
 
                     return Ok();
                 }
@@ -433,13 +433,95 @@ namespace PDFWebEdit.Controllers
             {
                 try
                 { 
-                    _pdfManipulationService.ReorderPages(targetDirectory, document, newPageOrder);
+                    _pdfManipulationService.ReorderPages(targetDirectory, document, newPageOrder, subDirectory);
 
                     return Ok();
                 }
                 catch (Exception x)
                 {
                     return ExceptionHelpers.GetErrorObjectResult("Reorder", HttpContext, x);
+                }
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
+        /// <summary>
+        /// Splits the pages into a new document.
+        /// </summary>
+        /// <param name="targetDirectory">The target directory.</param>
+        /// <param name="document">The document.</param>
+        /// <param name="pages">The pages.</param>
+        /// <param name="subDirectory">The sub directory containing the document.</param>
+        /// <returns>
+        /// An IActionResult.
+        /// </returns>
+        [HttpPost]
+        [Route("{targetDirectory}/{document}/split-pages")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Document))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
+        [ProducesErrorResponseType(typeof(ObjectResult))]
+        public IActionResult SplitPages(TargetDirectory targetDirectory, string document, [FromBody] List<int> pages, string? subDirectory = null)
+        {
+            // Get the path to the document
+            var path = _directoryService.GetDocumentPath(targetDirectory, subDirectory, document);
+
+            if (path != null)
+            {
+                try
+                {
+                    var newDocumentName = _pdfManipulationService.SplitPages(targetDirectory, document, pages, subDirectory);
+
+                    return Ok(_directoryService.GetDocument(targetDirectory, subDirectory, newDocumentName));
+                }
+                catch (Exception x)
+                {
+                    return ExceptionHelpers.GetErrorObjectResult("Split", HttpContext, x);
+                }
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
+        /// <summary>
+        /// Merges another document into the defined document.
+        /// </summary>
+        /// <param name="targetDirectory">The target directory.</param>
+        /// <param name="document">The document.</param>
+        /// <param name="mergeDocument">The merge document.</param>
+        /// <param name="subDirectory">The sub directory containing the document.</param>
+        /// <param name="mergeDocumentSubDirectory">Pathname of the merge document sub directory.</param>
+        /// <returns>
+        /// An IActionResult.
+        /// </returns>
+        [HttpPost]
+        [Route("{targetDirectory}/{document}/merge/{mergeDocument}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Document))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
+        [ProducesErrorResponseType(typeof(ObjectResult))]
+        public IActionResult Merge(TargetDirectory targetDirectory, string document, string mergeDocument, string? subDirectory = null, string? mergeDocumentSubDirectory = null)
+        {
+            // Get the path to the document
+            var sourcePath = _directoryService.GetDocumentPath(targetDirectory, subDirectory, document);
+            var targetPath = _directoryService.GetDocumentPath(targetDirectory, mergeDocumentSubDirectory, mergeDocument);
+
+            if ((sourcePath != null) && (targetPath != null))
+            {
+                try
+                {
+                    _pdfManipulationService.MergeDocument(targetDirectory, document, mergeDocument, subDirectory, mergeDocumentSubDirectory);
+
+                    return Ok(_directoryService.GetDocument(targetDirectory, subDirectory, document));
+                }
+                catch (Exception x)
+                {
+                    return ExceptionHelpers.GetErrorObjectResult("Merge", HttpContext, x);
                 }
             }
             else
@@ -472,7 +554,7 @@ namespace PDFWebEdit.Controllers
             {
                 try
                 { 
-                    _pdfManipulationService.RevertChanges(targetDirectory, document);
+                    _pdfManipulationService.RevertChanges(targetDirectory, document, subDirectory);
 
                     return Ok();
                 }
@@ -551,7 +633,7 @@ namespace PDFWebEdit.Controllers
             {
                 try
                 { 
-                    _pdfManipulationService.Unlock(targetDirectory, document, password);
+                    _pdfManipulationService.Unlock(targetDirectory, document, password, subDirectory);
 
                     return Ok();
                 }
@@ -609,7 +691,7 @@ namespace PDFWebEdit.Controllers
         /// Saves the specified document in the input directory.
         /// </summary>
         /// <param name="document">The document.</param>
-        /// <param name="sourceSubDirectory">The subDirectory to move frp,.</param>
+        /// <param name="sourceSubDirectory">The subDirectory to move from.</param>
         /// <param name="targetSubDirectory">The subDirectory to save to.</param>
         /// <returns>
         /// An IActionResult.
@@ -629,7 +711,7 @@ namespace PDFWebEdit.Controllers
             {
                 try
                 {
-                    _directoryService.Save(document, targetSubDirectory);
+                    _directoryService.Save(document, sourceSubDirectory, targetSubDirectory);
 
                     return Ok();
                 }
@@ -648,6 +730,7 @@ namespace PDFWebEdit.Controllers
         /// Saves the specified document in the input directory.
         /// </summary>
         /// <param name="document">The document.</param>
+        /// <param name="sourceSubDirectory">The subDirectory to move from.</param>
         /// <returns>
         /// An IActionResult.
         /// </returns>
@@ -657,16 +740,16 @@ namespace PDFWebEdit.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
         [ProducesErrorResponseType(typeof(ObjectResult))]
-        public IActionResult Save(string document)
+        public IActionResult Save(string document, string? sourceSubDirectory = null)
         {
             // Get the path to the document
-            var path = _directoryService.GetDocumentPath(TargetDirectory.Input, null, document);
+            var path = _directoryService.GetDocumentPath(TargetDirectory.Input, sourceSubDirectory, document);
 
             if (path != null)
             {
                 try
                 {
-                    _directoryService.Save(document, null);
+                    _directoryService.Save(document, sourceSubDirectory, null);
 
                     return Ok();
                 }

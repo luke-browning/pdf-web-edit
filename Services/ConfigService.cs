@@ -1,6 +1,6 @@
 ﻿using Octokit;
 using PDFWebEdit.Helpers;
-using PDFWebEdit.Models;
+using PDFWebEdit.Models.Config;
 using System.Text;
 using System.Text.Json;
 
@@ -27,14 +27,14 @@ namespace PDFWebEdit.Services
         private readonly string _configFilePath;
 
         /// <summary>
-        /// The configuration.
-        /// </summary>
-        public readonly Config Settings;
-
-        /// <summary>
         /// The release.
         /// </summary>
         public readonly string LatestRelease;
+
+        /// <summary>
+        /// The configuration.
+        /// </summary>
+        public Config Settings;
 
         /// <summary>
         /// Initialises a new instance of the <see cref="PDFWebEdit.Services.ConfigService"/> class.
@@ -52,9 +52,41 @@ namespace PDFWebEdit.Services
             if (!File.Exists(_configFilePath))
             {
                 // And create it if it doesn't
-                CreateDefaultConfig();
+                SaveConfig(new Config());
             }
 
+            // Load config
+            LoadConfiguration();
+        }
+
+        /// <summary>
+        /// Updates the configuration described by updatedConfig.
+        /// </summary>
+        /// <param name="updatedConfig">The updated configuration.</param>
+        public void UpdateConfiguration(Config updatedConfig)
+        {
+            // Persist changes to disk
+            SaveConfig(updatedConfig);
+
+            // Update settings object
+            LoadConfiguration();
+        }
+
+        /// <summary>
+        /// Reload configuration.
+        /// </summary>
+        public void ReloadConfiguration()
+        {
+            LoadConfiguration();
+        }
+
+        #region Helpers
+
+        /// <summary>
+        /// Loads the configuration.
+        /// </summary>
+        private void LoadConfiguration()
+        {
             // Load the config file
             using FileStream stream = File.OpenRead(_configFilePath);
             {
@@ -66,14 +98,15 @@ namespace PDFWebEdit.Services
         }
 
         /// <summary>
-        /// Creates default configuration.
+        /// Saves a configuration.
         /// </summary>
-        private void CreateDefaultConfig()
+        /// <param name="config">The configuration.</param>
+        private void SaveConfig(Config config)
         {
-            using FileStream fs = File.OpenWrite(_configFilePath);
+            using FileStream fs = File.Open(_configFilePath, System.IO.FileMode.Create);
             {
-                var defaultConfig = JsonSerializer.Serialize<Config>(new Config(), new JsonSerializerOptions { WriteIndented = true});
-                var defaultConfigBytes = Encoding.UTF8.GetBytes(defaultConfig);
+                var configuration = JsonSerializer.Serialize(config, new JsonSerializerOptions { WriteIndented = true});
+                var defaultConfigBytes = Encoding.UTF8.GetBytes(configuration);
                 fs.Write(defaultConfigBytes, 0, defaultConfigBytes.Length);
             }
         }
@@ -110,5 +143,7 @@ namespace PDFWebEdit.Services
                 //This local Version and the Version on GitHub are equal.
             }
         }
+
+        #endregion
     }
 }

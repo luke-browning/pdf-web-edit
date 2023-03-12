@@ -1,5 +1,6 @@
 ﻿using Docnet.Core.Exceptions;
 using iText.Kernel.Pdf;
+using iText.Kernel.Utils;
 using PDFWebEdit.Enumerations;
 using PDFWebEdit.Helpers;
 using PDFWebEdit.Models;
@@ -201,6 +202,113 @@ namespace PDFWebEdit.Services
                     // otherwise the output file is corrupt
                     targetDocument.Close();
                     sourceDocument.Close();
+
+                    // Store the doc 
+                    bytes = save.ToArray();
+                }
+            }
+
+            // Write the file
+            FileHelpers.WriteFile(outPath, bytes);
+        }
+
+        /// <summary>
+        /// Splits the pages into a new document.
+        /// </summary>
+        /// <param name="targetDirectory">Target directory.</param>
+        /// <param name="document">The document.</param>
+        /// <param name="pages">The pages.</param>
+        /// <param name="subDirectory">Subdirectory storing document.</param>
+        /// <returns>The name of the new document.</returns>
+        public string SplitPages(TargetDirectory targetDirectory, string document, List<int> pages, string? subDirectory = null)
+        {
+            var path = _directoryService.GetDocumentPath(targetDirectory, subDirectory, document);
+            var outPath = _directoryService.GetNextDocumentVersionNumberPath(targetDirectory, subDirectory, document);
+
+            // Check if the doc exists
+            if (path == null)
+            {
+                throw new Exception($"The document does not exist: {document}");
+            }
+
+            byte[]? bytes = null;
+
+            using (var open = File.OpenRead(path))
+            using (var save = new MemoryStream())
+            {
+                // Open the document
+                using (var sourceDocument = new PdfDocument(new PdfReader(open)))
+                using (var targetDocument = new PdfDocument(new PdfWriter(save)))
+                {
+                    // Copy the pages into the new document
+                    sourceDocument.CopyPagesTo(pages, targetDocument);
+
+                    // Close the doc before getting the bytes from the memory stream
+                    // otherwise the output file is corrupt
+                    targetDocument.Close();
+                    sourceDocument.Close();
+
+                    // Store the doc 
+                    bytes = save.ToArray();
+                }
+            }
+
+            // Write the file
+            FileHelpers.WriteFile(outPath, bytes);
+
+            // Return the name of the new document
+            return Path.GetFileNameWithoutExtension(outPath);
+        }
+
+        /// <summary>
+        /// Merge a document into another document.
+        /// </summary>
+        /// <param name="targetDirectory">Target directory.</param>
+        /// <param name="document">The source document.</param>
+        /// <param name="mergeDocument">The document to append.</param>
+        /// <param name="subDirectory">Subdirectory storing the source document.</param>
+        /// <param name="mergeDocumentSubDirectory">Subdirectory storing the merge document.</param>
+        public void MergeDocument(TargetDirectory targetDirectory, string document, string mergeDocument, string? subDirectory = null, string? mergeDocumentSubDirectory = null)
+        {
+            var sourcePath = _directoryService.GetDocumentPath(targetDirectory, subDirectory, document);
+            var targetPath = _directoryService.GetDocumentPath(targetDirectory, mergeDocumentSubDirectory, mergeDocument);
+            var outPath = _directoryService.GetEditingDocumentPath(targetDirectory, subDirectory, document);
+
+            // Check if the doc exists
+            if (sourcePath == null)
+            {
+                throw new Exception($"The document does not exist: {sourcePath}");
+            }
+
+            if (targetPath == null)
+            {
+                throw new Exception($"The document does not exist: {targetPath}");
+            }
+
+            byte[]? bytes = null;
+
+            using (var open = File.OpenRead(sourcePath))
+            using (var target = File.OpenRead(targetPath))
+            using (var save = new MemoryStream())
+            {
+                // Open the document
+                using (var sourceDocument = new PdfDocument(new PdfReader(open)))
+                using (var targetDocument = new PdfDocument(new PdfReader(target)))
+                using (var outputDocument = new PdfDocument(new PdfWriter(save)))
+                {
+                    var merger = new PdfMerger(outputDocument);
+
+                    // Copy the pages into the new document
+                    merger.Merge(sourceDocument, 1, sourceDocument.GetNumberOfPages());
+                    merger.Merge(targetDocument, 1, targetDocument.GetNumberOfPages());
+
+                    // Close the doc before getting the bytes from the memory stream
+                    // otherwise the output file is corrupt
+                    outputDocument.Close();
+                    sourceDocument.Close();
+                    targetDocument.Close();
+
+                    merger.Close();
 
                     // Store the doc 
                     bytes = save.ToArray();

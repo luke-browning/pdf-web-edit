@@ -14,6 +14,7 @@
     <div class="list-group">
       <button type="button" class="list-group-item list-group-item-action" *ngIf="currentPath.length > 0" (click)="up()">..</button>
       <button type="button" class="list-group-item list-group-item-action" *ngFor="let folder of currentDirectoryFolders" (click)="setFolder(folder)">{{ folder.name }}</button>
+      <button type="button" class="list-group-item list-group-item-action" *ngIf="currentDirectoryFolders.length == 0" disabled>No folders to show</button>
     </div>
   </div>
   <div class="modal-footer">

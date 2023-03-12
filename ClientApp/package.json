@@ -1,6 +1,6 @@
 {
   "name": "pdfwebedit",
-  "version": "0.0.0",
+  "version": "0.4.0",
   "scripts": {
     "ng": "ng",
     "prestart": "node aspnetcore-https",
@@ -26,8 +26,10 @@
     "@angular/router": "~12.2.2",
     "@ng-bootstrap/ng-bootstrap": "^10.0.0",
     "bootstrap": "^5.1.0",
+    "bootstrap-icons": "^1.10.3",
     "jquery": "^3.5.1",
     "ng2-dragula": "^2.1.1",
+    "ngx-ui-tour-ng-bootstrap": "^10.1.2",
     "oidc-client": "^1.11.5",
     "popper.js": "^1.16.0",
     "run-script-os": "^1.1.6",
