@@ -6,8 +6,8 @@ import { DirectoryPickerComponent } from '../directory-picker/directory-picker.c
 import { InputBoxComponent } from '../input-box/input-box.component';
 import { MergeDocmentComponent } from '../merge-docment/merge-docment.component';
 import { MessageBoxComponent } from '../message-box/message-box.component';
-import { Doc } from '../../models/Doc';
-import { Page } from '../../models/Page';
+import { Doc } from '../models/doc';
+import { Page } from '../models/page';
 import { AppConfigService } from '../services/app-config.service';
 
 @Component({

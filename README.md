@@ -1,5 +1,5 @@
 ## PDF Web Edit
-PDF Web Edit is a web-based application for manipulating PDF files. It's main purpose is to pre-process documents before they are imported into a Document Management System (DMS) such as [Paperless](https://github.com/the-paperless-project/paperless) ([-ng](https://github.com/jonaswinkler/paperless-ng) and [-ngx](https://github.com/paperless-ngx/paperless-ngx)).
+PDF Web Edit is a web-based application for manipulating PDF files. It's main purpose is to pre-process documents before they are imported into a Document Management System (DMS) such as [Paperless](https://github.com/the-paperless-project/paperless) ([-ng](https://github.com/jonaswinkler/paperless-ng) and [-ngx](https://github.com/paperless-ngx/paperless-ngx)) or stored in a directory based strucutre.
 
 ## :rocket: Features
 :heavy_check_mark: List all PDF documents in a directory  
@@ -7,6 +7,8 @@ PDF Web Edit is a web-based application for manipulating PDF files. It's main pu
 :heavy_check_mark: Delete pages  
 :heavy_check_mark: Rotate pages  
 :heavy_check_mark: Reorder pages  
+:heavy_check_mark: Split pages  
+:heavy_check_mark: Merge pages  
 :heavy_check_mark: Multi-select for quick manipulation  
 :heavy_check_mark: Delete document  
 :heavy_check_mark: Unlock encrypted/password protected documents  

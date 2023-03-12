@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { Doc } from '../../models/Doc';
+import { Doc } from '../models/doc';
 
 @Component({
   selector: 'app-merge-docment',
