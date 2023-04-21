@@ -36,5 +36,37 @@
         /// The default sort direction.
         /// </value>
         public string DefaultSortDirection { get; set; } = "Asc";
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to make the header sticky.
+        /// </summary>
+        /// <value>
+        /// True if sticky header, false if not.
+        /// </value>
+        public bool StickyHeader { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the icons is shown.
+        /// </summary>
+        /// <value>
+        /// True if show icons, false if not.
+        /// </value>
+        public bool ShowIcons { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the labels is shown.
+        /// </summary>
+        /// <value>
+        /// True if show labels, false if not.
+        /// </value>
+        public bool ShowLabels { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the debug mode.
+        /// </summary>
+        /// <value>
+        /// True if debug mode, false if not.
+        /// </value>
+        public bool DebugMode { get; set; } = false;
     }
 }

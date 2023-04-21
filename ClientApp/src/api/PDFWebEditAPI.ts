@@ -1735,6 +1735,14 @@ export class GeneralConfig implements IGeneralConfig {
     defaultSortColumn!: string;
     /** Gets or sets the default sort direction. */
     defaultSortDirection!: string;
+    /** Gets or sets a value indicating whether to make the header sticky. */
+    stickyHeader!: boolean;
+    /** Gets or sets a value indicating whether the icons is shown. */
+    showIcons!: boolean;
+    /** Gets or sets a value indicating whether the labels is shown. */
+    showLabels!: boolean;
+    /** Gets or sets a value indicating whether the debug mode. */
+    debugMode!: boolean;
 
     constructor(data?: IGeneralConfig) {
         if (data) {
@@ -1751,6 +1759,10 @@ export class GeneralConfig implements IGeneralConfig {
             this.defaultFolder = _data["defaultFolder"] !== undefined ? _data["defaultFolder"] : <any>null;
             this.defaultSortColumn = _data["defaultSortColumn"] !== undefined ? _data["defaultSortColumn"] : <any>null;
             this.defaultSortDirection = _data["defaultSortDirection"] !== undefined ? _data["defaultSortDirection"] : <any>null;
+            this.stickyHeader = _data["stickyHeader"] !== undefined ? _data["stickyHeader"] : <any>null;
+            this.showIcons = _data["showIcons"] !== undefined ? _data["showIcons"] : <any>null;
+            this.showLabels = _data["showLabels"] !== undefined ? _data["showLabels"] : <any>null;
+            this.debugMode = _data["debugMode"] !== undefined ? _data["debugMode"] : <any>null;
         }
     }
 
@@ -1767,6 +1779,10 @@ export class GeneralConfig implements IGeneralConfig {
         data["defaultFolder"] = this.defaultFolder !== undefined ? this.defaultFolder : <any>null;
         data["defaultSortColumn"] = this.defaultSortColumn !== undefined ? this.defaultSortColumn : <any>null;
         data["defaultSortDirection"] = this.defaultSortDirection !== undefined ? this.defaultSortDirection : <any>null;
+        data["stickyHeader"] = this.stickyHeader !== undefined ? this.stickyHeader : <any>null;
+        data["showIcons"] = this.showIcons !== undefined ? this.showIcons : <any>null;
+        data["showLabels"] = this.showLabels !== undefined ? this.showLabels : <any>null;
+        data["debugMode"] = this.debugMode !== undefined ? this.debugMode : <any>null;
         return data;
     }
 }
@@ -1781,6 +1797,14 @@ export interface IGeneralConfig {
     defaultSortColumn: string;
     /** Gets or sets the default sort direction. */
     defaultSortDirection: string;
+    /** Gets or sets a value indicating whether to make the header sticky. */
+    stickyHeader: boolean;
+    /** Gets or sets a value indicating whether the icons is shown. */
+    showIcons: boolean;
+    /** Gets or sets a value indicating whether the labels is shown. */
+    showLabels: boolean;
+    /** Gets or sets a value indicating whether the debug mode. */
+    debugMode: boolean;
 }
 
 /** A preview configuration. */

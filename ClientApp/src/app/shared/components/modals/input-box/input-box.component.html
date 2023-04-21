@@ -1,0 +1,16 @@
+<form (submit)="ok()">
+  <div class="modal-header">
+    <h5 class="modal-title">{{ title }}</h5>
+    <button type="button" class="btn-close" aria-label="Close" (click)="close()"></button>
+  </div>
+  <div class="modal-body">
+    <p>{{ message }}</p>
+
+    <input *ngIf="!password" type="text" class="form-control" [(ngModel)]="value" [ngModelOptions]="{standalone: true}" auto-focus required />
+    <input *ngIf="password" type="password" class="form-control" [(ngModel)]="value" [ngModelOptions]="{standalone: true}" auto-focus required />
+  </div>
+  <div class="modal-footer">
+    <button type="submit" class="btn btn-primary">OK</button>
+    <button type="button" class="btn btn-secondary" (click)="close()">Cancel</button>
+  </div>
+</form>

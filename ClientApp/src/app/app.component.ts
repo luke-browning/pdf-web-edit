@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { TourService } from 'ngx-ui-tour-ng-bootstrap';
-import { AppConfigService } from './services/app-config.service';
+import { ConfigService } from './services/config/config.service';
 
 @Component({
   selector: 'app-root',
@@ -11,7 +11,9 @@ export class AppComponent {
 
   title = 'PDF Web Edit';
 
-  constructor(private tourService: TourService, private configService: AppConfigService) {
+  stickyHeader = false;
+
+  constructor(private tourService: TourService, private configService: ConfigService) {
 
     configService.getConfig().subscribe(config => {
 
@@ -56,6 +58,9 @@ export class AppComponent {
           });
         }
       }
+
+      // Should we keep the header stuck to the top of the page
+      this.stickyHeader = config?.generalConfig.stickyHeader || false;
     });
   }
 }

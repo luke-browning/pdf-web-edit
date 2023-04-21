@@ -1,0 +1,37 @@
+<div class="row">
+
+  <div class="col">
+    <div class="card mb-3">
+      <div class="card-header">
+        <strong>{{ document.name }}</strong>
+        <span class="directory">{{ document.directory }}</span>
+      </div>
+      <div class="card-body" *ngIf="{ corrupt: document.corrupt | async, passwordProtected: document.passwordProtected | async } as docStatus">
+
+        <toolbar *ngIf="!docStatus.corrupt && !docStatus.passwordProtected && directory == targetDirectories.Input" [buttons]="inputButtons" [config]="config"></toolbar>
+        <toolbar *ngIf="!docStatus.corrupt && !docStatus.passwordProtected && directory == targetDirectories.Output" [buttons]="outputButtons" [config]="config"></toolbar>
+        <toolbar *ngIf="!docStatus.corrupt && !docStatus.passwordProtected && directory == targetDirectories.Trash" [buttons]="trashButtons" [config]="config"></toolbar>
+        <toolbar *ngIf="docStatus.corrupt && !docStatus.passwordProtected" [buttons]="corruptButtons" [config]="config"></toolbar>
+        <toolbar *ngIf="!docStatus.corrupt && docStatus.passwordProtected" [buttons]="passwordProtectedButtons" [config]="config"></toolbar>
+
+        <div #scrollWrapper *ngIf="!docStatus.corrupt && !docStatus.passwordProtected" class="scrolling-wrapper" [class]="size | async" [style.height]="maxPreviewHeight > 0 ? (maxPreviewHeight + 'px !important') : null">
+          <pages [pages]="document.pages" [size]="size" [config]="config" [resetDocumentPreview]="resetDocumentPreview.asObservable()" (onSelectionChange)="selectionChanged($event);" (onMaxPreviewSizeChange)="updatePreviewSize($event);"></pages>
+        </div>
+
+        <div *ngIf="docStatus.corrupt">
+          <div class="alert alert-danger" role="alert">
+            <span>This file is corrupt.</span> <span *ngIf="document.canRevertChanges"> You may be able to recover your document by clicking the Revert Changes button above.</span>
+          </div>
+        </div>
+
+        <div *ngIf="docStatus.passwordProtected">
+          <div class="alert alert-warning" role="alert">
+            This file is password protected. Please use the unlock feature to decrypt the document.
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>

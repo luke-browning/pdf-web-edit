@@ -5,19 +5,24 @@ import { HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 
 import { AppComponent } from './app.component';
-import { NavMenuComponent } from './nav-menu/nav-menu.component';
-import { HomeComponent } from './home/home.component';
+import { NavMenuComponent } from './shared/components/elements/nav-menu/nav-menu.component';
+import { HomeComponent } from './pages/home/home.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { DragulaModule } from 'ng2-dragula';
-import { MessageBoxComponent } from './message-box/message-box.component';
-import { InputBoxComponent } from './input-box/input-box.component';
-import { AutofocusDirective } from './shared/autofocus.directive';
-import { DirectoryPickerComponent } from './directory-picker/directory-picker.component';
-import { MergeDocmentComponent } from './merge-docment/merge-docment.component';
-import { SearchPipe } from './shared/filter.pipe';
-import { AppConfigService } from './services/app-config.service';
-import { SettingsComponent } from './settings/settings.component';
+import { MessageBoxComponent } from './shared/components/modals/message-box/message-box.component';
+import { InputBoxComponent } from './shared/components/modals/input-box/input-box.component';
+import { AutofocusDirective } from './shared/directives/auto-focus/auto-focus.directive';
+import { DirectoryPickerComponent } from './shared/components/modals/directory-picker/directory-picker.component';
+import { MergeDocmentComponent } from './shared/components/modals/merge-docment/merge-docment.component';
+import { SearchPipe } from './shared/pipes/filter/filter.pipe';
+import { ConfigService } from './services/config/config.service';
+import { SettingsComponent } from './shared/components/modals/settings/settings.component';
 import { TourNgBootstrapModule } from 'ngx-ui-tour-ng-bootstrap';
+import { ToolbarButtonComponent } from './shared/components/elements/toolbar-button/toolbar-button.component';
+import { ToolbarComponent } from './shared/components/elements/toolbar/toolbar.component';
+import { DocumentComponent } from './shared/components/elements/document/document.component';
+import { PagesComponent } from './shared/components/elements/pages/pages.component';
+import { PageComponent } from './shared/components/elements/page/page.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +35,12 @@ import { TourNgBootstrapModule } from 'ngx-ui-tour-ng-bootstrap';
     DirectoryPickerComponent,
     MergeDocmentComponent,
     SearchPipe,
-    SettingsComponent
+    SettingsComponent,
+    ToolbarButtonComponent,
+    ToolbarComponent,
+    DocumentComponent,
+    PagesComponent,
+    PageComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -50,8 +60,8 @@ import { TourNgBootstrapModule } from 'ngx-ui-tour-ng-bootstrap';
     {
       provide: APP_INITIALIZER,
       multi: true,
-      deps: [AppConfigService],
-      useFactory: (appConfigService: AppConfigService) => () => appConfigService.loadAppConfig()
+      deps: [ConfigService],
+      useFactory: (appConfigService: ConfigService) => () => appConfigService.loadAppConfig()
     }
   ],
   bootstrap: [AppComponent]

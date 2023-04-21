@@ -1,0 +1,12 @@
+<div class="thumb-container" [class]="size | async" [class.active]="page.active" [style.height]="previewHeight + 'px !important'" [style.width]="previewWidth + 'px !important'" (click)="setActive($event)">
+  <div *ngIf="!page.loaded" class="loading d-flex justify-content-center align-items-center">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+  <img *ngIf="page.show" #img [src]="page.url" class="thumb" (load)="pageLoaded(page.number)" (error)="pageNotLoaded($event)" />
+  <div *ngIf="!page.show" class="thumb failover-thumb d-flex align-items-center justify-content-center" [class.active]="page.active">
+    Failed to Load Preview
+  </div>
+  <div class="page-number" *ngIf="config?.previewConfig?.showPageNumber">{{ page.number }}</div>
+</div>

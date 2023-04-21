@@ -1,0 +1,3 @@
+<button type="button" class="btn btn-primary" *ngIf="button.if" (click)="run()" [disabled]="!(button.enabled | async)" placement="bottom" [ngbTooltip]="button.label" [disableTooltip]="showLabel">
+  <i *ngIf="showIcon" [class]="button.icon" [ngClass]="{ 'labels-and-icons' : showIcon && showLabel }"></i> <span *ngIf="showLabel">{{ button.label }}</span>
+</button>

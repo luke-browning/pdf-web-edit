@@ -495,6 +495,38 @@
             The default sort direction.
             </value>
         </member>
+        <member name="P:PDFWebEdit.Models.Config.GeneralConfig.StickyHeader">
+            <summary>
+            Gets or sets a value indicating whether to make the header sticky.
+            </summary>
+            <value>
+            True if sticky header, false if not.
+            </value>
+        </member>
+        <member name="P:PDFWebEdit.Models.Config.GeneralConfig.ShowIcons">
+            <summary>
+            Gets or sets a value indicating whether the icons is shown.
+            </summary>
+            <value>
+            True if show icons, false if not.
+            </value>
+        </member>
+        <member name="P:PDFWebEdit.Models.Config.GeneralConfig.ShowLabels">
+            <summary>
+            Gets or sets a value indicating whether the labels is shown.
+            </summary>
+            <value>
+            True if show labels, false if not.
+            </value>
+        </member>
+        <member name="P:PDFWebEdit.Models.Config.GeneralConfig.DebugMode">
+            <summary>
+            Gets or sets a value indicating whether the debug mode.
+            </summary>
+            <value>
+            True if debug mode, false if not.
+            </value>
+        </member>
         <member name="T:PDFWebEdit.Models.Config.InputConfig">
             <summary>
             A input configuration.

@@ -1,0 +1,1 @@
+<page *ngFor="let page of pages" [page]="page" [size]="size" [config]="config" (onSelect)="pageSelected($event)" (onPagePreviewLoad)="registerPageSize($event)"></page>
