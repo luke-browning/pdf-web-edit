@@ -63,7 +63,7 @@ export class AppComponent {
       }
 
       // Should we keep the header stuck to the top of the page
-      this.stickyHeader = config?.generalConfig.stickyHeader || false;
+      this.stickyHeader = config?.headerConfig.stickyHeader || false;
     });
   }
 }

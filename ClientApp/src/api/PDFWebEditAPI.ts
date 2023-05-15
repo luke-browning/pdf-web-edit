@@ -1798,10 +1798,12 @@ export interface IConfig {
 
 /** A header configuration. */
 export class HeaderConfig implements IHeaderConfig {
-    /** Gets or sets a value indicating whether the search is shown. */
-    showSearch!: boolean;
+    /** Gets or sets a value indicating whether to make the header sticky. */
+    stickyHeader!: boolean;
     /** Gets or sets a value indicating whether the directory picker is shown. */
     showDirectoryPicker!: boolean;
+    /** Gets or sets a value indicating whether the search is shown. */
+    showSearch!: boolean;
     /** Gets or sets a value indicating whether the preview size picker is shown. */
     showPreviewSizePicker!: boolean;
     /** Gets or sets a value indicating whether the sort picker is shown. */
@@ -1826,8 +1828,9 @@ export class HeaderConfig implements IHeaderConfig {
 
     init(_data?: any) {
         if (_data) {
-            this.showSearch = _data["showSearch"] !== undefined ? _data["showSearch"] : <any>null;
+            this.stickyHeader = _data["stickyHeader"] !== undefined ? _data["stickyHeader"] : <any>null;
             this.showDirectoryPicker = _data["showDirectoryPicker"] !== undefined ? _data["showDirectoryPicker"] : <any>null;
+            this.showSearch = _data["showSearch"] !== undefined ? _data["showSearch"] : <any>null;
             this.showPreviewSizePicker = _data["showPreviewSizePicker"] !== undefined ? _data["showPreviewSizePicker"] : <any>null;
             this.showSortPicker = _data["showSortPicker"] !== undefined ? _data["showSortPicker"] : <any>null;
             this.showColourModePicker = _data["showColourModePicker"] !== undefined ? _data["showColourModePicker"] : <any>null;
@@ -1846,8 +1849,9 @@ export class HeaderConfig implements IHeaderConfig {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["showSearch"] = this.showSearch !== undefined ? this.showSearch : <any>null;
+        data["stickyHeader"] = this.stickyHeader !== undefined ? this.stickyHeader : <any>null;
         data["showDirectoryPicker"] = this.showDirectoryPicker !== undefined ? this.showDirectoryPicker : <any>null;
+        data["showSearch"] = this.showSearch !== undefined ? this.showSearch : <any>null;
         data["showPreviewSizePicker"] = this.showPreviewSizePicker !== undefined ? this.showPreviewSizePicker : <any>null;
         data["showSortPicker"] = this.showSortPicker !== undefined ? this.showSortPicker : <any>null;
         data["showColourModePicker"] = this.showColourModePicker !== undefined ? this.showColourModePicker : <any>null;
@@ -1860,10 +1864,12 @@ export class HeaderConfig implements IHeaderConfig {
 
 /** A header configuration. */
 export interface IHeaderConfig {
-    /** Gets or sets a value indicating whether the search is shown. */
-    showSearch: boolean;
+    /** Gets or sets a value indicating whether to make the header sticky. */
+    stickyHeader: boolean;
     /** Gets or sets a value indicating whether the directory picker is shown. */
     showDirectoryPicker: boolean;
+    /** Gets or sets a value indicating whether the search is shown. */
+    showSearch: boolean;
     /** Gets or sets a value indicating whether the preview size picker is shown. */
     showPreviewSizePicker: boolean;
     /** Gets or sets a value indicating whether the sort picker is shown. */
@@ -1888,8 +1894,6 @@ export class GeneralConfig implements IGeneralConfig {
     defaultSortColumn!: string;
     /** Gets or sets the default sort direction. */
     defaultSortDirection!: string;
-    /** Gets or sets a value indicating whether to make the header sticky. */
-    stickyHeader!: boolean;
     /** Gets or sets a value indicating whether the icons is shown. */
     showIcons!: boolean;
     /** Gets or sets a value indicating whether the labels is shown. */
@@ -1914,7 +1918,6 @@ export class GeneralConfig implements IGeneralConfig {
             this.defaultFolder = _data["defaultFolder"] !== undefined ? _data["defaultFolder"] : <any>null;
             this.defaultSortColumn = _data["defaultSortColumn"] !== undefined ? _data["defaultSortColumn"] : <any>null;
             this.defaultSortDirection = _data["defaultSortDirection"] !== undefined ? _data["defaultSortDirection"] : <any>null;
-            this.stickyHeader = _data["stickyHeader"] !== undefined ? _data["stickyHeader"] : <any>null;
             this.showIcons = _data["showIcons"] !== undefined ? _data["showIcons"] : <any>null;
             this.showLabels = _data["showLabels"] !== undefined ? _data["showLabels"] : <any>null;
             this.defaultColourMode = _data["defaultColourMode"] !== undefined ? _data["defaultColourMode"] : <any>null;
@@ -1935,7 +1938,6 @@ export class GeneralConfig implements IGeneralConfig {
         data["defaultFolder"] = this.defaultFolder !== undefined ? this.defaultFolder : <any>null;
         data["defaultSortColumn"] = this.defaultSortColumn !== undefined ? this.defaultSortColumn : <any>null;
         data["defaultSortDirection"] = this.defaultSortDirection !== undefined ? this.defaultSortDirection : <any>null;
-        data["stickyHeader"] = this.stickyHeader !== undefined ? this.stickyHeader : <any>null;
         data["showIcons"] = this.showIcons !== undefined ? this.showIcons : <any>null;
         data["showLabels"] = this.showLabels !== undefined ? this.showLabels : <any>null;
         data["defaultColourMode"] = this.defaultColourMode !== undefined ? this.defaultColourMode : <any>null;
@@ -1954,8 +1956,6 @@ export interface IGeneralConfig {
     defaultSortColumn: string;
     /** Gets or sets the default sort direction. */
     defaultSortDirection: string;
-    /** Gets or sets a value indicating whether to make the header sticky. */
-    stickyHeader: boolean;
     /** Gets or sets a value indicating whether the icons is shown. */
     showIcons: boolean;
     /** Gets or sets a value indicating whether the labels is shown. */

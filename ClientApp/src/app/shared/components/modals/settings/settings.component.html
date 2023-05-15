@@ -46,11 +46,6 @@
             </div>
 
             <div class="form-check form-switch mb-3">
-              <input class="form-check-input" type="checkbox" role="switch" name="sticky-header" id="sticky-header" [(ngModel)]="config.generalConfig.stickyHeader">
-              <label class="form-check-label" for="sticky-header">Sticky Header</label>
-            </div>
-
-            <div class="form-check form-switch mb-3">
               <input class="form-check-input" type="checkbox" role="switch" name="show-icons" id="show-icons" [(ngModel)]="config.generalConfig.showIcons">
               <label class="form-check-label" for="show-icons">Show Icons</label>
             </div>
@@ -85,6 +80,11 @@
         <ng-container ngbNavItem="header">
           <a ngbNavLink>Header</a>
           <ng-template ngbNavContent>
+
+            <div class="form-check form-switch mb-3">
+              <input class="form-check-input" type="checkbox" role="switch" name="sticky-header" id="sticky-header" [(ngModel)]="config.headerConfig.stickyHeader">
+              <label class="form-check-label" for="sticky-header">Sticky Header</label>
+            </div>
 
             <div class="form-check form-switch mb-3">
               <input class="form-check-input" type="checkbox" role="switch" name="show-directory-picker" id="show-directory-picker" [(ngModel)]="config.headerConfig.showDirectoryPicker">

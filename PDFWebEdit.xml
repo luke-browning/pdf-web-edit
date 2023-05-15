@@ -541,14 +541,6 @@
             The default sort direction.
             </value>
         </member>
-        <member name="P:PDFWebEdit.Models.Config.GeneralConfig.StickyHeader">
-            <summary>
-            Gets or sets a value indicating whether to make the header sticky.
-            </summary>
-            <value>
-            True if sticky header, false if not.
-            </value>
-        </member>
         <member name="P:PDFWebEdit.Models.Config.GeneralConfig.ShowIcons">
             <summary>
             Gets or sets a value indicating whether the icons is shown.
@@ -586,12 +578,12 @@
             A header configuration.
             </summary>
         </member>
-        <member name="P:PDFWebEdit.Models.Config.HeaderConfig.ShowSearch">
+        <member name="P:PDFWebEdit.Models.Config.HeaderConfig.StickyHeader">
             <summary>
-            Gets or sets a value indicating whether the search is shown.
+            Gets or sets a value indicating whether to make the header sticky.
             </summary>
             <value>
-            True if show search, false if not.
+            True if sticky header, false if not.
             </value>
         </member>
         <member name="P:PDFWebEdit.Models.Config.HeaderConfig.ShowDirectoryPicker">
@@ -600,6 +592,14 @@
             </summary>
             <value>
             True if show directory picker, false if not.
+            </value>
+        </member>
+        <member name="P:PDFWebEdit.Models.Config.HeaderConfig.ShowSearch">
+            <summary>
+            Gets or sets a value indicating whether the search is shown.
+            </summary>
+            <value>
+            True if show search, false if not.
             </value>
         </member>
         <member name="P:PDFWebEdit.Models.Config.HeaderConfig.ShowPreviewSizePicker">

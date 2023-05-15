@@ -6,6 +6,14 @@
     public class HeaderConfig
     {
         /// <summary>
+        /// Gets or sets a value indicating whether to make the header sticky.
+        /// </summary>
+        /// <value>
+        /// True if sticky header, false if not.
+        /// </value>
+        public bool StickyHeader { get; set; } = true;
+
+        /// <summary>
         /// Gets or sets a value indicating whether the directory picker is shown.
         /// </summary>
         /// <value>
