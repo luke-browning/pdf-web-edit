@@ -14,7 +14,7 @@ import { MaxPreviewSizeChangedEvent, SelectionChangedEvent } from '../pages/page
 @Component({
   selector: 'document',
   templateUrl: './document.component.html',
-  styleUrls: ['./document.component.css']
+  styleUrls: ['./document.component.scss']
 })
 export class DocumentComponent implements OnInit {
 
@@ -33,9 +33,9 @@ export class DocumentComponent implements OnInit {
 
   targetDirectories = PDFWebEditAPI.TargetDirectory;
 
-  inputButtons: Array<ToolbarButton> = [];
-  outputButtons: Array<ToolbarButton> = [];
-  trashButtons: Array<ToolbarButton> = [];
+  inboxButtons: Array<ToolbarButton> = [];
+  outboxButtons: Array<ToolbarButton> = [];
+  archiveButtons: Array<ToolbarButton> = [];
   passwordProtectedButtons: Array<ToolbarButton> = [];
   corruptButtons: Array<ToolbarButton> = [];
 
@@ -69,96 +69,96 @@ export class DocumentComponent implements OnInit {
 
   generateToolbars() {
 
-    // Input
-    this.inputButtons.push({
+    // Inbox
+    this.inboxButtons.push({
       label: "Select All",
       icon: "bi bi-check2-square",
       separator: false,
-      if: this.config.inputConfig.showSelectAll,
+      if: this.config.inboxConfig.showSelectAll,
       enabled: new BehaviorSubject<boolean>(true),
       function: this.selectAll.bind(this)
     }, {
       label: "Deselect All",
       icon: "bi bi-square",
       separator: true,
-      if: this.config.inputConfig.showUnselect,
+      if: this.config.inboxConfig.showUnselect,
       enabled: new BehaviorSubject<boolean>(true),
       function: this.unselect.bind(this)
     }, {
       label: "Rotate Clockwise",
       icon: "bi bi-arrow-clockwise",
       separator: false,
-      if: this.config.inputConfig.showRotateAntiClockwise,
+      if: this.config.inboxConfig.showRotateAntiClockwise,
       enabled: this.document.hasSelectedPages,
       function: this.rotateClockwise.bind(this)
     }, {
       label: "Rotate Anti-Clockwise",
       icon: "bi bi-arrow-counterclockwise",
       separator: false,
-      if: this.config.inputConfig.showRotateAntiClockwise,
+      if: this.config.inboxConfig.showRotateAntiClockwise,
       enabled: this.document.hasSelectedPages,
       function: this.rotateAntiClockwise.bind(this)
     }, {
       label: "Remove",
       icon: "bi bi-x-lg",
       separator: false,
-      if: this.config.inputConfig.showRemove,
+      if: this.config.inboxConfig.showRemove,
       enabled: this.document.hasSelectedPages,
       function: this.remove.bind(this)
     }, {
       label: "Split",
       icon: "bi bi-subtract",
       separator: false,
-      if: this.config.inputConfig.showSplit,
+      if: this.config.inboxConfig.showSplit,
       enabled: this.document.hasSelectedPages,
       function: this.split.bind(this)
     }, {
       label: "Merge",
       icon: "bi bi-union",
       separator: true,
-      if: this.config.inputConfig.showMerge,
+      if: this.config.inboxConfig.showMerge,
       enabled: this.document.hasSelectedPages,
       function: this.merge.bind(this)
     }, {
       label: "Rename",
       icon: "bi bi-pencil",
       separator: false,
-      if: this.config.inputConfig.showRename,
+      if: this.config.inboxConfig.showRename,
       enabled: new BehaviorSubject<boolean>(true),
       function: this.rename.bind(this)
     }, {
-      label: "Delete",
-      icon: "bi bi-trash3",
+      label: "Archive",
+      icon: "bi bi-archive-fill",
       separator: false,
-      if: this.config.inputConfig.showDelete,
+      if: this.config.inboxConfig.showArchive,
       enabled: new BehaviorSubject<boolean>(true),
-      function: this.delete.bind(this)
+      function: this.archive.bind(this)
     }, {
       label: "Download",
       icon: "bi bi-download",
       separator: true,
-      if: this.config.inputConfig.showDownload,
+      if: this.config.inboxConfig.showDownload,
       enabled: new BehaviorSubject<boolean>(true),
       function: this.download.bind(this)
     }, {
       label: "Revert Changes",
       icon: "bi bi-repeat",
       separator: false,
-      if: this.config.inputConfig.showRevert,
+      if: this.config.inboxConfig.showRevert,
       enabled: this.document.canRevertChanges,
       function: this.revert.bind(this)
     }, {
       label: "Save To",
       icon: "bi bi-check2-all",
       separator: false,
-      if: this.config.inputConfig.showSaveTo,
+      if: this.config.inboxConfig.showSaveTo,
       enabled: new BehaviorSubject<boolean>(true),
       function: this.saveTo.bind(this)
     }, {
       label: "Save",
       icon: "bi bi-check2",
       separator: this.config.generalConfig.debugMode,
-      if: this.config.inputConfig.showSave,
+      if: this.config.inboxConfig.showSave,
       enabled: new BehaviorSubject<boolean>(true),
       function: this.save.bind(this)
     }, {
@@ -170,55 +170,55 @@ export class DocumentComponent implements OnInit {
       function: this.loadDocumentPages.bind(this)
     });
 
-    // Output
-    this.outputButtons.push({
+    // Outbox
+    this.outboxButtons.push({
       label: "Download",
       icon: "bi bi-download",
       separator: true,
-      if: this.config.outputConfig.showDownload,
+      if: this.config.outboxConfig.showDownload,
       enabled: new BehaviorSubject<boolean>(true),
       function: this.download.bind(this)
     }, {
-      label: "Move to Input",
-      icon: "bi bi-folder",
+      label: "Move to Inbox",
+      icon: "bi bi-folder-symlink",
       separator: false,
-      if: this.config.outputConfig.showRestore,
+      if: this.config.outboxConfig.showRestore,
       enabled: new BehaviorSubject<boolean>(true),
       function: this.restore.bind(this)
     });
 
-    // Trash
-    this.trashButtons.push({
+    // Archive
+    this.archiveButtons.push({
       label: "Permanently Delete",
       icon: "bi bi-trash3",
       separator: false,
-      if: this.config.trashConfig.showDelete,
+      if: this.config.archiveConfig.showDelete,
       enabled: new BehaviorSubject<boolean>(true),
-      function: this.delete.bind(this)
+      function: this.permenentlyDeleteFromArchive.bind(this)
     }, {
       label: "Download",
       icon: "bi bi-download",
       separator: true,
-      if: this.config.trashConfig.showDownload,
+      if: this.config.archiveConfig.showDownload,
       enabled: new BehaviorSubject<boolean>(true),
       function: this.download.bind(this)
     }, {
-      label: "Move to Input",
-      icon: "bi bi-folder",
+      label: "Move to Inbox",
+      icon: "bi bi-folder-symlink",
       separator: false,
-      if: this.config.trashConfig.showRestore,
+      if: this.config.archiveConfig.showRestore,
       enabled: new BehaviorSubject<boolean>(true),
       function: this.restore.bind(this)
     });
 
     // Password protected
     this.passwordProtectedButtons.push({
-      label: "Delete",
-      icon: "bi bi-trash3",
+      label: "Archive",
+      icon: "bi bi-archive-fill",
       separator: false,
       if: true,
       enabled: new BehaviorSubject<boolean>(true),
-      function: this.delete.bind(this)
+      function: this.archive.bind(this)
     }, {
       label: "Download",
       icon: "bi bi-download",
@@ -237,12 +237,12 @@ export class DocumentComponent implements OnInit {
 
     // Corrupt
     this.corruptButtons.push({
-      label: "Delete",
-      icon: "bi bi-trash3",
+      label: "Archive",
+      icon: "bi bi-archive-fill",
       separator: false,
       if: true,
       enabled: new BehaviorSubject<boolean>(true),
-      function: this.delete.bind(this)
+      function: this.archive.bind(this)
     }, {
       label: "Download",
       icon: "bi bi-download",
@@ -258,10 +258,10 @@ export class DocumentComponent implements OnInit {
       enabled: this.document.canRevertChanges,
       function: this.revert.bind(this)
     }, {
-      label: "Move to Input",
-      icon: "bi bi-folder",
+      label: "Move to Inbox",
+      icon: "bi bi-folder-symlink",
       separator: false,
-      if: true,
+      if: this.directory != PDFWebEditAPI.TargetDirectory.Inbox,
       enabled: new BehaviorSubject<boolean>(true),
       function: this.restore.bind(this)
     });
@@ -485,8 +485,14 @@ export class DocumentComponent implements OnInit {
     }, error => this.showMessageBox(error));
   }
 
-  delete() {
-    this.api.delete(this.directory, this.document.name, this.document.directory).subscribe(() => {
+  archive() {
+    this.api.archive(this.directory, this.document.name, this.document.directory).subscribe(() => {
+      this.onRemoveDocument.emit(this.document.name);
+    }, error => this.showMessageBox(error));
+  }
+
+  permenentlyDeleteFromArchive() {
+    this.api.deleteFromArchive(this.document.name).subscribe(() => {
       this.onRemoveDocument.emit(this.document.name);
     }, error => this.showMessageBox(error));
   }

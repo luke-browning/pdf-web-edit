@@ -7,7 +7,7 @@ import { PagePreviewLoadEvent, SelectEvent } from '../page/page.component';
 @Component({
   selector: 'pages',
   templateUrl: './pages.component.html',
-  styleUrls: ['./pages.component.css']
+  styleUrls: ['./pages.component.scss']
 })
 export class PagesComponent implements OnInit {
 

@@ -8,9 +8,9 @@
       </div>
       <div class="card-body" *ngIf="{ corrupt: document.corrupt | async, passwordProtected: document.passwordProtected | async } as docStatus">
 
-        <toolbar *ngIf="!docStatus.corrupt && !docStatus.passwordProtected && directory == targetDirectories.Input" [buttons]="inputButtons" [config]="config"></toolbar>
-        <toolbar *ngIf="!docStatus.corrupt && !docStatus.passwordProtected && directory == targetDirectories.Output" [buttons]="outputButtons" [config]="config"></toolbar>
-        <toolbar *ngIf="!docStatus.corrupt && !docStatus.passwordProtected && directory == targetDirectories.Trash" [buttons]="trashButtons" [config]="config"></toolbar>
+        <toolbar *ngIf="!docStatus.corrupt && !docStatus.passwordProtected && directory == targetDirectories.Inbox" [buttons]="inboxButtons" [config]="config"></toolbar>
+        <toolbar *ngIf="!docStatus.corrupt && !docStatus.passwordProtected && directory == targetDirectories.Outbox" [buttons]="outboxButtons" [config]="config"></toolbar>
+        <toolbar *ngIf="!docStatus.corrupt && !docStatus.passwordProtected && directory == targetDirectories.Archive" [buttons]="archiveButtons" [config]="config"></toolbar>
         <toolbar *ngIf="docStatus.corrupt && !docStatus.passwordProtected" [buttons]="corruptButtons" [config]="config"></toolbar>
         <toolbar *ngIf="!docStatus.corrupt && docStatus.passwordProtected" [buttons]="passwordProtectedButtons" [config]="config"></toolbar>
 

@@ -1,4 +1,6 @@
-﻿namespace PDFWebEdit.Models.Config
+﻿using PDFWebEdit.Enumerations;
+
+namespace PDFWebEdit.Models.Config
 {
     /// <summary>
     /// A general configuration.
@@ -19,7 +21,7 @@
         /// <value>
         /// The default folder.
         /// </value>
-        public string DefaultFolder { get; set; } = "Input";
+        public string DefaultFolder { get; set; } = "Inbox";
 
         /// <summary>
         /// Gets or sets the default sort column.
@@ -59,7 +61,15 @@
         /// <value>
         /// True if show labels, false if not.
         /// </value>
-        public bool ShowLabels { get; set; } = true;
+        public bool ShowLabels { get; set; } = false;
+
+        /// <summary>
+        /// Gets or sets the default colour mode.
+        /// </summary>
+        /// <value>
+        /// The colour mode.
+        /// </value>
+        public string DefaultColourMode { get; set; } = "auto";
 
         /// <summary>
         /// Gets or sets a value indicating whether the debug mode.

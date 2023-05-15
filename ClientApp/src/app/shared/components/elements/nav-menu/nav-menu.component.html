@@ -1,27 +1,160 @@
-<header>
-  <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-    <div class="container-fluid">
+<nav class="navbar navbar-expand-sm navbar-toggleable-sm mb-3"
+     [ngClass]="colourMode == 'light' ? 'navbar-light bg-white border-bottom box-shadow' : 'navbar-dark bg-dark'">
+  <div class="container-fluid">
 
-      <a class="navbar-brand" [routerLink]="['/']">
+    <div class="mx-auto">
+      <a class="navbar-brand mx-auto" [routerLink]="['/']">
         <span class="logo-1">PDF</span><span class="logo-2"> Web Edit</span>
       </a>
 
-      <button class="navbar-toggler"
-              type="button"
-              data-toggle="collapse"
-              data-target=".navbar-collapse"
-              aria-label="Toggle navigation"
-              [attr.aria-expanded]="isExpanded"
-              (click)="toggle()">
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-label="Toggle navigation"
+              [attr.aria-expanded]="isExpanded" (click)="toggle()">
         <span class="navbar-toggler-icon"></span>
       </button>
-
-      <div class="navbar-collapse collapse d-sm-inline-flex justify-content-end" [ngClass]="{ show: isExpanded }">
-
-        <button type="button" class="btn btn-link" (click)="editConfig()">
-          <i class="bi bi-gear-fill"></i>
-        </button>
-      </div>
     </div>
-  </nav>
-</header>
+
+    <div class="navbar-collapse collapse">
+      <ng-container *ngIf="config?.headerConfig?.showDirectoryPicker">
+        <ul class="navbar-nav me-auto ms-2">
+
+          <li class="nav-item" ngbDropdown>
+            <a class="nav-link dropdown-toggle" ngbDropdownToggle role="button" aria-expanded="false" tourAnchor="folder">
+              {{ currentDirectory }}
+            </a>
+            <div ngbDropdownMenu class="dropdown-menu" [ngClass]="colourMode == 'light' ? '' : 'dropdown-menu-dark'">
+              <button ngbDropdownItem class="dropdown-item" routerLink="/inbox" [class.active]="currentDirectory == 'Inbox'">
+                Inbox
+              </button>
+              <button ngbDropdownItem class="dropdown-item" routerLink="/outbox" [class.active]="currentDirectory == 'Outbox'">
+                Outbox
+              </button>
+              <hr class="dropdown-divider">
+              <button ngbDropdownItem class="dropdown-item" routerLink="/archive" [class.active]="currentDirectory == 'Archive'">
+                Archive
+              </button>
+            </div>
+          </li>
+        </ul>
+      </ng-container>
+    </div>
+
+    <div class="navbar-collapse collapse">
+      <ng-container *ngIf="config?.headerConfig?.showSearch">
+        <input type="text"
+               class="form-control border-0"
+               [ngClass]="searchFocused ? '' : 'text-light bg-secondary'"
+               style="--bs-bg-opacity: .4; padding-right: 40px;"
+               id="search"
+               placeholder="Search..."
+               (focus)="searchFocused = true;"
+               (focusout)="searchFocused = false;"
+               #search>
+        <button class="btn bg-transparent border-0"
+                [ngClass]="searchFocused ? 'text-dark bg-white' : (colourMode == 'light' ? 'text-secondary bg-secondary' : 'text-light bg-secondary')"
+                style="--bs-bg-opacity: .4; margin-left: -40px; z-index: 100;"
+                type="button"
+                (click)="clearSearch()">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </ng-container>
+    </div>
+
+    <div class="navbar-collapse collapse">
+      <ul class="navbar-nav ms-auto">
+        <ng-container *ngIf="config?.headerConfig?.showPreviewSizePicker">
+          <li class="nav-item" ngbDropdown ngbTooltip="Page Size" placement="left" tourAnchor="size">
+            <a class="nav-link" ngbDropdownToggle role="button">
+              <i class="bi bi-layout-three-columns" *ngIf="previewSize == 'small' && config?.headerConfig?.showIcons!"></i>
+              <i class="bi bi-layout-split" *ngIf="previewSize == 'medium' && config?.headerConfig?.showIcons!"></i>
+              <i class="bi bi-square" *ngIf="previewSize == 'large' && config?.headerConfig?.showIcons!"></i>
+              <span *ngIf="config?.headerConfig?.showIcons! && config?.headerConfig?.showLabels!">&nbsp;</span>
+              <span *ngIf="previewSize == 'small' && config?.headerConfig?.showLabels!">Small</span>
+              <span *ngIf="previewSize == 'medium' && config?.headerConfig?.showLabels!">Medium</span>
+              <span *ngIf="previewSize == 'large' && config?.headerConfig?.showLabels!">Large</span>
+            </a>
+            <div ngbDropdownMenu class="dropdown-menu dropdown-menu-end" [ngClass]="colourMode == 'light' ? '' : 'dropdown-menu-dark'">
+              <a ngbDropdownItem href="#" (click)="$event.preventDefault(); setPreviewSize('small');" [class.active]="previewSize == 'small'">
+                <i class="bi bi-layout-three-columns pe-2"></i> Small
+              </a>
+              <a ngbDropdownItem href="#" (click)="$event.preventDefault(); setPreviewSize('medium');" [class.active]="previewSize == 'medium'">
+                <i class="bi bi-layout-split pe-2"></i> Medium
+              </a>
+              <a ngbDropdownItem href="#" (click)="$event.preventDefault(); setPreviewSize('large');" [class.active]="previewSize == 'large'">
+                <i class="bi bi-square pe-2"></i> Large
+              </a>
+            </div>
+          </li>
+        </ng-container>
+
+        <ng-container *ngIf="config?.headerConfig?.showSortPicker">
+          <li class="nav-item" ngbDropdown ngbTooltip="Sort" placement="left" tourAnchor="order">
+            <a class="nav-link" ngbDropdownToggle role="button">
+              <i class="bi bi-sort-alpha-down" *ngIf="config?.headerConfig?.showIcons!"></i>
+              <span *ngIf="config?.headerConfig?.showIcons! && config?.headerConfig?.showLabels!">&nbsp;</span>
+              <span *ngIf="config?.headerConfig?.showLabels!">{{ sortBy }} ({{ sortDirection }})</span>
+            </a>
+            <div ngbDropdownMenu class="dropdown-menu dropdown-menu-end" [ngClass]="colourMode == 'light' ? '' : 'dropdown-menu-dark'">
+              <div class="btn-group ps-2 pe-2">
+                <div class="btn-group" ngbDropdown role="group">
+                  <button type="button" class="btn btn-secondary" ngbDropdownToggle>{{ sortBy }}</button>
+                  <div class="dropdown-menu" ngbDropdownMenu [ngClass]="colourMode == 'light' ? '' : 'dropdown-menu-dark'">
+                    <button ngbDropdownItem (click)="setSortBy('Name')" [class.active]="sortBy == 'Name'">Name</button>
+                    <button ngbDropdownItem (click)="setSortBy('Created')" [class.active]="sortBy == 'Created'">Created</button>
+                    <button ngbDropdownItem (click)="setSortBy('Last Modified')" [class.active]="sortBy == 'Last Modified'">Last Modified</button>
+                  </div>
+                </div>
+                <div class="btn-group" ngbDropdown role="group">
+                  <button type="button" class="btn btn-secondary" ngbDropdownToggle>{{ sortDirection }}</button>
+                  <div class="dropdown-menu" ngbDropdownMenu [ngClass]="colourMode == 'light' ? '' : 'dropdown-menu-dark'">
+                    <button ngbDropdownItem (click)="setSortDirection('Asc')" [class.active]="sortDirection == 'Asc'">Asc</button>
+                    <button ngbDropdownItem (click)="setSortDirection('Desc')" [class.active]="sortDirection == 'Desc'">Desc</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </li>
+        </ng-container>
+
+        <ng-container *ngIf="config?.headerConfig?.showColourModePicker">
+          <li class="nav-item" ngbDropdown ngbTooltip="Colour Mode" placement="left">
+            <a class="nav-link" ngbDropdownToggle role="button">
+              <i class="bi bi-sun-fill" *ngIf="selectedColourMode == 'light' && config?.headerConfig?.showIcons!"></i>
+              <i class="bi bi-moon-fill" *ngIf="selectedColourMode == 'dark' && config?.headerConfig?.showIcons!"></i>
+              <i class="bi bi-circle-half" *ngIf="selectedColourMode == 'auto' && config?.headerConfig?.showIcons!"></i>
+              <span *ngIf="config?.headerConfig?.showIcons! && config?.headerConfig?.showLabels!">&nbsp;</span>
+              <span *ngIf="selectedColourMode == 'light' && config?.headerConfig?.showLabels!">Light</span>
+              <span *ngIf="selectedColourMode == 'dark' && config?.headerConfig?.showLabels!">Dark</span>
+              <span *ngIf="selectedColourMode == 'auto' && config?.headerConfig?.showLabels!">Auto</span>
+            </a>
+            <div ngbDropdownMenu class="dropdown-menu dropdown-menu-end" [ngClass]="colourMode == 'light' ? '' : 'dropdown-menu-dark'">
+              <a ngbDropdownItem href="#" (click)="$event.preventDefault(); setColourMode('light')" [class.active]="selectedColourMode == 'light'">
+                <i class="bi bi-sun-fill pe-2"></i> Light
+              </a>
+              <a ngbDropdownItem href="#" (click)="$event.preventDefault(); setColourMode('dark')" [class.active]="selectedColourMode == 'dark'">
+                <i class="bi bi-moon-fill pe-2"></i> Dark
+              </a>
+              <hr class="dropdown-divider">
+              <a ngbDropdownItem href="#" (click)="$event.preventDefault(); setColourMode('auto')" [class.active]="selectedColourMode == 'auto'">
+                <i class="bi bi-circle-half pe-2"></i> Auto
+              </a>
+            </div>
+          </li>
+        </ng-container>
+
+        <ng-container *ngIf="config?.headerConfig?.showSettingsButton">
+          <li class="nav-item py-2 py-lg-1 col-12 col-lg-auto">
+            <div class="vr d-none d-lg-flex h-100 mx-lg-2 text-secondary"></div>
+            <hr class="d-lg-none my-2 text-secondary-50">
+          </li>
+
+          <li class="nav-item" ngbTooltip="Settings" placement="left">
+            <a type="button" class="nav-link" (click)="editConfig()">
+              <i class="bi bi-gear-fill"></i>
+            </a>
+          </li>
+        </ng-container>
+
+      </ul>
+    </div>
+  </div>
+</nav>

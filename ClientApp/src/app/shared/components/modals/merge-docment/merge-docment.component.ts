@@ -5,7 +5,7 @@ import { Doc } from '../../../models/doc';
 @Component({
   selector: 'app-merge-docment',
   templateUrl: './merge-docment.component.html',
-  styleUrls: ['./merge-docment.component.css']
+  styleUrls: ['./merge-docment.component.scss']
 })
 export class MergeDocmentComponent implements OnInit {
 

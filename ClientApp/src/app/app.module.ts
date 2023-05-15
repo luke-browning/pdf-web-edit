@@ -47,14 +47,15 @@ import { PageComponent } from './shared/components/elements/page/page.component'
     HttpClientModule,
     FormsModule,
     RouterModule.forRoot([
-      { path: '', component: HomeComponent, pathMatch: 'full' },
-      { path: 'input', component: HomeComponent, pathMatch: 'full' },
-      { path: 'output', component: HomeComponent, pathMatch: 'full' },
-      { path: 'trash', component: HomeComponent, pathMatch: 'full' },
+      { path: 'inbox', component: HomeComponent, pathMatch: 'full' },
+      { path: 'outbox', component: HomeComponent, pathMatch: 'full' },
+      { path: 'archive', component: HomeComponent, pathMatch: 'full' },
+      { path: '', redirectTo: '/inbox', pathMatch: 'full' },
+      { path: '**', redirectTo: '/inbox', pathMatch: 'full' },
     ]),
     NgbModule,
     DragulaModule.forRoot(),
-    TourNgBootstrapModule.forRoot(),
+    TourNgBootstrapModule,
   ],
   providers: [
     {

@@ -5,7 +5,7 @@ import { PDFWebEditAPI } from '../../../../../api/PDFWebEditAPI';
 @Component({
   selector: 'app-directory-picker',
   templateUrl: './directory-picker.component.html',
-  styleUrls: ['./directory-picker.component.css']
+  styleUrls: ['./directory-picker.component.scss']
 })
 export class DirectoryPickerComponent implements OnInit {
 

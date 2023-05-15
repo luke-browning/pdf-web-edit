@@ -296,7 +296,7 @@ export class DocumentClient {
     }
 
     /**
-     * Gets the documents in the input folder.
+     * Gets the documents in the selected folder.
      * @param targetDirectory The target directory.
      * @return An enumerator that allows foreach to be used to process the documents in this collection.
      */
@@ -1298,14 +1298,14 @@ export class DocumentClient {
     }
 
     /**
-     * Deletes the specified document.
+     * Archives the specified document.
      * @param targetDirectory The target directory.
      * @param document The document.
      * @param subDirectory (optional) The sub directory containing the document.
      * @return An IActionResult.
      */
-    delete(targetDirectory: TargetDirectory, document: string, subDirectory?: string | null | undefined): Observable<void> {
-        let url_ = this.baseUrl + "/api/documents/{targetDirectory}/{document}/delete?";
+    archive(targetDirectory: TargetDirectory, document: string, subDirectory?: string | null | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/documents/{targetDirectory}/{document}/archive?";
         if (targetDirectory === undefined || targetDirectory === null)
             throw new Error("The parameter 'targetDirectory' must be defined.");
         url_ = url_.replace("{targetDirectory}", encodeURIComponent("" + targetDirectory));
@@ -1325,11 +1325,11 @@ export class DocumentClient {
         };
 
         return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processDelete(response_);
+            return this.processArchive(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processDelete(response_ as any);
+                    return this.processArchive(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<void>;
                 }
@@ -1338,7 +1338,71 @@ export class DocumentClient {
         }));
     }
 
-    protected processDelete(response: HttpResponseBase): Observable<void> {
+    protected processArchive(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(null as any);
+            }));
+        } else if (status === 404) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("A server side error occurred.", status, _responseText, _headers);
+            }));
+        } else if (status === 500) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result500: any = null;
+            let resultData500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result500 = resultData500 ? ProblemDetails.fromJS(resultData500) : <any>null;
+            return throwException("A server side error occurred.", status, _responseText, _headers, result500);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(null as any);
+    }
+
+    /**
+     * Permentently deletes the specified document from the archive.
+     * @param document The document.
+     * @return An IActionResult.
+     */
+    deleteFromArchive(document: string): Observable<void> {
+        let url_ = this.baseUrl + "/api/documents/{document}/delete";
+        if (document === undefined || document === null)
+            throw new Error("The parameter 'document' must be defined.");
+        url_ = url_.replace("{document}", encodeURIComponent("" + document));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDeleteFromArchive(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDeleteFromArchive(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<void>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<void>;
+        }));
+    }
+
+    protected processDeleteFromArchive(response: HttpResponseBase): Observable<void> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -1445,7 +1509,7 @@ export class DocumentClient {
     }
 
     /**
-     * Restores a document from trash.
+     * Restores a document from the target directory to the inbox.
      * @param targetDirectory The target directory.
      * @param document The document.
      * @param subDirectory (optional) The sub directory containing the document.
@@ -1517,7 +1581,7 @@ export class DocumentClient {
     }
 
     /**
-     * Saves the specified document in the input directory.
+     * Saves the specified document from the inbox directory.
      * @param document The document.
      * @param sourceSubDirectory (optional) The subDirectory to move from.
      * @param targetSubDirectory (optional) The subDirectory to save to.
@@ -1587,7 +1651,7 @@ export class DocumentClient {
     }
 
     /**
-     * Saves the specified document in the input directory.
+     * Saves the specified document from the inbox directory.
      * @param document The document.
      * @param sourceSubDirectory (optional) The subDirectory to move from.
      * @return An IActionResult.
@@ -1656,16 +1720,18 @@ export class DocumentClient {
 
 /** A configuration. */
 export class Config implements IConfig {
+    /** Gets or sets the header configuration. */
+    headerConfig!: HeaderConfig;
     /** Gets or sets the general configuration. */
     generalConfig!: GeneralConfig;
     /** Gets or sets the preview configuration. */
     previewConfig!: PreviewConfig;
-    /** Gets or sets the input configuration. */
-    inputConfig!: InputConfig;
-    /** Gets or sets the output configuration. */
-    outputConfig!: OutputConfig;
-    /** Gets or sets the trash configuration. */
-    trashConfig!: TrashConfig;
+    /** Gets or sets the inbox configuration. */
+    inboxConfig!: InboxConfig;
+    /** Gets or sets the outbox configuration. */
+    outboxConfig!: OutboxConfig;
+    /** Gets or sets the archive configuration. */
+    archiveConfig!: ArchiveConfig;
 
     constructor(data?: IConfig) {
         if (data) {
@@ -1675,21 +1741,23 @@ export class Config implements IConfig {
             }
         }
         if (!data) {
+            this.headerConfig = new HeaderConfig();
             this.generalConfig = new GeneralConfig();
             this.previewConfig = new PreviewConfig();
-            this.inputConfig = new InputConfig();
-            this.outputConfig = new OutputConfig();
-            this.trashConfig = new TrashConfig();
+            this.inboxConfig = new InboxConfig();
+            this.outboxConfig = new OutboxConfig();
+            this.archiveConfig = new ArchiveConfig();
         }
     }
 
     init(_data?: any) {
         if (_data) {
+            this.headerConfig = _data["headerConfig"] ? HeaderConfig.fromJS(_data["headerConfig"]) : new HeaderConfig();
             this.generalConfig = _data["generalConfig"] ? GeneralConfig.fromJS(_data["generalConfig"]) : new GeneralConfig();
             this.previewConfig = _data["previewConfig"] ? PreviewConfig.fromJS(_data["previewConfig"]) : new PreviewConfig();
-            this.inputConfig = _data["inputConfig"] ? InputConfig.fromJS(_data["inputConfig"]) : new InputConfig();
-            this.outputConfig = _data["outputConfig"] ? OutputConfig.fromJS(_data["outputConfig"]) : new OutputConfig();
-            this.trashConfig = _data["trashConfig"] ? TrashConfig.fromJS(_data["trashConfig"]) : new TrashConfig();
+            this.inboxConfig = _data["inboxConfig"] ? InboxConfig.fromJS(_data["inboxConfig"]) : new InboxConfig();
+            this.outboxConfig = _data["outboxConfig"] ? OutboxConfig.fromJS(_data["outboxConfig"]) : new OutboxConfig();
+            this.archiveConfig = _data["archiveConfig"] ? ArchiveConfig.fromJS(_data["archiveConfig"]) : new ArchiveConfig();
         }
     }
 
@@ -1702,27 +1770,112 @@ export class Config implements IConfig {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["headerConfig"] = this.headerConfig ? this.headerConfig.toJSON() : <any>null;
         data["generalConfig"] = this.generalConfig ? this.generalConfig.toJSON() : <any>null;
         data["previewConfig"] = this.previewConfig ? this.previewConfig.toJSON() : <any>null;
-        data["inputConfig"] = this.inputConfig ? this.inputConfig.toJSON() : <any>null;
-        data["outputConfig"] = this.outputConfig ? this.outputConfig.toJSON() : <any>null;
-        data["trashConfig"] = this.trashConfig ? this.trashConfig.toJSON() : <any>null;
+        data["inboxConfig"] = this.inboxConfig ? this.inboxConfig.toJSON() : <any>null;
+        data["outboxConfig"] = this.outboxConfig ? this.outboxConfig.toJSON() : <any>null;
+        data["archiveConfig"] = this.archiveConfig ? this.archiveConfig.toJSON() : <any>null;
         return data;
     }
 }
 
 /** A configuration. */
 export interface IConfig {
+    /** Gets or sets the header configuration. */
+    headerConfig: HeaderConfig;
     /** Gets or sets the general configuration. */
     generalConfig: GeneralConfig;
     /** Gets or sets the preview configuration. */
     previewConfig: PreviewConfig;
-    /** Gets or sets the input configuration. */
-    inputConfig: InputConfig;
-    /** Gets or sets the output configuration. */
-    outputConfig: OutputConfig;
-    /** Gets or sets the trash configuration. */
-    trashConfig: TrashConfig;
+    /** Gets or sets the inbox configuration. */
+    inboxConfig: InboxConfig;
+    /** Gets or sets the outbox configuration. */
+    outboxConfig: OutboxConfig;
+    /** Gets or sets the archive configuration. */
+    archiveConfig: ArchiveConfig;
+}
+
+/** A header configuration. */
+export class HeaderConfig implements IHeaderConfig {
+    /** Gets or sets a value indicating whether the search is shown. */
+    showSearch!: boolean;
+    /** Gets or sets a value indicating whether the directory picker is shown. */
+    showDirectoryPicker!: boolean;
+    /** Gets or sets a value indicating whether the preview size picker is shown. */
+    showPreviewSizePicker!: boolean;
+    /** Gets or sets a value indicating whether the sort picker is shown. */
+    showSortPicker!: boolean;
+    /** Gets or sets a value indicating whether the colour mode picker is shown. */
+    showColourModePicker!: boolean;
+    /** Gets or sets a value indicating whether the settings button is shown. */
+    showSettingsButton!: boolean;
+    /** Gets or sets a value indicating whether the icons is shown. */
+    showIcons!: boolean;
+    /** Gets or sets a value indicating whether the labels is shown. */
+    showLabels!: boolean;
+
+    constructor(data?: IHeaderConfig) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.showSearch = _data["showSearch"] !== undefined ? _data["showSearch"] : <any>null;
+            this.showDirectoryPicker = _data["showDirectoryPicker"] !== undefined ? _data["showDirectoryPicker"] : <any>null;
+            this.showPreviewSizePicker = _data["showPreviewSizePicker"] !== undefined ? _data["showPreviewSizePicker"] : <any>null;
+            this.showSortPicker = _data["showSortPicker"] !== undefined ? _data["showSortPicker"] : <any>null;
+            this.showColourModePicker = _data["showColourModePicker"] !== undefined ? _data["showColourModePicker"] : <any>null;
+            this.showSettingsButton = _data["showSettingsButton"] !== undefined ? _data["showSettingsButton"] : <any>null;
+            this.showIcons = _data["showIcons"] !== undefined ? _data["showIcons"] : <any>null;
+            this.showLabels = _data["showLabels"] !== undefined ? _data["showLabels"] : <any>null;
+        }
+    }
+
+    static fromJS(data: any): HeaderConfig {
+        data = typeof data === 'object' ? data : {};
+        let result = new HeaderConfig();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["showSearch"] = this.showSearch !== undefined ? this.showSearch : <any>null;
+        data["showDirectoryPicker"] = this.showDirectoryPicker !== undefined ? this.showDirectoryPicker : <any>null;
+        data["showPreviewSizePicker"] = this.showPreviewSizePicker !== undefined ? this.showPreviewSizePicker : <any>null;
+        data["showSortPicker"] = this.showSortPicker !== undefined ? this.showSortPicker : <any>null;
+        data["showColourModePicker"] = this.showColourModePicker !== undefined ? this.showColourModePicker : <any>null;
+        data["showSettingsButton"] = this.showSettingsButton !== undefined ? this.showSettingsButton : <any>null;
+        data["showIcons"] = this.showIcons !== undefined ? this.showIcons : <any>null;
+        data["showLabels"] = this.showLabels !== undefined ? this.showLabels : <any>null;
+        return data;
+    }
+}
+
+/** A header configuration. */
+export interface IHeaderConfig {
+    /** Gets or sets a value indicating whether the search is shown. */
+    showSearch: boolean;
+    /** Gets or sets a value indicating whether the directory picker is shown. */
+    showDirectoryPicker: boolean;
+    /** Gets or sets a value indicating whether the preview size picker is shown. */
+    showPreviewSizePicker: boolean;
+    /** Gets or sets a value indicating whether the sort picker is shown. */
+    showSortPicker: boolean;
+    /** Gets or sets a value indicating whether the colour mode picker is shown. */
+    showColourModePicker: boolean;
+    /** Gets or sets a value indicating whether the settings button is shown. */
+    showSettingsButton: boolean;
+    /** Gets or sets a value indicating whether the icons is shown. */
+    showIcons: boolean;
+    /** Gets or sets a value indicating whether the labels is shown. */
+    showLabels: boolean;
 }
 
 /** A general configuration. */
@@ -1741,6 +1894,8 @@ export class GeneralConfig implements IGeneralConfig {
     showIcons!: boolean;
     /** Gets or sets a value indicating whether the labels is shown. */
     showLabels!: boolean;
+    /** Gets or sets the default colour mode. */
+    defaultColourMode!: string;
     /** Gets or sets a value indicating whether the debug mode. */
     debugMode!: boolean;
 
@@ -1762,6 +1917,7 @@ export class GeneralConfig implements IGeneralConfig {
             this.stickyHeader = _data["stickyHeader"] !== undefined ? _data["stickyHeader"] : <any>null;
             this.showIcons = _data["showIcons"] !== undefined ? _data["showIcons"] : <any>null;
             this.showLabels = _data["showLabels"] !== undefined ? _data["showLabels"] : <any>null;
+            this.defaultColourMode = _data["defaultColourMode"] !== undefined ? _data["defaultColourMode"] : <any>null;
             this.debugMode = _data["debugMode"] !== undefined ? _data["debugMode"] : <any>null;
         }
     }
@@ -1782,6 +1938,7 @@ export class GeneralConfig implements IGeneralConfig {
         data["stickyHeader"] = this.stickyHeader !== undefined ? this.stickyHeader : <any>null;
         data["showIcons"] = this.showIcons !== undefined ? this.showIcons : <any>null;
         data["showLabels"] = this.showLabels !== undefined ? this.showLabels : <any>null;
+        data["defaultColourMode"] = this.defaultColourMode !== undefined ? this.defaultColourMode : <any>null;
         data["debugMode"] = this.debugMode !== undefined ? this.debugMode : <any>null;
         return data;
     }
@@ -1803,6 +1960,8 @@ export interface IGeneralConfig {
     showIcons: boolean;
     /** Gets or sets a value indicating whether the labels is shown. */
     showLabels: boolean;
+    /** Gets or sets the default colour mode. */
+    defaultColourMode: string;
     /** Gets or sets a value indicating whether the debug mode. */
     debugMode: boolean;
 }
@@ -1853,8 +2012,8 @@ export interface IPreviewConfig {
     showPageNumber: boolean;
 }
 
-/** A input configuration. */
-export class InputConfig implements IInputConfig {
+/** A inbox configuration. */
+export class InboxConfig implements IInboxConfig {
     /** Gets or sets a value indicating whether the save to is shown. */
     showSaveTo!: boolean;
     /** Gets or sets a value indicating whether the save is shown. */
@@ -1863,8 +2022,8 @@ export class InputConfig implements IInputConfig {
     showRevert!: boolean;
     /** Gets or sets a value indicating whether the download is shown. */
     showDownload!: boolean;
-    /** Gets or sets a value indicating whether the delete is shown. */
-    showDelete!: boolean;
+    /** Gets or sets a value indicating whether the archive is shown. */
+    showArchive!: boolean;
     /** Gets or sets a value indicating whether the rename is shown. */
     showRename!: boolean;
     /** Gets or sets a value indicating whether the merge is shown. */
@@ -1881,12 +2040,12 @@ export class InputConfig implements IInputConfig {
     showSelectAll!: boolean;
     /** Gets or sets a value indicating whether the unselect is shown. */
     showUnselect!: boolean;
-    /** Gets or sets a value indicating whether the original file on save wil be deleted. */
-    deleteOriginalFileOnSave!: boolean;
-    /** Gets or sets a value indicating whether the move files to trash on delete. */
-    moveFilesToTrashOnDelete!: boolean;
+    /** Gets or sets a value indicating whether to archive the original file on save . */
+    archiveOriginalFileOnSave!: boolean;
+    /** Gets or sets a value indicating whether the document on archive wil be deleted. */
+    deleteDocumentOnArchive!: boolean;
 
-    constructor(data?: IInputConfig) {
+    constructor(data?: IInboxConfig) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -1901,7 +2060,7 @@ export class InputConfig implements IInputConfig {
             this.showSave = _data["showSave"] !== undefined ? _data["showSave"] : <any>null;
             this.showRevert = _data["showRevert"] !== undefined ? _data["showRevert"] : <any>null;
             this.showDownload = _data["showDownload"] !== undefined ? _data["showDownload"] : <any>null;
-            this.showDelete = _data["showDelete"] !== undefined ? _data["showDelete"] : <any>null;
+            this.showArchive = _data["showArchive"] !== undefined ? _data["showArchive"] : <any>null;
             this.showRename = _data["showRename"] !== undefined ? _data["showRename"] : <any>null;
             this.showMerge = _data["showMerge"] !== undefined ? _data["showMerge"] : <any>null;
             this.showSplit = _data["showSplit"] !== undefined ? _data["showSplit"] : <any>null;
@@ -1910,14 +2069,14 @@ export class InputConfig implements IInputConfig {
             this.showRotateAntiClockwise = _data["showRotateAntiClockwise"] !== undefined ? _data["showRotateAntiClockwise"] : <any>null;
             this.showSelectAll = _data["showSelectAll"] !== undefined ? _data["showSelectAll"] : <any>null;
             this.showUnselect = _data["showUnselect"] !== undefined ? _data["showUnselect"] : <any>null;
-            this.deleteOriginalFileOnSave = _data["deleteOriginalFileOnSave"] !== undefined ? _data["deleteOriginalFileOnSave"] : <any>null;
-            this.moveFilesToTrashOnDelete = _data["moveFilesToTrashOnDelete"] !== undefined ? _data["moveFilesToTrashOnDelete"] : <any>null;
+            this.archiveOriginalFileOnSave = _data["archiveOriginalFileOnSave"] !== undefined ? _data["archiveOriginalFileOnSave"] : <any>null;
+            this.deleteDocumentOnArchive = _data["deleteDocumentOnArchive"] !== undefined ? _data["deleteDocumentOnArchive"] : <any>null;
         }
     }
 
-    static fromJS(data: any): InputConfig {
+    static fromJS(data: any): InboxConfig {
         data = typeof data === 'object' ? data : {};
-        let result = new InputConfig();
+        let result = new InboxConfig();
         result.init(data);
         return result;
     }
@@ -1928,7 +2087,7 @@ export class InputConfig implements IInputConfig {
         data["showSave"] = this.showSave !== undefined ? this.showSave : <any>null;
         data["showRevert"] = this.showRevert !== undefined ? this.showRevert : <any>null;
         data["showDownload"] = this.showDownload !== undefined ? this.showDownload : <any>null;
-        data["showDelete"] = this.showDelete !== undefined ? this.showDelete : <any>null;
+        data["showArchive"] = this.showArchive !== undefined ? this.showArchive : <any>null;
         data["showRename"] = this.showRename !== undefined ? this.showRename : <any>null;
         data["showMerge"] = this.showMerge !== undefined ? this.showMerge : <any>null;
         data["showSplit"] = this.showSplit !== undefined ? this.showSplit : <any>null;
@@ -1937,14 +2096,14 @@ export class InputConfig implements IInputConfig {
         data["showRotateAntiClockwise"] = this.showRotateAntiClockwise !== undefined ? this.showRotateAntiClockwise : <any>null;
         data["showSelectAll"] = this.showSelectAll !== undefined ? this.showSelectAll : <any>null;
         data["showUnselect"] = this.showUnselect !== undefined ? this.showUnselect : <any>null;
-        data["deleteOriginalFileOnSave"] = this.deleteOriginalFileOnSave !== undefined ? this.deleteOriginalFileOnSave : <any>null;
-        data["moveFilesToTrashOnDelete"] = this.moveFilesToTrashOnDelete !== undefined ? this.moveFilesToTrashOnDelete : <any>null;
+        data["archiveOriginalFileOnSave"] = this.archiveOriginalFileOnSave !== undefined ? this.archiveOriginalFileOnSave : <any>null;
+        data["deleteDocumentOnArchive"] = this.deleteDocumentOnArchive !== undefined ? this.deleteDocumentOnArchive : <any>null;
         return data;
     }
 }
 
-/** A input configuration. */
-export interface IInputConfig {
+/** A inbox configuration. */
+export interface IInboxConfig {
     /** Gets or sets a value indicating whether the save to is shown. */
     showSaveTo: boolean;
     /** Gets or sets a value indicating whether the save is shown. */
@@ -1953,8 +2112,8 @@ export interface IInputConfig {
     showRevert: boolean;
     /** Gets or sets a value indicating whether the download is shown. */
     showDownload: boolean;
-    /** Gets or sets a value indicating whether the delete is shown. */
-    showDelete: boolean;
+    /** Gets or sets a value indicating whether the archive is shown. */
+    showArchive: boolean;
     /** Gets or sets a value indicating whether the rename is shown. */
     showRename: boolean;
     /** Gets or sets a value indicating whether the merge is shown. */
@@ -1971,20 +2130,20 @@ export interface IInputConfig {
     showSelectAll: boolean;
     /** Gets or sets a value indicating whether the unselect is shown. */
     showUnselect: boolean;
-    /** Gets or sets a value indicating whether the original file on save wil be deleted. */
-    deleteOriginalFileOnSave: boolean;
-    /** Gets or sets a value indicating whether the move files to trash on delete. */
-    moveFilesToTrashOnDelete: boolean;
+    /** Gets or sets a value indicating whether to archive the original file on save . */
+    archiveOriginalFileOnSave: boolean;
+    /** Gets or sets a value indicating whether the document on archive wil be deleted. */
+    deleteDocumentOnArchive: boolean;
 }
 
-/** A save configuration. */
-export class OutputConfig implements IOutputConfig {
+/** A outbox configuration. */
+export class OutboxConfig implements IOutboxConfig {
     /** Gets or sets a value indicating whether the restore is shown. */
     showRestore!: boolean;
     /** Gets or sets a value indicating whether the download is shown. */
     showDownload!: boolean;
 
-    constructor(data?: IOutputConfig) {
+    constructor(data?: IOutboxConfig) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -2000,9 +2159,9 @@ export class OutputConfig implements IOutputConfig {
         }
     }
 
-    static fromJS(data: any): OutputConfig {
+    static fromJS(data: any): OutboxConfig {
         data = typeof data === 'object' ? data : {};
-        let result = new OutputConfig();
+        let result = new OutboxConfig();
         result.init(data);
         return result;
     }
@@ -2015,26 +2174,24 @@ export class OutputConfig implements IOutputConfig {
     }
 }
 
-/** A save configuration. */
-export interface IOutputConfig {
+/** A outbox configuration. */
+export interface IOutboxConfig {
     /** Gets or sets a value indicating whether the restore is shown. */
     showRestore: boolean;
     /** Gets or sets a value indicating whether the download is shown. */
     showDownload: boolean;
 }
 
-/** A trash configuration. */
-export class TrashConfig implements ITrashConfig {
+/** A archive configuration. */
+export class ArchiveConfig implements IArchiveConfig {
     /** Gets or sets a value indicating whether the restore is shown. */
     showRestore!: boolean;
     /** Gets or sets a value indicating whether the download is shown. */
     showDownload!: boolean;
     /** Gets or sets a value indicating whether the delete is shown. */
     showDelete!: boolean;
-    /** Gets or sets a value indicating whether the permenently delete deleted documents. */
-    permenentlyDeleteDeletedDocuments!: boolean;
 
-    constructor(data?: ITrashConfig) {
+    constructor(data?: IArchiveConfig) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -2048,13 +2205,12 @@ export class TrashConfig implements ITrashConfig {
             this.showRestore = _data["showRestore"] !== undefined ? _data["showRestore"] : <any>null;
             this.showDownload = _data["showDownload"] !== undefined ? _data["showDownload"] : <any>null;
             this.showDelete = _data["showDelete"] !== undefined ? _data["showDelete"] : <any>null;
-            this.permenentlyDeleteDeletedDocuments = _data["permenentlyDeleteDeletedDocuments"] !== undefined ? _data["permenentlyDeleteDeletedDocuments"] : <any>null;
         }
     }
 
-    static fromJS(data: any): TrashConfig {
+    static fromJS(data: any): ArchiveConfig {
         data = typeof data === 'object' ? data : {};
-        let result = new TrashConfig();
+        let result = new ArchiveConfig();
         result.init(data);
         return result;
     }
@@ -2064,21 +2220,18 @@ export class TrashConfig implements ITrashConfig {
         data["showRestore"] = this.showRestore !== undefined ? this.showRestore : <any>null;
         data["showDownload"] = this.showDownload !== undefined ? this.showDownload : <any>null;
         data["showDelete"] = this.showDelete !== undefined ? this.showDelete : <any>null;
-        data["permenentlyDeleteDeletedDocuments"] = this.permenentlyDeleteDeletedDocuments !== undefined ? this.permenentlyDeleteDeletedDocuments : <any>null;
         return data;
     }
 }
 
-/** A trash configuration. */
-export interface ITrashConfig {
+/** A archive configuration. */
+export interface IArchiveConfig {
     /** Gets or sets a value indicating whether the restore is shown. */
     showRestore: boolean;
     /** Gets or sets a value indicating whether the download is shown. */
     showDownload: boolean;
     /** Gets or sets a value indicating whether the delete is shown. */
     showDelete: boolean;
-    /** Gets or sets a value indicating whether the permenently delete deleted documents. */
-    permenentlyDeleteDeletedDocuments: boolean;
 }
 
 export class ProblemDetails implements IProblemDetails {
@@ -2304,11 +2457,11 @@ export enum DocumentStatus {
     PasswordProtected = 2,
 }
 
-/** Values that represent target directories. 0 = Input 1 = Output 2 = Trash */
+/** Values that represent target directories. 0 = Inbox 1 = Outbox 2 = Archive */
 export enum TargetDirectory {
-    Input = 0,
-    Output = 1,
-    Trash = 2,
+    Inbox = 0,
+    Outbox = 1,
+    Archive = 2,
 }
 
 export interface FileResponse {

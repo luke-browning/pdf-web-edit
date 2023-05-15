@@ -6,6 +6,14 @@
     public class Config
     {
         /// <summary>
+        /// Gets or sets the header configuration.
+        /// </summary>
+        /// <value>
+        /// The header configuration.
+        /// </value>
+        public HeaderConfig HeaderConfig { get; set; } = new HeaderConfig();
+
+        /// <summary>
         /// Gets or sets the general configuration.
         /// </summary>
         /// <value>
@@ -22,27 +30,27 @@
         public PreviewConfig PreviewConfig { get; set; } = new PreviewConfig();
 
         /// <summary>
-        /// Gets or sets the input configuration.
+        /// Gets or sets the inbox configuration.
         /// </summary>
         /// <value>
-        /// The input configuration.
+        /// The inbox configuration.
         /// </value>
-        public InputConfig InputConfig { get; set; } = new InputConfig();
+        public InboxConfig InboxConfig { get; set; } = new InboxConfig();
 
         /// <summary>
-        /// Gets or sets the output configuration.
+        /// Gets or sets the outbox configuration.
         /// </summary>
         /// <value>
-        /// The output configuration.
+        /// The outbox configuration.
         /// </value>
-        public OutputConfig OutputConfig { get; set; } = new OutputConfig();
+        public OutboxConfig OutboxConfig { get; set; } = new OutboxConfig();
 
         /// <summary>
-        /// Gets or sets the trash configuration.
+        /// Gets or sets the archive configuration.
         /// </summary>
         /// <value>
-        /// The trash configuration.
+        /// The archive configuration.
         /// </value>
-        public TrashConfig TrashConfig { get; set; } = new TrashConfig();
+        public ArchiveConfig ArchiveConfig { get; set; } = new ArchiveConfig();
     }
 }

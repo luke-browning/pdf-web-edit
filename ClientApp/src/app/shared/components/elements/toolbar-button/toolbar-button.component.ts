@@ -4,7 +4,7 @@ import { ToolbarButton } from '../../../models/toolbar-button';
 @Component({
   selector: 'toolbar-button',
   templateUrl: './toolbar-button.component.html',
-  styleUrls: ['./toolbar-button.component.css']
+  styleUrls: ['./toolbar-button.component.scss']
 })
 export class ToolbarButtonComponent implements OnInit {
 

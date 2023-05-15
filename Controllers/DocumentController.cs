@@ -67,7 +67,7 @@ namespace PDFWebEdit.Controllers
         }
 
         /// <summary>
-        /// Gets the documents in the input folder.
+        /// Gets the documents in the selected folder.
         /// </summary>
         /// <param name="targetDirectory">The target directory.</param>
         /// <returns>
@@ -570,7 +570,7 @@ namespace PDFWebEdit.Controllers
         }
 
         /// <summary>
-        /// Deletes the specified document.
+        /// Archives the specified document.
         /// </summary>
         /// <param name="targetDirectory">The target directory.</param>
         /// <param name="document">The document.</param>
@@ -579,12 +579,12 @@ namespace PDFWebEdit.Controllers
         /// An IActionResult.
         /// </returns>
         [HttpPost]
-        [Route("{targetDirectory}/{document}/delete")]
+        [Route("{targetDirectory}/{document}/archive")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
         [ProducesErrorResponseType(typeof(ObjectResult))]
-        public IActionResult Delete(TargetDirectory targetDirectory, string document, string? subDirectory = null)
+        public IActionResult Archive(TargetDirectory targetDirectory, string document, string? subDirectory = null)
         {
             // Get the path to the document
             var path = _directoryService.GetDocumentPath(targetDirectory, subDirectory, document);
@@ -592,8 +592,45 @@ namespace PDFWebEdit.Controllers
             if (path != null)
             {
                 try
-                { 
-                    _directoryService.Delete(targetDirectory, subDirectory, document);
+                {
+                    _directoryService.Archive(targetDirectory, subDirectory, document);
+
+                    return Ok();
+                }
+                catch (Exception x)
+                {
+                    return ExceptionHelpers.GetErrorObjectResult("Archive", HttpContext, x);
+                }
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
+        /// <summary>
+        /// Permentently deletes the specified document from the archive.
+        /// </summary>
+        /// <param name="document">The document.</param>
+        /// <returns>
+        /// An IActionResult.
+        /// </returns>
+        [HttpPost]
+        [Route("{document}/delete")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
+        [ProducesErrorResponseType(typeof(ObjectResult))]
+        public IActionResult DeleteFromArchive(string document)
+        {
+            // Get the path to the document
+            var path = _directoryService.GetDocumentPath(TargetDirectory.Archive, null, document);
+
+            if (path != null)
+            {
+                try
+                {
+                    _directoryService.PermenentlyDeleteFromArchive(document);
 
                     return Ok();
                 }
@@ -649,7 +686,7 @@ namespace PDFWebEdit.Controllers
         }
 
         /// <summary>
-        /// Restores a document from trash.
+        /// Restores a document from the target directory to the inbox.
         /// </summary>
         /// <param name="targetDirectory">The target directory.</param>
         /// <param name="document">The document.</param>
@@ -688,7 +725,7 @@ namespace PDFWebEdit.Controllers
         }
 
         /// <summary>
-        /// Saves the specified document in the input directory.
+        /// Saves the specified document from the inbox directory.
         /// </summary>
         /// <param name="document">The document.</param>
         /// <param name="sourceSubDirectory">The subDirectory to move from.</param>
@@ -705,7 +742,7 @@ namespace PDFWebEdit.Controllers
         public IActionResult SaveTo(string document, string? sourceSubDirectory = null, string? targetSubDirectory = null)
         {
             // Get the path to the document
-            var path = _directoryService.GetDocumentPath(TargetDirectory.Input, sourceSubDirectory, document);
+            var path = _directoryService.GetDocumentPath(TargetDirectory.Inbox, sourceSubDirectory, document);
 
             if (path != null)
             {
@@ -727,7 +764,7 @@ namespace PDFWebEdit.Controllers
         }
 
         /// <summary>
-        /// Saves the specified document in the input directory.
+        /// Saves the specified document from the inbox directory.
         /// </summary>
         /// <param name="document">The document.</param>
         /// <param name="sourceSubDirectory">The subDirectory to move from.</param>
@@ -743,7 +780,7 @@ namespace PDFWebEdit.Controllers
         public IActionResult Save(string document, string? sourceSubDirectory = null)
         {
             // Get the path to the document
-            var path = _directoryService.GetDocumentPath(TargetDirectory.Input, sourceSubDirectory, document);
+            var path = _directoryService.GetDocumentPath(TargetDirectory.Inbox, sourceSubDirectory, document);
 
             if (path != null)
             {

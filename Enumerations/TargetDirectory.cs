@@ -6,18 +6,18 @@
     public enum TargetDirectory
     {
         /// <summary>
-        /// An enum constant representing the input option.
+        /// An enum constant representing the inbox option.
         /// </summary>
-        Input,
+        Inbox,
 
         /// <summary>
-        /// An enum constant representing the output option.
+        /// An enum constant representing the outbot option.
         /// </summary>
-        Output,
+        Outbox,
 
         /// <summary>
-        /// An enum constant representing the trash option.
+        /// An enum constant representing the archive option.
         /// </summary>
-        Trash
+        Archive
     }
 }

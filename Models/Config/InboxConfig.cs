@@ -1,9 +1,9 @@
 ﻿namespace PDFWebEdit.Models.Config
 {
     /// <summary>
-    /// A input configuration.
+    /// A inbox configuration.
     /// </summary>
-    public class InputConfig
+    public class InboxConfig
     {
         /// <summary>
         /// Gets or sets a value indicating whether the save to is shown.
@@ -38,12 +38,12 @@
         public bool ShowDownload { get; set; } = true;
 
         /// <summary>
-        /// Gets or sets a value indicating whether the delete is shown.
+        /// Gets or sets a value indicating whether the archive is shown.
         /// </summary>
         /// <value>
-        /// True if show delete, false if not.
+        /// True if show archive, false if not.
         /// </value>
-        public bool ShowDelete { get; set; } = true;
+        public bool ShowArchive { get; set; } = true;
 
         /// <summary>
         /// Gets or sets a value indicating whether the rename is shown.
@@ -110,19 +110,19 @@
         public bool ShowUnselect { get; set; } = true;
 
         /// <summary>
-        /// Gets or sets a value indicating whether the original file on save wil be deleted.
+        /// Gets or sets a value indicating whether to archive the original file on save .
         /// </summary>
         /// <value>
-        /// True if delete original file on save, false if not.
+        /// True if archive original file on save, false if not.
         /// </value>
-        public bool DeleteOriginalFileOnSave { get; set; } = false;
+        public bool ArchiveOriginalFileOnSave { get; set; } = true;
 
         /// <summary>
-        /// Gets or sets a value indicating whether the move files to trash on delete.
+        /// Gets or sets a value indicating whether the document on archive wil be deleted.
         /// </summary>
         /// <value>
-        /// True if move files to trash on delete, false if not.
+        /// True if delete document on archive, false if not.
         /// </value>
-        public bool MoveFilesToTrashOnDelete { get; set; } = true;
+        public bool DeleteDocumentOnArchive { get; set; } = false;
     }
 }

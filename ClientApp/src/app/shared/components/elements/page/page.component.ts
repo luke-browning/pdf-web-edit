@@ -6,7 +6,7 @@ import { Page } from '../../../models/page';
 @Component({
   selector: 'page',
   templateUrl: './page.component.html',
-  styleUrls: ['./page.component.css']
+  styleUrls: ['./page.component.scss']
 })
 export class PageComponent implements OnInit {
 

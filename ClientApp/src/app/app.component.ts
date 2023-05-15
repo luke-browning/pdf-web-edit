@@ -1,19 +1,22 @@
 import { Component } from '@angular/core';
 import { TourService } from 'ngx-ui-tour-ng-bootstrap';
 import { ConfigService } from './services/config/config.service';
+import { SessionService } from './services/session/session.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
 
   title = 'PDF Web Edit';
 
+  colourMode!: string;
+
   stickyHeader = false;
 
-  constructor(private tourService: TourService, private configService: ConfigService) {
+  constructor(private tourService: TourService, private configService: ConfigService, private sessionService: SessionService) {
 
     configService.getConfig().subscribe(config => {
 

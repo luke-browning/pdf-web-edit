@@ -2,31 +2,30 @@ import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { PDFWebEditAPI } from '../../../api/PDFWebEditAPI';
-import { DirectoryPickerComponent } from '../../shared/components/modals/directory-picker/directory-picker.component';
-import { InputBoxComponent } from '../../shared/components/modals/input-box/input-box.component';
-import { MergeDocmentComponent } from '../../shared/components/modals/merge-docment/merge-docment.component';
-import { MessageBoxComponent } from '../../shared/components/modals/message-box/message-box.component';
 import { Doc } from '../../shared/models/doc';
-import { Page } from '../../shared/models/page';
 import { ConfigService } from '../../services/config/config.service';
-import { ToolbarButton } from '../../shared/models/toolbar-button';
 import { ReplaceDocument } from '../../shared/components/elements/document/document.component';
 import { BehaviorSubject } from 'rxjs';
+import { SessionService } from '../../services/session/session.service';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css']
+  styleUrls: ['./home.component.scss']
 })
 export class HomeComponent {
 
+  // Documents
+  documentsLoaded = false;
   documents: Doc[] = [];
+  filteredDocuments: Doc[] = [];
+  filterQuery = '';
 
   // Config
   config!: PDFWebEditAPI.Config;
 
   // Options
-  directory = PDFWebEditAPI.TargetDirectory.Input;
+  directory = PDFWebEditAPI.TargetDirectory.Inbox;
   targetDirectories = PDFWebEditAPI.TargetDirectory;
   directoryStructure: PDFWebEditAPI.Folder[] = [];
 
@@ -36,7 +35,7 @@ export class HomeComponent {
   sortDirection: string = 'Asc';
 
   constructor(private api: PDFWebEditAPI.DocumentClient, private modalService: NgbModal, private route: ActivatedRoute,
-    private router: Router, private configService: ConfigService) {
+    private router: Router, private configService: ConfigService, private sessionService: SessionService) {
 
     // Load the app config
     configService.getConfig().subscribe(config => {
@@ -49,20 +48,16 @@ export class HomeComponent {
 
       // Work out the current directory
       switch (router.url) {
-        default:
-          router.navigateByUrl('/' + this.config?.generalConfig?.defaultFolder.toLowerCase() || 'input');
+        case '/inbox':
+          this.directory = PDFWebEditAPI.TargetDirectory.Inbox
           break;
 
-        case '/input':
-          this.directory = PDFWebEditAPI.TargetDirectory.Input
+        case '/outbox':
+          this.directory = PDFWebEditAPI.TargetDirectory.Outbox;
           break;
 
-        case '/output':
-          this.directory = PDFWebEditAPI.TargetDirectory.Output;
-          break;
-
-        case '/trash':
-          this.directory = PDFWebEditAPI.TargetDirectory.Trash;
+        case '/archive':
+          this.directory = PDFWebEditAPI.TargetDirectory.Archive;
           break;
       }
 
@@ -73,6 +68,11 @@ export class HomeComponent {
 
         this.sortDocuments();
 
+        this.sessionService.search.subscribe((query) => {
+          this.filterQuery = query;
+          this.updatedFilteredDocuments();
+        });
+
       }, error => console.error(error));
 
       // List directories
@@ -82,14 +82,13 @@ export class HomeComponent {
         }
       });
     });
-  }
 
-  //
-  // Sizing
-  // 
+    // Keep track of the preview size
+    sessionService.previewSize.subscribe((previewSize) => this.size.next(previewSize));
 
-  setSize($event: Event) {
-    this.size.next(($event.target as HTMLInputElement).value);
+    // Keep track of the sorting
+    sessionService.sortBy.subscribe((sortBy) => this.setSort(sortBy));
+    sessionService.sortDirection.subscribe((sortDirection) => this.setSortDirection(sortDirection));
   }
 
   //
@@ -99,11 +98,13 @@ export class HomeComponent {
   setSort(sort: string) {
     this.sort = sort;
     this.sortDocuments();
+    this.updatedFilteredDocuments();
   }
 
   setSortDirection(direction: string) {
     this.sortDirection = direction;
     this.sortDocuments();
+    this.updatedFilteredDocuments();
   }
 
   sortDocuments() {
@@ -151,19 +152,26 @@ export class HomeComponent {
     let newDoc = this.loadDocument(newDocument);
     this.documents.push(newDoc);
     this.sortDocuments();
+    this.updatedFilteredDocuments();
   }
 
   replaceDocEvent($event: ReplaceDocument) {
     this.replaceDoc($event.originalDoc, $event.newDocument);
+    this.updatedFilteredDocuments();
   }
 
   removeDocEvent(name: string) {
     this.documents = this.documents.filter(item => item.name !== name);
+    this.updatedFilteredDocuments();
   }
 
   //
   // Helpers
   //
+
+  updatedFilteredDocuments() {
+    this.filteredDocuments = this.documents.filter(doc => doc.name.toLowerCase().indexOf(this.filterQuery.toLowerCase()) > -1);
+  }
 
   replaceDoc(originalDoc: Doc, newDocument: PDFWebEditAPI.Document) {
 
@@ -185,6 +193,8 @@ export class HomeComponent {
 
       this.documents.push(doc);
     });
+
+    this.documentsLoaded = true;
   }
 
   loadDocument(file: PDFWebEditAPI.Document): Doc {
