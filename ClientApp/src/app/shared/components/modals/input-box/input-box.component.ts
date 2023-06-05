@@ -10,6 +10,8 @@ export class InputBoxComponent implements OnInit {
 
   @Input() title!: string;
   @Input() message!: string;
+  @Input() okButton!: string;
+  @Input() closeButton!: string;
   @Input() password!: boolean;
   @Input() value!: string;
 

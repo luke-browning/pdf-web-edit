@@ -8,6 +8,14 @@ namespace PDFWebEdit.Models.Config
     public class GeneralConfig
     {
         /// <summary>
+        /// Gets or sets the default language.
+        /// </summary>
+        /// <value>
+        /// The default language.
+        /// </value>
+        public string DefaultLanguage { get; set; } = "en";
+
+        /// <summary>
         /// Gets or sets a value indicating whether the tour is enabled.
         /// </summary>
         /// <value>

@@ -1,8 +1,10 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
+import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
 import { AppComponent } from './app.component';
 import { NavMenuComponent } from './shared/components/elements/nav-menu/nav-menu.component';
@@ -23,6 +25,11 @@ import { ToolbarComponent } from './shared/components/elements/toolbar/toolbar.c
 import { DocumentComponent } from './shared/components/elements/document/document.component';
 import { PagesComponent } from './shared/components/elements/pages/pages.component';
 import { PageComponent } from './shared/components/elements/page/page.component';
+
+// AoT requires an exported function for factories
+export function HttpLoaderFactory(http: HttpClient) {
+  return new TranslateHttpLoader(http);
+}
 
 @NgModule({
   declarations: [
@@ -56,6 +63,14 @@ import { PageComponent } from './shared/components/elements/page/page.component'
     NgbModule,
     DragulaModule.forRoot(),
     TourNgBootstrapModule,
+    TranslateModule.forRoot({
+      defaultLanguage: 'en',
+      loader: {
+        provide: TranslateLoader,
+        useFactory: HttpLoaderFactory,
+        deps: [HttpClient]
+      }
+    })
   ],
   providers: [
     {

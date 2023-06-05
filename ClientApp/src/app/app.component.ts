@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { Component, Inject, Renderer2 } from '@angular/core';
 import { TourService } from 'ngx-ui-tour-ng-bootstrap';
 import { ConfigService } from './services/config/config.service';
 import { SessionService } from './services/session/session.service';
@@ -16,7 +17,8 @@ export class AppComponent {
 
   stickyHeader = false;
 
-  constructor(private tourService: TourService, private configService: ConfigService, private sessionService: SessionService) {
+  constructor(private tourService: TourService, private configService: ConfigService, private sessionService: SessionService,
+    private renderer: Renderer2) {
 
     configService.getConfig().subscribe(config => {
 
@@ -64,6 +66,15 @@ export class AppComponent {
 
       // Should we keep the header stuck to the top of the page
       this.stickyHeader = config?.headerConfig.stickyHeader || false;
+
+      // Colour mode
+      this.sessionService.colourMode.subscribe((colourMode) => {
+
+        this.renderer.removeClass(document.body, 'light');
+        this.renderer.removeClass(document.body, 'dark');
+
+        this.renderer.addClass(document.body, colourMode);
+      });
     });
   }
 }

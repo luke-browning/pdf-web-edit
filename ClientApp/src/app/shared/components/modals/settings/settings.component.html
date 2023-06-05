@@ -1,6 +1,6 @@
 <form (submit)="ok()">
   <div class="modal-header">
-    <h5 class="modal-title" id="exampleModalLabel">Settings</h5>
+    <h5 class="modal-title" id="exampleModalLabel">{{ 'settings.label' | translate }}</h5>
     <button type="button" class="btn-close" aria-label="Close" (click)="close()"></button>
   </div>
   <div class="modal-body">
@@ -9,244 +9,251 @@
       <div ngbNav #nav="ngbNav" [(activeId)]="active" class="nav-pills flex-column" orientation="vertical">
 
         <ng-container ngbNavItem="general" class="flex-fill">
-          <a ngbNavLink>General</a>
+          <a ngbNavLink>{{ 'settings.sections.general' | translate }}</a>
           <ng-template ngbNavContent>
 
             <div class="mb-3">
-              <label for="default-folder" class="form-label">Default Folder</label>
+              <label for="default-language" class="form-label">{{ 'settings.general.defaultLanguage' | translate }}</label>
+              <select name="default-language" id="default-folder" class="form-select" [(ngModel)]="config.generalConfig.defaultLanguage">
+                <option *ngFor="let language of languages" [value]="language.value">{{ language.label | translate }}</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label for="default-folder" class="form-label">{{ 'settings.general.defaultFolder' | translate }}</label>
               <select name="default-folder" id="default-folder" class="form-select" [(ngModel)]="config.generalConfig.defaultFolder">
-                <option *ngFor="let folder of folders" [value]="folder.value">{{ folder.label }}</option>
+                <option *ngFor="let folder of folders" [value]="folder.value">{{ folder.label | translate }}</option>
               </select>
             </div>
 
             <div class="mb-3">
-              <label for="default-sort-column" class="form-label">Default Sort Column</label>
+              <label for="default-sort-column" class="form-label">{{ 'settings.general.defaultSortColumn' | translate }}</label>
               <select name="default-sort-column" id="default-sort-column" class="form-select" [(ngModel)]="config.generalConfig.defaultSortColumn">
-                <option *ngFor="let column of sortColumns" [value]="column.value">{{ column.label }}</option>
+                <option *ngFor="let column of sortColumns" [value]="column.value">{{ column.label | translate }}</option>
               </select>
             </div>
 
             <div class="mb-3">
-              <label for="default-sort-direction" class="form-label">Default Sort Direction</label>
+              <label for="default-sort-direction" class="form-label">{{ 'settings.general.defaultSortDirection' | translate }}</label>
               <select name="default-sort-direction" id="default-sort-direction" class="form-select" [(ngModel)]="config.generalConfig.defaultSortDirection">
-                <option *ngFor="let direction of sortDirections" [value]="direction.value">{{ direction.label }}</option>
+                <option *ngFor="let direction of sortDirections" [value]="direction.value">{{ direction.label | translate }}</option>
               </select>
             </div>
 
             <div class="mb-3">
-              <label for="default-colour-mode" class="form-label">Default Colour Mode</label>
+              <label for="default-colour-mode" class="form-label">{{ 'settings.general.defaultColourMode' | translate }}</label>
               <select name="default-colour-mode" id="default-colour-mode" class="form-select" [(ngModel)]="config.generalConfig.defaultColourMode">
-                <option *ngFor="let colourMode of colourModes" [value]="colourMode.value">{{ colourMode.label }}</option>
+                <option *ngFor="let colourMode of colourModes" [value]="colourMode.value">{{ colourMode.label | translate }}</option>
               </select>
             </div>
 
             <div class="form-check form-switch mb-3">
               <input class="form-check-input" type="checkbox" role="switch" name="enable-tour" id="enable-tour" [(ngModel)]="config.generalConfig.enableTour">
-              <label class="form-check-label" for="enable-tour">Enable Tour</label>
+              <label class="form-check-label" for="enable-tour">{{ 'settings.general.enableTour' | translate }}</label>
             </div>
 
             <div class="form-check form-switch mb-3">
               <input class="form-check-input" type="checkbox" role="switch" name="show-icons" id="show-icons" [(ngModel)]="config.generalConfig.showIcons">
-              <label class="form-check-label" for="show-icons">Show Icons</label>
+              <label class="form-check-label" for="show-icons">{{ 'settings.general.showIcons' | translate }}</label>
             </div>
 
             <div class="form-check form-switch mb-3">
               <input class="form-check-input" type="checkbox" role="switch" name="show-labels" id="show-labels" [(ngModel)]="config.generalConfig.showLabels">
-              <label class="form-check-label" for="show-labels">Show Labels</label>
+              <label class="form-check-label" for="show-labels">{{ 'settings.general.showLabels' | translate }}</label>
             </div>
 
           </ng-template>
         </ng-container>
 
         <ng-container ngbNavItem="preview">
-          <a ngbNavLink>Previews</a>
+          <a ngbNavLink>{{ 'settings.sections.previews' | translate }}</a>
           <ng-template ngbNavContent>
 
             <div class="mb-3">
-              <label for="default-size" class="form-label">Default Size</label>
+              <label for="default-size" class="form-label">{{ 'settings.previews.defaultSize' | translate }}</label>
               <select name="default-size" id="default-size" class="form-select" [(ngModel)]="config.previewConfig.defaultSize">
-                <option *ngFor="let size of sizes" [value]="size.value">{{ size.label }}</option>
+                <option *ngFor="let size of sizes" [value]="size.value">{{ size.label | translate }}</option>
               </select>
             </div>
 
             <div class="form-check form-switch mb-3">
               <input class="form-check-input" type="checkbox" role="switch" name="show-page-number" id="show-page-number" [(ngModel)]="config.previewConfig.showPageNumber">
-              <label class="form-check-label" for="show-page-number">Show Page Number</label>
+              <label class="form-check-label" for="show-page-number">{{ 'settings.previews.showPageNumber' | translate }}</label>
             </div>
 
           </ng-template>
         </ng-container>
 
         <ng-container ngbNavItem="header">
-          <a ngbNavLink>Header</a>
+          <a ngbNavLink>{{ 'settings.sections.header' | translate }}</a>
           <ng-template ngbNavContent>
 
             <div class="form-check form-switch mb-3">
               <input class="form-check-input" type="checkbox" role="switch" name="sticky-header" id="sticky-header" [(ngModel)]="config.headerConfig.stickyHeader">
-              <label class="form-check-label" for="sticky-header">Sticky Header</label>
+              <label class="form-check-label" for="sticky-header">{{ 'settings.header.stickyHeader' | translate }}</label>
             </div>
 
             <div class="form-check form-switch mb-3">
               <input class="form-check-input" type="checkbox" role="switch" name="show-directory-picker" id="show-directory-picker" [(ngModel)]="config.headerConfig.showDirectoryPicker">
-              <label class="form-check-label" for="show-directory-picker">Show Directory Picker</label>
+              <label class="form-check-label" for="show-directory-picker">{{ 'settings.header.showDirectoryPicker' | translate }}</label>
             </div>
 
             <div class="form-check form-switch mb-3">
               <input class="form-check-input" type="checkbox" role="switch" name="show-search" id="show-search" [(ngModel)]="config.headerConfig.showSearch">
-              <label class="form-check-label" for="show-search">Show Search</label>
+              <label class="form-check-label" for="show-search">{{ 'settings.header.showSearch' | translate }}</label>
             </div>
 
             <div class="form-check form-switch mb-3">
               <input class="form-check-input" type="checkbox" role="switch" name="show-preview-size-picker" id="show-preview-size-picker" [(ngModel)]="config.headerConfig.showPreviewSizePicker">
-              <label class="form-check-label" for="show-preview-size-picker">Show Preview Size Picker</label>
+              <label class="form-check-label" for="show-preview-size-picker">{{ 'settings.header.showPreviewSizePicker' | translate }}</label>
             </div>
 
             <div class="form-check form-switch mb-3">
               <input class="form-check-input" type="checkbox" role="switch" name="show-sort-picker" id="show-sort-picker" [(ngModel)]="config.headerConfig.showSortPicker">
-              <label class="form-check-label" for="show-sort-picker">Show Sort Picker</label>
+              <label class="form-check-label" for="show-sort-picker">{{ 'settings.header.showSortPicker' | translate }}</label>
             </div>
 
             <div class="form-check form-switch mb-3">
               <input class="form-check-input" type="checkbox" role="switch" name="show-colour-mode-picker" id="show-colour-mode-picker" [(ngModel)]="config.headerConfig.showColourModePicker">
-              <label class="form-check-label" for="show-colour-mode-picker">Show Colour Mode Picker</label>
+              <label class="form-check-label" for="show-colour-mode-picker">{{ 'settings.header.showColourModePicker' | translate }}</label>
             </div>
 
             <div class="form-check form-switch mb-3">
               <input class="form-check-input" type="checkbox" role="switch" name="show-settings-button" id="show-settings-button" [(ngModel)]="config.headerConfig.showSettingsButton">
-              <label class="form-check-label" for="show-settings-button">Show Settings Button</label>
+              <label class="form-check-label" for="show-settings-button">{{ 'settings.header.showSettingsButton' | translate }}</label>
             </div>
 
             <div class="form-check form-switch mb-3">
               <input class="form-check-input" type="checkbox" role="switch" name="show-header-icons" id="show-header-icons" [(ngModel)]="config.headerConfig.showIcons">
-              <label class="form-check-label" for="show-header-icons">Show Icons</label>
+              <label class="form-check-label" for="show-header-icons">{{ 'settings.header.showIcons' | translate }}</label>
             </div>
 
             <div class="form-check form-switch mb-3">
               <input class="form-check-input" type="checkbox" role="switch" name="show-header-labels" id="show-header-labels" [(ngModel)]="config.headerConfig.showLabels">
-              <label class="form-check-label" for="show-header-labels">Show Labels</label>
+              <label class="form-check-label" for="show-header-labels">{{ 'settings.header.showLabels' | translate }}</label>
             </div>
 
           </ng-template>
         </ng-container>
 
         <ng-container ngbNavItem>
-          <a ngbNavLink>Directories</a>
+          <a ngbNavLink>{{ 'settings.sections.directories' | translate }}</a>
           <ng-template ngbNavContent>
 
             <ngb-accordion [closeOthers]="true" activeIds="input" class="mt-3">
-              <ngb-panel id="input" title="Input">
+              <ngb-panel id="input" title="{{ 'settings.directories.inbox' | translate }}">
                 <ng-template ngbPanelContent>
 
                   <div class="form-check form-switch mt-3 mb-3">
                     <input class="form-check-input" type="checkbox" role="switch" name="show-save-to" id="show-save-to" [(ngModel)]="config.inboxConfig.showSaveTo">
-                    <label class="form-check-label" for="show-save-to">Show Save To</label>
+                    <label class="form-check-label" for="show-save-to">{{ 'settings.directories.showSaveTo' | translate }}</label>
                   </div>
 
                   <div class="form-check form-switch mb-3">
                     <input class="form-check-input" type="checkbox" role="switch" name="show-save" id="show-save" [(ngModel)]="config.inboxConfig.showSave">
-                    <label class="form-check-label" for="show-save">Show Save</label>
+                    <label class="form-check-label" for="show-save">{{ 'settings.directories.showSave' | translate }}</label>
                   </div>
 
                   <div class="form-check form-switch mb-3">
                     <input class="form-check-input" type="checkbox" role="switch" name="show-revert" id="show-revert" [(ngModel)]="config.inboxConfig.showRevert">
-                    <label class="form-check-label" for="show-revert">Show Revert</label>
+                    <label class="form-check-label" for="show-revert">{{ 'settings.directories.showRevert' | translate }}</label>
                   </div>
 
                   <div class="form-check form-switch mb-3">
                     <input class="form-check-input" type="checkbox" role="switch" name="show-download" id="show-download" [(ngModel)]="config.inboxConfig.showDownload">
-                    <label class="form-check-label" for="show-download">Show Download</label>
+                    <label class="form-check-label" for="show-download">{{ 'settings.directories.showDownloaad' | translate }}</label>
                   </div>
 
                   <div class="form-check form-switch mb-3">
                     <input class="form-check-input" type="checkbox" role="switch" name="show-delete" id="show-delete" [(ngModel)]="config.inboxConfig.showArchive">
-                    <label class="form-check-label" for="show-delete">Show Delete</label>
+                    <label class="form-check-label" for="show-delete">{{ 'settings.directories.showDelete' | translate }}</label>
                   </div>
 
                   <div class="form-check form-switch mb-3">
                     <input class="form-check-input" type="checkbox" role="switch" name="show-rename" id="show-rename" [(ngModel)]="config.inboxConfig.showRename">
-                    <label class="form-check-label" for="show-rename">Show Rename</label>
+                    <label class="form-check-label" for="show-rename">{{ 'settings.directories.showRename' | translate }}</label>
                   </div>
 
                   <div class="form-check form-switch mb-3">
                     <input class="form-check-input" type="checkbox" role="switch" name="show-merge" id="show-merge" [(ngModel)]="config.inboxConfig.showMerge">
-                    <label class="form-check-label" for="show-merge">Show Merge</label>
+                    <label class="form-check-label" for="show-merge">{{ 'settings.directories.showMerge' | translate }}</label>
                   </div>
 
                   <div class="form-check form-switch mb-3">
                     <input class="form-check-input" type="checkbox" role="switch" name="show-split" id="show-split" [(ngModel)]="config.inboxConfig.showSplit">
-                    <label class="form-check-label" for="show-split">Show Split</label>
+                    <label class="form-check-label" for="show-split">{{ 'settings.directories.showSplit' | translate }}</label>
                   </div>
 
                   <div class="form-check form-switch mb-3">
                     <input class="form-check-input" type="checkbox" role="switch" name="show-remove" id="show-remove" [(ngModel)]="config.inboxConfig.showRemove">
-                    <label class="form-check-label" for="show-remove">Show Remove</label>
+                    <label class="form-check-label" for="show-remove">{{ 'settings.directories.showRemove' | translate }}</label>
                   </div>
 
                   <div class="form-check form-switch mb-3">
                     <input class="form-check-input" type="checkbox" role="switch" name="show-rotate-clockwise" id="show-rotate-clockwise" [(ngModel)]="config.inboxConfig.showRotateClockwise">
-                    <label class="form-check-label" for="show-rotate-clockwise">Show Rotate Clockwise</label>
+                    <label class="form-check-label" for="show-rotate-clockwise">{{ 'settings.directories.showRotateClockwise' | translate }}</label>
                   </div>
 
                   <div class="form-check form-switch mb-3">
                     <input class="form-check-input" type="checkbox" role="switch" name="show-rotate-anti-clockwise" id="show-rotate-anti-clockwise" [(ngModel)]="config.inboxConfig.showRotateAntiClockwise">
-                    <label class="form-check-label" for="show-rotate-anti-clockwise">Show Rotate Anti-Clockwise</label>
+                    <label class="form-check-label" for="show-rotate-anti-clockwise">{{ 'settings.directories.showRotateAntiClockwise' | translate }}</label>
                   </div>
 
                   <div class="form-check form-switch mb-3">
                     <input class="form-check-input" type="checkbox" role="switch" name="show-select-all" id="show-select-all" [(ngModel)]="config.inboxConfig.showSelectAll">
-                    <label class="form-check-label" for="show-select-all">Show Select All</label>
+                    <label class="form-check-label" for="show-select-all">{{ 'settings.directories.showSelectAll' | translate }}</label>
                   </div>
 
                   <div class="form-check form-switch mb-3">
                     <input class="form-check-input" type="checkbox" role="switch" name="show-unselect" id="show-unselect" [(ngModel)]="config.inboxConfig.showUnselect">
-                    <label class="form-check-label" for="show-unselect">Show Unselect</label>
+                    <label class="form-check-label" for="show-unselect">{{ 'settings.directories.showUnselect' | translate }}</label>
                   </div>
 
                   <hr />
 
                   <div class="form-check form-switch mb-3">
                     <input class="form-check-input" type="checkbox" role="switch" name="archive-original-file-on-save" id="archive-original-file-on-save" [(ngModel)]="config.inboxConfig.archiveOriginalFileOnSave">
-                    <label class="form-check-label" for="archive-original-file-on-save">Archive Original File On Save</label>
+                    <label class="form-check-label" for="archive-original-file-on-save">{{ 'settings.directories.archiveOriginalFileOnSave' | translate }}</label>
                   </div>
 
                   <div class="form-check form-switch mb-3">
                     <input class="form-check-input" type="checkbox" role="switch" name="delete-document-on-archive" id="delete-document-on-archive" [(ngModel)]="config.inboxConfig.deleteDocumentOnArchive">
-                    <label class="form-check-label" for="delete-document-on-archive">Delete Document On Archive</label>
+                    <label class="form-check-label" for="delete-document-on-archive">{{ 'settings.directories.deleteDocumentOnArchive' | translate }}</label>
                   </div>
 
                 </ng-template>
               </ngb-panel>
-              <ngb-panel id="outbox" title="Outbox">
+              <ngb-panel id="outbox" title="{{ 'settings.directories.outbox' | translate }}">
                 <ng-template ngbPanelContent>
 
                   <div class="form-check form-switch mb-3">
                     <input class="form-check-input" type="checkbox" role="switch" name="show-restore" id="show-restore" [(ngModel)]="config.outboxConfig.showRestore">
-                    <label class="form-check-label" for="show-restore">Show Restore</label>
+                    <label class="form-check-label" for="show-restore">{{ 'settings.directories.showRestore' | translate }}</label>
                   </div>
 
                   <div class="form-check form-switch mb-3">
                     <input class="form-check-input" type="checkbox" role="switch" name="show-download" id="show-download" [(ngModel)]="config.outboxConfig.showDownload">
-                    <label class="form-check-label" for="show-download">Show Download</label>
+                    <label class="form-check-label" for="show-download">{{ 'settings.directories.showDownload' | translate }}</label>
                   </div>
 
                 </ng-template>
               </ngb-panel>
-              <ngb-panel id="archive" title="Archive">
+              <ngb-panel id="archive" title="{{ 'settings.directories.archive' | translate }}">
                 <ng-template ngbPanelContent>
 
                   <div class="form-check form-switch mb-3">
                     <input class="form-check-input" type="checkbox" role="switch" name="show-restore" id="show-restore" [(ngModel)]="config.archiveConfig.showRestore">
-                    <label class="form-check-label" for="show-restore">Show Restore</label>
+                    <label class="form-check-label" for="show-restore">{{ 'settings.directories.showRestore' | translate }}</label>
                   </div>
 
                   <div class="form-check form-switch mb-3">
                     <input class="form-check-input" type="checkbox" role="switch" name="show-download" id="show-download" [(ngModel)]="config.archiveConfig.showDownload">
-                    <label class="form-check-label" for="show-download">Show Download</label>
+                    <label class="form-check-label" for="show-download">{{ 'settings.directories.showDownload' | translate }}</label>
                   </div>
 
                   <div class="form-check form-switch mb-3">
                     <input class="form-check-input" type="checkbox" role="switch" name="show-delete" id="show-delete" [(ngModel)]="config.archiveConfig.showDelete">
-                    <label class="form-check-label" for="show-delete">Show Delete</label>
+                    <label class="form-check-label" for="show-delete">{{ 'settings.directories.showDelete' | translate }}</label>
                   </div>
 
                 </ng-template>
@@ -261,9 +268,9 @@
     </div>
   </div>
   <div class="modal-footer ">
-    <button type="button" class="btn btn-secondary me-auto" (click)="reloadConfiguration()">Reload Configuration</button>
+    <button type="button" class="btn btn-secondary me-auto" (click)="reloadConfiguration()">{{ 'settings.buttons.reloadConfiguration' | translate }}</button>
 
-    <button type="submit" class="btn btn-primary">Save</button>
-    <button type="button" class="btn btn-secondary" (click)="close()">Cancel</button>
+    <button type="submit" class="btn btn-primary">{{ 'settings.buttons.save' | translate }}</button>
+    <button type="button" class="btn btn-secondary" (click)="close()">{{ 'settings.buttons.cancel' | translate }}</button>
   </div>
 </form>

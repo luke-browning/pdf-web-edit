@@ -60,3 +60,27 @@ toolbar {
 .alert {
     margin-bottom: 0;
 }
+
+.dark {
+
+  .card {
+    border-color: #212529;
+
+    .card-header {
+      background: #212529;
+      color: #fff;
+    }
+
+    .card-body {
+      background: #5f6871;
+    }
+  }
+}
+
+.card {
+  border-radius: 0;
+
+  .card-header {
+    border-radius: 0;
+  }
+}

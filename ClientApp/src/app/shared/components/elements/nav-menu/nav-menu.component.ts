@@ -7,6 +7,7 @@ import { PDFWebEditAPI } from '../../../../../api/PDFWebEditAPI';
 import { ConfigService } from '../../../../services/config/config.service';
 import { SessionService } from '../../../../services/session/session.service';
 import { SettingsComponent } from '../../modals/settings/settings.component';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-nav-menu',
@@ -27,18 +28,25 @@ export class NavMenuComponent {
 
   // Sorting
   sortBy!: string;
+  sortByTranslated!: string;
   sortDirection!: string;
+  sortDirectionTranslated!: string;
 
   // Previews
   previewSize!: string;
 
-  currentDirectory = 'Loading...';
+  // Language
+  language!: string;
+
+  currentDirectory = '';
+  currentDirectoryTranslated = '';
 
   targetDirectory = PDFWebEditAPI.TargetDirectory;
 
   isExpanded = false;
 
-  constructor(private router: Router, private modalService: NgbModal, private configService: ConfigService, private sessionService: SessionService) {
+  constructor(private router: Router, private modalService: NgbModal, private configService: ConfigService,
+    private sessionService: SessionService, private translateService: TranslateService) {
 
     configService.getConfig().subscribe(config => {
       this.config = config!;
@@ -62,6 +70,8 @@ export class NavMenuComponent {
           this.currentDirectory = 'Archive';
           break;
       }
+
+      this.translateVariables();
     });
     
     // Colour mode
@@ -74,6 +84,64 @@ export class NavMenuComponent {
 
     // Page size
     this.sessionService.previewSize.subscribe((previewSize) => this.previewSize = previewSize);
+
+    // Translations
+    this.sessionService.language.subscribe((language) => this.language = language);
+
+    // When the language changes, update variables
+    translateService.onLangChange.subscribe((lang) => {
+      this.translateVariables();
+    });
+  }
+
+  translateVariables() {
+
+    this.translateCurrentDirectory();
+    this.translateSortOptions();
+  }
+
+  translateCurrentDirectory() {
+
+    switch (this.currentDirectory) {
+      case 'Inbox':
+        this.currentDirectoryTranslated = this.translateService.instant('shared.folders.inbox');
+        break;
+
+      case 'Outbox':
+        this.currentDirectoryTranslated = this.translateService.instant('shared.folders.outbox');
+        break;
+
+      case 'Archive':
+        this.currentDirectoryTranslated = this.translateService.instant('shared.folders.archive');
+        break;
+    }
+  }
+
+  translateSortOptions() {
+
+    switch (this.sortBy) {
+      case 'Name':
+        this.sortByTranslated = this.translateService.instant('shared.sort.by.name');
+        break;
+
+      case 'Created':
+        this.sortByTranslated = this.translateService.instant('shared.sort.by.created');
+        break;
+
+      case 'Last Modified':
+        this.sortByTranslated = this.translateService.instant('shared.sort.by.lastModified');
+        break;
+    }
+
+    switch (this.sortDirection) {
+      case 'Asc':
+        this.sortDirectionTranslated = this.translateService.instant('shared.sort.direction.asc');
+        break;
+
+      case 'Desc':
+        this.sortDirectionTranslated = this.translateService.instant('shared.sort.direction.desc');
+        break;
+    }
   }
 
   ngOnInit() {
@@ -123,14 +191,20 @@ export class NavMenuComponent {
 
   setSortBy(sortBy: string) {
     this.sessionService.setSortBy(sortBy);
+    this.translateSortOptions();
   }
 
   setSortDirection(sortDirection: string) {
     this.sessionService.setSortDirection(sortDirection);
+    this.translateSortOptions();
   }
 
   setPreviewSize(size: string) {
     this.sessionService.setPreviewSize(size);
+  }
+
+  setLanguage(language: string) {
+    this.sessionService.setLanguage(language);
   }
 
   clearSearch() {

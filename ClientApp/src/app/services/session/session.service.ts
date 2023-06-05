@@ -1,6 +1,7 @@
 import { ApplicationRef, Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { ConfigService } from '../config/config.service';
+import { TranslateService } from '@ngx-translate/core';
 
 @Injectable({
   providedIn: 'root'
@@ -34,7 +35,11 @@ export class SessionService {
   private search$ = new BehaviorSubject<string>('');
   search = this.search$.asObservable();
 
-  constructor(private ref: ApplicationRef, private configService: ConfigService) {
+  // Language
+  private language$ = new BehaviorSubject<string>('');
+  language = this.language$.asObservable();
+
+  constructor(private ref: ApplicationRef, private configService: ConfigService, private translate: TranslateService) {
 
     this.readBrowserColourMode();
 
@@ -63,7 +68,26 @@ export class SessionService {
       let localStorageSortDirection = localStorage.getItem('sort_direction');
 
       this.setSortDirection(localStorageSortDirection || defaultSortDirection || 'Asc');
+
+      // Get the language
+      let defaultLanguage = config?.generalConfig.defaultLanguage;
+      let localStorageLanguage = localStorage.getItem('language');
+
+      this.setLanguage(localStorageLanguage || defaultLanguage || 'en');
     });
+  }
+
+  setLanguage(language: string) {
+
+    // This language will be used as a fallback when a translation isn't found in the current language
+    this.translate.setDefaultLang('en');
+
+    // Save the currently selected language
+    this.language$.next(language);
+    localStorage.setItem('language', language);
+
+    // The lang to use, if the lang isn't available, it will use the current loader to get them
+    this.translate.use(language);
   }
 
   setColourMode(mode: string) {

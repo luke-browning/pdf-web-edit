@@ -2,6 +2,7 @@ import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild }
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { BehaviorSubject, combineLatest, Observable, Subject, Subscription } from 'rxjs';
 import { PDFWebEditAPI } from '../../../../../api/PDFWebEditAPI';
+import { SessionService } from '../../../../services/session/session.service';
 import { Doc } from '../../../models/doc';
 import { Page } from '../../../models/page';
 import { ToolbarButton } from '../../../models/toolbar-button';
@@ -10,6 +11,7 @@ import { InputBoxComponent } from '../../modals/input-box/input-box.component';
 import { MergeDocmentComponent } from '../../modals/merge-docment/merge-docment.component';
 import { MessageBoxComponent } from '../../modals/message-box/message-box.component';
 import { MaxPreviewSizeChangedEvent, SelectionChangedEvent } from '../pages/pages.component';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'document',
@@ -49,7 +51,10 @@ export class DocumentComponent implements OnInit {
 
   subscriptions: Subscription[] = [];
 
-  constructor(private api: PDFWebEditAPI.DocumentClient, private modalService: NgbModal) { }
+  // Colour modes
+  colourMode!: string;
+
+  constructor(private api: PDFWebEditAPI.DocumentClient, private sessionService: SessionService, private modalService: NgbModal, private translateService: TranslateService) { }
 
   ngOnInit(): void {
 
@@ -57,6 +62,9 @@ export class DocumentComponent implements OnInit {
       this.setSize(result);
       this.loadDocumentPages();
     });
+
+    // Colour mode
+    this.sessionService.colourMode.subscribe((colourMode) => this.colourMode = colourMode);
 
     this.subscriptions.push(sizeSubscription);
 
@@ -71,98 +79,98 @@ export class DocumentComponent implements OnInit {
 
     // Inbox
     this.inboxButtons.push({
-      label: "Select All",
+      label: "documents.buttons.selectAll",
       icon: "bi bi-check2-square",
       separator: false,
       if: this.config.inboxConfig.showSelectAll,
       enabled: new BehaviorSubject<boolean>(true),
       function: this.selectAll.bind(this)
     }, {
-      label: "Deselect All",
+      label: "documents.buttons.deselectAll",
       icon: "bi bi-square",
       separator: true,
       if: this.config.inboxConfig.showUnselect,
       enabled: new BehaviorSubject<boolean>(true),
       function: this.unselect.bind(this)
     }, {
-      label: "Rotate Clockwise",
+      label: "documents.buttons.rotateClockwise",
       icon: "bi bi-arrow-clockwise",
       separator: false,
       if: this.config.inboxConfig.showRotateAntiClockwise,
       enabled: this.document.hasSelectedPages,
       function: this.rotateClockwise.bind(this)
     }, {
-      label: "Rotate Anti-Clockwise",
+      label: "documents.buttons.rotateAntiClockwise",
       icon: "bi bi-arrow-counterclockwise",
       separator: false,
       if: this.config.inboxConfig.showRotateAntiClockwise,
       enabled: this.document.hasSelectedPages,
       function: this.rotateAntiClockwise.bind(this)
     }, {
-      label: "Remove",
+      label: "documents.buttons.remove",
       icon: "bi bi-x-lg",
       separator: false,
       if: this.config.inboxConfig.showRemove,
       enabled: this.document.hasSelectedPages,
       function: this.remove.bind(this)
     }, {
-      label: "Split",
+      label: "documents.buttons.split",
       icon: "bi bi-subtract",
       separator: false,
       if: this.config.inboxConfig.showSplit,
       enabled: this.document.hasSelectedPages,
       function: this.split.bind(this)
     }, {
-      label: "Merge",
+      label: "documents.buttons.merge",
       icon: "bi bi-union",
       separator: true,
       if: this.config.inboxConfig.showMerge,
       enabled: this.document.hasSelectedPages,
       function: this.merge.bind(this)
     }, {
-      label: "Rename",
+      label: "documents.buttons.rename",
       icon: "bi bi-pencil",
       separator: false,
       if: this.config.inboxConfig.showRename,
       enabled: new BehaviorSubject<boolean>(true),
       function: this.rename.bind(this)
     }, {
-      label: "Archive",
+      label: "documents.buttons.archive",
       icon: "bi bi-archive-fill",
       separator: false,
       if: this.config.inboxConfig.showArchive,
       enabled: new BehaviorSubject<boolean>(true),
       function: this.archive.bind(this)
     }, {
-      label: "Download",
+      label: "documents.buttons.download",
       icon: "bi bi-download",
       separator: true,
       if: this.config.inboxConfig.showDownload,
       enabled: new BehaviorSubject<boolean>(true),
       function: this.download.bind(this)
     }, {
-      label: "Revert Changes",
+      label: "documents.buttons.revertChanges",
       icon: "bi bi-repeat",
       separator: false,
       if: this.config.inboxConfig.showRevert,
       enabled: this.document.canRevertChanges,
       function: this.revert.bind(this)
     }, {
-      label: "Save To",
+      label: "documents.buttons.saveTo",
       icon: "bi bi-check2-all",
       separator: false,
       if: this.config.inboxConfig.showSaveTo,
       enabled: new BehaviorSubject<boolean>(true),
       function: this.saveTo.bind(this)
     }, {
-      label: "Save",
+      label: "documents.buttons.save",
       icon: "bi bi-check2",
       separator: this.config.generalConfig.debugMode,
       if: this.config.inboxConfig.showSave,
       enabled: new BehaviorSubject<boolean>(true),
       function: this.save.bind(this)
     }, {
-      label: "Reload Pages",
+      label: "documents.buttons.reloadPages",
       icon: "bi bi-repeat",
       separator: false,
       if: this.config.generalConfig.debugMode,
@@ -172,14 +180,14 @@ export class DocumentComponent implements OnInit {
 
     // Outbox
     this.outboxButtons.push({
-      label: "Download",
+      label: "documents.buttons.download",
       icon: "bi bi-download",
       separator: true,
       if: this.config.outboxConfig.showDownload,
       enabled: new BehaviorSubject<boolean>(true),
       function: this.download.bind(this)
     }, {
-      label: "Move to Inbox",
+      label: "documents.buttons.moveToInbox",
       icon: "bi bi-folder-symlink",
       separator: false,
       if: this.config.outboxConfig.showRestore,
@@ -189,21 +197,21 @@ export class DocumentComponent implements OnInit {
 
     // Archive
     this.archiveButtons.push({
-      label: "Permanently Delete",
+      label: "documents.buttons.permanentlyDelete",
       icon: "bi bi-trash3",
       separator: false,
       if: this.config.archiveConfig.showDelete,
       enabled: new BehaviorSubject<boolean>(true),
       function: this.permenentlyDeleteFromArchive.bind(this)
     }, {
-      label: "Download",
+      label: "documents.buttons.download",
       icon: "bi bi-download",
       separator: true,
       if: this.config.archiveConfig.showDownload,
       enabled: new BehaviorSubject<boolean>(true),
       function: this.download.bind(this)
     }, {
-      label: "Move to Inbox",
+      label: "documents.buttons.moveToInbox",
       icon: "bi bi-folder-symlink",
       separator: false,
       if: this.config.archiveConfig.showRestore,
@@ -213,21 +221,21 @@ export class DocumentComponent implements OnInit {
 
     // Password protected
     this.passwordProtectedButtons.push({
-      label: "Archive",
+      label: "documents.buttons.archive",
       icon: "bi bi-archive-fill",
       separator: false,
       if: true,
       enabled: new BehaviorSubject<boolean>(true),
       function: this.archive.bind(this)
     }, {
-      label: "Download",
+      label: "documents.buttons.download",
       icon: "bi bi-download",
       separator: true,
       if: true,
       enabled: new BehaviorSubject<boolean>(true),
       function: this.download.bind(this)
     }, {
-      label: "Unlock",
+      label: "documents.buttons.unlock",
       icon: "bi bi-unlock-fill",
       separator: false,
       if: true,
@@ -237,28 +245,28 @@ export class DocumentComponent implements OnInit {
 
     // Corrupt
     this.corruptButtons.push({
-      label: "Archive",
+      label: "documents.buttons.archive",
       icon: "bi bi-archive-fill",
       separator: false,
       if: true,
       enabled: new BehaviorSubject<boolean>(true),
       function: this.archive.bind(this)
     }, {
-      label: "Download",
+      label: "documents.buttons.download",
       icon: "bi bi-download",
       separator: true,
       if: true,
       enabled: new BehaviorSubject<boolean>(true),
       function: this.download.bind(this)
     }, {
-      label: "Revert Changes",
+      label: "documents.buttons.revertChanges",
       icon: "bi bi-repeat",
       separator: false,
       if: true,
       enabled: this.document.canRevertChanges,
       function: this.revert.bind(this)
     }, {
-      label: "Move to Inbox",
+      label: "documents.buttons.moveToInbox",
       icon: "bi bi-folder-symlink",
       separator: false,
       if: this.directory != PDFWebEditAPI.TargetDirectory.Inbox,
@@ -351,7 +359,7 @@ export class DocumentComponent implements OnInit {
       });
 
     } else {
-      this.showMessageBox('No pages selected. Please select a page to rotate.');
+      this.showMessageBox(this.translateService.instant('errors.noPagesSelectedForRotate'));
     }
   }
 
@@ -374,7 +382,7 @@ export class DocumentComponent implements OnInit {
       });
 
     } else {
-      this.showMessageBox('No pages selected. Please select a page to rotate.');
+      this.showMessageBox(this.translateService.instant('errors.noPagesSelectedForRotate'));
     }
   }
 
@@ -398,7 +406,7 @@ export class DocumentComponent implements OnInit {
       });
 
     } else {
-      this.showMessageBox('No pages selected. Please select a page to remove.');
+      this.showMessageBox(this.translateService.instant('errors.noPagesSelectedForRemove'));
     }
   }
 
@@ -440,7 +448,7 @@ export class DocumentComponent implements OnInit {
         this.onNewDocument.emit(newDocument);
 
       } else {
-        this.showMessageBox('Unable to load new document!');
+        this.showMessageBox(this.translateService.instant('errors.splitUnableToLoadNewDocument'));
       }
 
     }, error => {
@@ -460,7 +468,7 @@ export class DocumentComponent implements OnInit {
         if (updatedDocument != null) {
           this.onReplaceDocument.emit({ originalDoc: this.document, newDocument: updatedDocument });
         } else {
-          this.showMessageBox('Unable to load updated document!');
+          this.showMessageBox(this.translateService.instant('errors.mergeUnableToLoadUpdatedDocument'));
         }
 
       }, error => this.showMessageBox(error));
@@ -479,7 +487,7 @@ export class DocumentComponent implements OnInit {
         if (updatedDocument != null) {
           this.onReplaceDocument.emit({ originalDoc: this.document, newDocument: updatedDocument });
         } else {
-          this.showMessageBox('File does not exist!');
+          this.showMessageBox(this.translateService.instant('errors.fileDoesNotExist'));
         }
       });
     }, error => this.showMessageBox(error));
@@ -536,7 +544,11 @@ export class DocumentComponent implements OnInit {
 
   rename() {
 
-    this.showInputBox('Enter new name.', 'Rename Document', false, this.document.name).then(result => {
+    this.showInputBox(this.translateService.instant('renameDocument.message'),
+      this.translateService.instant('renameDocument.title'),
+      this.translateService.instant('renameDocument.buttons.rename'),
+      this.translateService.instant('renameDocument.buttons.close'),
+      false, this.document.name).then(result => {
       if (result) {
         this.api.rename(this.directory, this.document.name, result, this.document.directory).subscribe(() => {
           this.api.getDocument(this.directory, result, this.document.directory).subscribe((updatedDocument) => {
@@ -545,7 +557,7 @@ export class DocumentComponent implements OnInit {
             if (updatedDocument != null) {
               this.onReplaceDocument.emit({ originalDoc: this.document, newDocument: updatedDocument });
             } else {
-              this.showMessageBox('File does not exist!');
+              this.showMessageBox(this.translateService.instant('errors.fileDoesNotExist'));
             }
           });
         }, error => this.showMessageBox(error.detail));
@@ -559,7 +571,10 @@ export class DocumentComponent implements OnInit {
 
   unlock() {
 
-    this.showInputBox('This document is password protected. Please enter the password to unlock it.', 'Unlock Document', true).then(result => {
+    this.showInputBox(this.translateService.instant('unlockDocument.message'),
+      this.translateService.instant('unlockDocument.title'),
+      this.translateService.instant('unlockDocument.buttons.unlock'),
+      this.translateService.instant('unlockDocument.buttons.close'), true).then(result => {
       if (result) {
         this.api.unlock(this.directory, this.document.name, result, this.document.directory).subscribe(() => {
           this.api.getDocument(this.directory, this.document.name, this.document.directory).subscribe((updatedDocument) => {
@@ -568,7 +583,7 @@ export class DocumentComponent implements OnInit {
             if (updatedDocument != null) {
               this.onReplaceDocument.emit({ originalDoc: this.document, newDocument: updatedDocument });
             } else {
-              this.showMessageBox('File does not exist!');
+              this.showMessageBox(this.translateService.instant('errors.fileDoesNotExist'));
             }
           });
         }, error => this.showMessageBox(error.detail));
@@ -675,9 +690,13 @@ export class DocumentComponent implements OnInit {
     this.document.canRevertChanges.next(state);
   }
 
-  showMessageBox(message: any, title = 'An Error Occurred') {
+  showMessageBox(message: any, title = '') {
 
     let error: string | undefined | null;
+
+    if (!title) {
+      title = this.translateService.instant('errors.anErrorOccurred');
+    }
 
     if (typeof message === 'string') {
       error = message;
@@ -688,7 +707,7 @@ export class DocumentComponent implements OnInit {
       if (message instanceof PDFWebEditAPI.ProblemDetails) {
         error = message.detail;
       } else {
-        error = 'Unhandled exception!';
+        error = this.translateService.instant('errors.unhandledException');
       }
     }
 
@@ -697,10 +716,12 @@ export class DocumentComponent implements OnInit {
     modalRef.componentInstance.message = error;
   }
 
-  showInputBox(message: string, title: string, password: boolean, defaultValue?: string): Promise<string> {
+  showInputBox(message: string, title: string, okButton: string, closeButton: string, password: boolean, defaultValue?: string): Promise<string> {
     const modalRef = this.modalService.open(InputBoxComponent);
     modalRef.componentInstance.title = title;
     modalRef.componentInstance.message = message;
+    modalRef.componentInstance.okButton = okButton;
+    modalRef.componentInstance.closeButton = closeButton;
     modalRef.componentInstance.password = password;
     modalRef.componentInstance.value = defaultValue;
 

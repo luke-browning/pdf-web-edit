@@ -1,0 +1,189 @@
+{
+  "header": {
+    "branding": {
+      "logo1": "PDF",
+      "logo2": "Web Edit"
+    },
+    "search": {
+      "placeholder": "Rechercher..."
+    },
+    "settings": {
+      "label": "Paramètres"
+    }
+  },
+  "documents": {
+    "buttons": {
+      "selectAll": "Sélectionner tout",
+      "deselectAll": "Désélectionner tout",
+      "rotateClockwise": "Rotation horaire",
+      "rotateAntiClockwise": "Rotation anti-horaire",
+      "remove": "Supprimer",
+      "split": "Diviser",
+      "merge": "Fusionner",
+      "rename": "Renommer",
+      "archive": "Archiver",
+      "download": "Télécharger",
+      "revertChanges": "Annuler les modifications",
+      "saveTo": "Enregistrer dans",
+      "save": "Enregistrer",
+      "reloadPages": "Recharger les pages",
+      "moveToInbox": "Déplacer vers la boîte de réception",
+      "permanentlyDelete": "Supprimer définitivement",
+      "unlock": "Déverrouiller"
+    },
+    "messages": {
+      "passwordProtected": "Ce fichier est protégé par un mot de passe. Veuillez utiliser la fonction de déverrouillage pour décrypter le document.",
+      "corrupt": "Ce fichier est corrompu.",
+      "corruptHelp": "Vous pouvez essayer de récupérer votre document en cliquant sur le bouton Annuler les modifications ci-dessus."
+    }
+  },
+  "settings": {
+    "label": "Paramètres",
+    "sections": {
+      "general": "Général",
+      "previews": "Aperçus",
+      "header": "En-tête",
+      "directories": "Répertoires"
+    },
+    "buttons": {
+      "reloadConfiguration": "Recharger la configuration",
+      "save": "Enregistrer",
+      "cancel": "Annuler"
+    },
+    "general": {
+      "defaultLanguage": "Langue par défaut",
+      "defaultFolder": "Dossier par défaut",
+      "defaultSortColumn": "Colonne de tri par défaut",
+      "defaultSortDirection": "Direction de tri par défaut",
+      "defaultColourMode": "Mode couleur par défaut",
+      "enableTour": "Activer la visite guidée",
+      "showIcons": "Afficher les icônes",
+      "showLabels": "Afficher les étiquettes"
+    },
+    "previews": {
+      "defaultSize": "Taille par défaut",
+      "showPageNumber": "Afficher le numéro de page"
+    },
+    "header": {
+      "stickyHeader": "En-tête fixe",
+      "showDirectoryPicker": "Afficher le sélecteur de répertoire",
+      "showSearch": "Afficher la recherche",
+      "showPreviewSizePicker": "Afficher le sélecteur de taille d'aperçu",
+      "showSortPicker": "Afficher le sélecteur de tri",
+      "showColourModePicker": "Afficher le sélecteur de mode couleur",
+      "showSettingsButton": "Afficher le bouton Paramètres",
+      "showIcons": "Afficher les icônes",
+      "showLabels": "Afficher les étiquettes"
+    },
+    "directories": {
+      "inbox": "Boîte de réception",
+      "outbox": "Boîte d'envoi",
+      "archive": "Archive",
+      "showSaveTo": "Afficher Enregistrer dans",
+      "showSave": "Afficher Enregistrer",
+      "showRestore": "Afficher Restaurer",
+      "showRevert": "Afficher Annuler",
+      "showDownload": "Afficher Télécharger",
+      "showDelete": "Afficher Supprimer",
+      "showRename": "Afficher Renommer",
+      "showMerge": "Afficher Fusionner",
+      "showSplit": "Afficher Diviser",
+      "showRemove": "Afficher Supprimer",
+      "showRotateClockwise": "Afficher Rotation horaire",
+      "showRotateAntiClockwise": "Afficher Rotation anti-horaire",
+      "showSelectAll": "Afficher Sélectionner tout",
+      "showUnselect": "Afficher Désélectionner",
+      "archiveOriginalFileOnSave": "Archiver le fichier original lors de l'enregistrement",
+      "deleteDocumentOnArchive": "Supprimer le document lors de l'archivage"
+    }
+  },
+  "directoryPicker": {
+    "title": "Sélectionner un dossier",
+    "outbox": "Boîte d'envoi",
+    "up": "..",
+    "noFolders": "Aucun dossier à afficher",
+    "buttons": {
+      "save": "Enregistrer",
+      "close": "Fermer"
+    }
+  },
+  "merge": {
+    "title": "Fusionner des documents",
+    "search": "Recherche...",
+    "buttons": {
+      "merge": "Fusionner",
+      "close": "Fermer"
+    }
+  },
+  "unlockDocument": {
+    "title": "Déverrouiller le document",
+    "message": "Ce document est protégé par un mot de passe. Veuillez entrer le mot de passe pour le déverrouiller.",
+    "buttons": {
+      "unlock": "Déverrouiller",
+      "close": "Fermer"
+    }
+  },
+  "renameDocument": {
+    "title": "Renommer le document",
+    "message": "Entrer le nouveau nom.",
+    "buttons": {
+      "rename": "Renommer",
+      "close": "Fermer"
+    }
+  },
+  "shared": {
+    "folders": {
+      "inbox": "Boîte de réception",
+      "outbox": "Boîte d'envoi",
+      "archive": "Archive"
+    },
+    "previewSize": {
+      "label": "Taille de la page",
+      "sizes": {
+        "small": "Petite",
+        "medium": "Moyenne",
+        "large": "Grande"
+      }
+    },
+    "sort": {
+      "label": "Trier",
+      "by": {
+        "name": "Nom",
+        "created": "Créé",
+        "lastModified": "Dernière modification"
+      },
+      "direction": {
+        "asc": "Asc",
+        "desc": "Desc"
+      }
+    },
+    "colourMode": {
+      "label": "Mode couleur",
+      "modes": {
+        "light": "Clair",
+        "dark": "Sombre",
+        "auto": "Automatique"
+      }
+    },
+    "languages": {
+      "label": "Langue",
+      "language": "Français",
+      "languages": {
+        "en": "English",
+        "fr": "Français"
+      }
+    },
+    "loading": "Chargement...",
+    "noDocumentsFound": "Aucun document trouvé."
+  },
+  "errors": {
+    "anErrorOccurred": "Une erreur s'est produite",
+    "unhandledException": "Exception non gérée !",
+    "failedToLoadPreview": "Échec du chargement de l'aperçu",
+    "noPagesSelectedForRotate": "Aucune page sélectionnée. Veuillez sélectionner une page à faire pivoter.",
+    "noPagesSelectedForRemove": "Aucune page sélectionnée. Veuillez sélectionner une page à supprimer.",
+    "splitUnableToLoadNewDocument": "Impossible de charger le nouveau document !",
+    "mergeUnableToLoadUpdatedDocument": "Impossible de charger le document mis à jour !",
+    "fileDoesNotExist": "Le fichier n'existe pas !"
+  }
+}

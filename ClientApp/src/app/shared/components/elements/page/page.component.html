@@ -6,7 +6,7 @@
   </div>
   <img *ngIf="page.show" #img [src]="page.url" class="thumb" (load)="pageLoaded(page.number)" (error)="pageNotLoaded($event)" />
   <div *ngIf="!page.show" class="thumb failover-thumb d-flex align-items-center justify-content-center" [class.active]="page.active">
-    Failed to Load Preview
+    {{ 'errors.failedToLoadPreview' | translate }}
   </div>
   <div class="page-number" *ngIf="config?.previewConfig?.showPageNumber">{{ page.number }}</div>
 </div>

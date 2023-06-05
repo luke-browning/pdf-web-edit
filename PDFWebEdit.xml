@@ -509,6 +509,14 @@
             A general configuration.
             </summary>
         </member>
+        <member name="P:PDFWebEdit.Models.Config.GeneralConfig.DefaultLanguage">
+            <summary>
+            Gets or sets the default language.
+            </summary>
+            <value>
+            The default language.
+            </value>
+        </member>
         <member name="P:PDFWebEdit.Models.Config.GeneralConfig.EnableTour">
             <summary>
             Gets or sets a value indicating whether the tour is enabled.
@@ -624,6 +632,14 @@
             </summary>
             <value>
             True if show colour mode picker, false if not.
+            </value>
+        </member>
+        <member name="P:PDFWebEdit.Models.Config.HeaderConfig.ShowLanguagePicker">
+            <summary>
+            Gets or sets a value indicating whether the language picker is shown.
+            </summary>
+            <value>
+            True if show language picker, false if not.
             </value>
         </member>
         <member name="P:PDFWebEdit.Models.Config.HeaderConfig.ShowSettingsButton">

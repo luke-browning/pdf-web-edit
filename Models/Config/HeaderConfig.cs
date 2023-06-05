@@ -54,6 +54,14 @@
         public bool ShowColourModePicker { get; set; } = true;
 
         /// <summary>
+        /// Gets or sets a value indicating whether the language picker is shown.
+        /// </summary>
+        /// <value>
+        /// True if show language picker, false if not.
+        /// </value>
+        public bool ShowLanguagePicker { get; set; } = true;
+
+        /// <summary>
         /// Gets or sets a value indicating whether the settings button is shown.
         /// </summary>
         /// <value>

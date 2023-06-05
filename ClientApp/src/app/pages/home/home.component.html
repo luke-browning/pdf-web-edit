@@ -10,9 +10,9 @@
           (onRemoveDocument)="removeDocEvent($event)"></document>
 
 <div *ngIf="!documentsLoaded" class="text-center text-muted mt-5">
-  Loading...
+  {{ 'shared.loading' | translate }}
 </div>
 
 <div *ngIf="documentsLoaded && filteredDocuments.length == 0" class="text-center text-muted mt-5">
-  No documents found
+  {{ 'shared.noDocumentsFound' | translate }}
 </div>

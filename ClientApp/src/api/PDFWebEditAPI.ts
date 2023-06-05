@@ -1810,6 +1810,8 @@ export class HeaderConfig implements IHeaderConfig {
     showSortPicker!: boolean;
     /** Gets or sets a value indicating whether the colour mode picker is shown. */
     showColourModePicker!: boolean;
+    /** Gets or sets a value indicating whether the language picker is shown. */
+    showLanguagePicker!: boolean;
     /** Gets or sets a value indicating whether the settings button is shown. */
     showSettingsButton!: boolean;
     /** Gets or sets a value indicating whether the icons is shown. */
@@ -1834,6 +1836,7 @@ export class HeaderConfig implements IHeaderConfig {
             this.showPreviewSizePicker = _data["showPreviewSizePicker"] !== undefined ? _data["showPreviewSizePicker"] : <any>null;
             this.showSortPicker = _data["showSortPicker"] !== undefined ? _data["showSortPicker"] : <any>null;
             this.showColourModePicker = _data["showColourModePicker"] !== undefined ? _data["showColourModePicker"] : <any>null;
+            this.showLanguagePicker = _data["showLanguagePicker"] !== undefined ? _data["showLanguagePicker"] : <any>null;
             this.showSettingsButton = _data["showSettingsButton"] !== undefined ? _data["showSettingsButton"] : <any>null;
             this.showIcons = _data["showIcons"] !== undefined ? _data["showIcons"] : <any>null;
             this.showLabels = _data["showLabels"] !== undefined ? _data["showLabels"] : <any>null;
@@ -1855,6 +1858,7 @@ export class HeaderConfig implements IHeaderConfig {
         data["showPreviewSizePicker"] = this.showPreviewSizePicker !== undefined ? this.showPreviewSizePicker : <any>null;
         data["showSortPicker"] = this.showSortPicker !== undefined ? this.showSortPicker : <any>null;
         data["showColourModePicker"] = this.showColourModePicker !== undefined ? this.showColourModePicker : <any>null;
+        data["showLanguagePicker"] = this.showLanguagePicker !== undefined ? this.showLanguagePicker : <any>null;
         data["showSettingsButton"] = this.showSettingsButton !== undefined ? this.showSettingsButton : <any>null;
         data["showIcons"] = this.showIcons !== undefined ? this.showIcons : <any>null;
         data["showLabels"] = this.showLabels !== undefined ? this.showLabels : <any>null;
@@ -1876,6 +1880,8 @@ export interface IHeaderConfig {
     showSortPicker: boolean;
     /** Gets or sets a value indicating whether the colour mode picker is shown. */
     showColourModePicker: boolean;
+    /** Gets or sets a value indicating whether the language picker is shown. */
+    showLanguagePicker: boolean;
     /** Gets or sets a value indicating whether the settings button is shown. */
     showSettingsButton: boolean;
     /** Gets or sets a value indicating whether the icons is shown. */
@@ -1886,6 +1892,8 @@ export interface IHeaderConfig {
 
 /** A general configuration. */
 export class GeneralConfig implements IGeneralConfig {
+    /** Gets or sets the default language. */
+    defaultLanguage!: string;
     /** Gets or sets a value indicating whether the tour is enabled. */
     enableTour!: boolean;
     /** Gets or sets the default folder. */
@@ -1914,6 +1922,7 @@ export class GeneralConfig implements IGeneralConfig {
 
     init(_data?: any) {
         if (_data) {
+            this.defaultLanguage = _data["defaultLanguage"] !== undefined ? _data["defaultLanguage"] : <any>null;
             this.enableTour = _data["enableTour"] !== undefined ? _data["enableTour"] : <any>null;
             this.defaultFolder = _data["defaultFolder"] !== undefined ? _data["defaultFolder"] : <any>null;
             this.defaultSortColumn = _data["defaultSortColumn"] !== undefined ? _data["defaultSortColumn"] : <any>null;
@@ -1934,6 +1943,7 @@ export class GeneralConfig implements IGeneralConfig {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["defaultLanguage"] = this.defaultLanguage !== undefined ? this.defaultLanguage : <any>null;
         data["enableTour"] = this.enableTour !== undefined ? this.enableTour : <any>null;
         data["defaultFolder"] = this.defaultFolder !== undefined ? this.defaultFolder : <any>null;
         data["defaultSortColumn"] = this.defaultSortColumn !== undefined ? this.defaultSortColumn : <any>null;
@@ -1948,6 +1958,8 @@ export class GeneralConfig implements IGeneralConfig {
 
 /** A general configuration. */
 export interface IGeneralConfig {
+    /** Gets or sets the default language. */
+    defaultLanguage: string;
     /** Gets or sets a value indicating whether the tour is enabled. */
     enableTour: boolean;
     /** Gets or sets the default folder. */

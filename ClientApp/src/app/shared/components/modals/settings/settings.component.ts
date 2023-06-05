@@ -14,34 +14,39 @@ export class SettingsComponent implements OnInit {
   config!: PDFWebEditAPI.Config;
 
   // Options
+  languages = [
+    { label: "shared.languages.languages.en", value: "en" },
+    { label: "shared.languages.languages.fr", value: "fr" },
+  ];
+
   folders = [
-    { label: "Inbox", value: "Inbox" },
-    { label: "Outbox", value: "Outbox" },
-    { label: "Archive", value: "Archive" },
+    { label: "shared.folders.inbox", value: "Inbox" },
+    { label: "shared.folders.outbox", value: "Outbox" },
+    { label: "shared.folders.archive", value: "Archive" },
   ];
 
   sortColumns = [
-    { label: "Name", value: "Name" },
-    { label: "Created", value: "Created" },
-    { label: "Last Modified", value: "Last Modified" },
+    { label: "shared.sort.by.name", value: "Name" },
+    { label: "shared.sort.by.created", value: "Created" },
+    { label: "shared.sort.by.lastModified", value: "Last Modified" },
   ];
 
   sortDirections = [
-    { label: "Ascending", value: "Asc" },
-    { label: "Descending", value: "Desc" },
+    { label: "shared.sort.direction.asc", value: "Asc" },
+    { label: "shared.sort.direction.desc", value: "Desc" },
   ];
 
   colourModes = [
-    { label: "Auto", value: "auto" },
-    { label: "Light", value: "light" },
-    { label: "Dark", value: "dark" },
+    { label: "shared.colourMode.modes.auto", value: "auto" },
+    { label: "shared.colourMode.modes.light", value: "light" },
+    { label: "shared.colourMode.modes.dark", value: "dark" },
   ];
 
   // Preview Options
   sizes = [
-    { label: "Small", value: "small" },
-    { label: "Medium", value: "medium" },
-    { label: "Large", value: "large" },
+    { label: "shared.previewSize.sizes.small", value: "small" },
+    { label: "shared.previewSize.sizes.medium", value: "medium" },
+    { label: "shared.previewSize.sizes.large", value: "large" },
   ];
 
   // Tab
