@@ -10,7 +10,6 @@ import { AppComponent } from './app.component';
 import { NavMenuComponent } from './shared/components/elements/nav-menu/nav-menu.component';
 import { HomeComponent } from './pages/home/home.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { DragulaModule } from 'ng2-dragula';
 import { MessageBoxComponent } from './shared/components/modals/message-box/message-box.component';
 import { InputBoxComponent } from './shared/components/modals/input-box/input-box.component';
 import { AutofocusDirective } from './shared/directives/auto-focus/auto-focus.directive';
@@ -61,7 +60,6 @@ export function HttpLoaderFactory(http: HttpClient) {
       { path: '**', redirectTo: '/inbox', pathMatch: 'full' },
     ]),
     NgbModule,
-    DragulaModule.forRoot(),
     TourNgBootstrapModule,
     TranslateModule.forRoot({
       defaultLanguage: 'en',
