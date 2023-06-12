@@ -1984,6 +1984,8 @@ export class PreviewConfig implements IPreviewConfig {
     defaultSize!: string;
     /** Gets or sets a value indicating whether the page number is shown. */
     showPageNumber!: boolean;
+    /** Gets or sets a value indicating whether to blur the image. */
+    blur!: boolean;
 
     constructor(data?: IPreviewConfig) {
         if (data) {
@@ -1998,6 +2000,7 @@ export class PreviewConfig implements IPreviewConfig {
         if (_data) {
             this.defaultSize = _data["defaultSize"] !== undefined ? _data["defaultSize"] : <any>null;
             this.showPageNumber = _data["showPageNumber"] !== undefined ? _data["showPageNumber"] : <any>null;
+            this.blur = _data["blur"] !== undefined ? _data["blur"] : <any>null;
         }
     }
 
@@ -2012,6 +2015,7 @@ export class PreviewConfig implements IPreviewConfig {
         data = typeof data === 'object' ? data : {};
         data["defaultSize"] = this.defaultSize !== undefined ? this.defaultSize : <any>null;
         data["showPageNumber"] = this.showPageNumber !== undefined ? this.showPageNumber : <any>null;
+        data["blur"] = this.blur !== undefined ? this.blur : <any>null;
         return data;
     }
 }
@@ -2022,6 +2026,8 @@ export interface IPreviewConfig {
     defaultSize: string;
     /** Gets or sets a value indicating whether the page number is shown. */
     showPageNumber: boolean;
+    /** Gets or sets a value indicating whether to blur the image. */
+    blur: boolean;
 }
 
 /** A inbox configuration. */

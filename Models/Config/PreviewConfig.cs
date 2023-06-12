@@ -20,5 +20,13 @@
         /// True if show page number, false if not.
         /// </value>
         public bool ShowPageNumber { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to blur the image.
+        /// </summary>
+        /// <value>
+        /// True if blur, false if not.
+        /// </value>
+        public bool Blur { get; set; } = false;
     }
 }

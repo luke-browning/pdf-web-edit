@@ -833,6 +833,14 @@
             True if show page number, false if not.
             </value>
         </member>
+        <member name="P:PDFWebEdit.Models.Config.PreviewConfig.Blur">
+            <summary>
+            Gets or sets a value indicating whether to blur the image.
+            </summary>
+            <value>
+            True if blur, false if not.
+            </value>
+        </member>
         <member name="T:PDFWebEdit.Models.DocNetSingleton">
             <summary>
             A document net singleton.

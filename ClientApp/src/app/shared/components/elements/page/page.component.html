@@ -6,7 +6,7 @@
       <span class="visually-hidden">Loading...</span>
     </div>
   </div>
-  <img *ngIf="page.show" #img [src]="page.url" class="thumb" (load)="pageLoaded(page.number)" (error)="pageNotLoaded($event)" />
+  <img *ngIf="page.show" #img [src]="page.url" class="thumb" [class.blur]="config.previewConfig.blur" (load)="pageLoaded(page.number)" (error)="pageNotLoaded($event)" />
   <div *ngIf="!page.show" class="thumb failover-thumb d-flex align-items-center justify-content-center" [class.active]="page.active">
     {{ 'errors.failedToLoadPreview' | translate }}
   </div>

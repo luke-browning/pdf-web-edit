@@ -62,7 +62,8 @@
     },
     "previews": {
       "defaultSize": "Default Size",
-      "showPageNumber": "Show Page Number"
+      "showPageNumber": "Show Page Number",
+      "blur": "Blur image"
     },
     "header": {
       "stickyHeader": "Sticky Header",

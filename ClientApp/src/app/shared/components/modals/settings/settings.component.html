@@ -81,6 +81,11 @@
               <label class="form-check-label" for="show-page-number">{{ 'settings.previews.showPageNumber' | translate }}</label>
             </div>
 
+            <div class="form-check form-switch mb-3">
+              <input class="form-check-input" type="checkbox" role="switch" name="blur" id="blur" [(ngModel)]="config.previewConfig.blur">
+              <label class="form-check-label" for="blur">{{ 'settings.previews.blur' | translate }}</label>
+            </div>
+
           </ng-template>
         </ng-container>
 

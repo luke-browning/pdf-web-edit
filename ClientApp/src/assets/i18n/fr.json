@@ -62,7 +62,8 @@
     },
     "previews": {
       "defaultSize": "Taille par défaut",
-      "showPageNumber": "Afficher le numéro de page"
+      "showPageNumber": "Afficher le numéro de page",
+      "blur": "Brouiller l'image"
     },
     "header": {
       "stickyHeader": "En-tête fixe",
