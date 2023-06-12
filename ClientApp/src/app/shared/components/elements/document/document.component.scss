@@ -13,10 +13,24 @@ toolbar {
 
 /* Scroll wrapper */
 .scrolling-wrapper {
-  overflow-x: scroll;
+  overflow-x: hidden;
   overflow-y: hidden;
   white-space: nowrap;
   padding-bottom: 20px;
+}
+
+/* Custom scrollbar */
+.scrollbar {
+  --scrollbar-border-radius: 8px;
+  --scrollbar-padding: 0px;
+  --scrollbar-viewport-margin: 0;
+  --scrollbar-track-color: rgba(0,0,0,0.15);
+  --scrollbar-thumb-color: var(--bs-body-color);
+  --scrollbar-thumb-hover-color: #000;
+  --scrollbar-size: 10px;
+  --scrollbar-hover-size: var(--scrollbar-size);
+  --scrollbar-thumb-transition: height ease-out 150ms, width ease-out 150ms;
+  --scrollbar-track-transition: height ease-out 150ms, width ease-out 150ms;
 }
 
 /* Size of pages */

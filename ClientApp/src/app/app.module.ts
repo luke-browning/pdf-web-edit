@@ -6,6 +6,7 @@ import { RouterModule } from '@angular/router';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { DndModule } from 'ngx-drag-drop';
+import { NgScrollbarModule } from 'ngx-scrollbar';
 
 import { AppComponent } from './app.component';
 import { NavMenuComponent } from './shared/components/elements/nav-menu/nav-menu.component';
@@ -70,7 +71,8 @@ export function HttpLoaderFactory(http: HttpClient) {
         deps: [HttpClient]
       }
     }),
-    DndModule
+    DndModule,
+    NgScrollbarModule
   ],
   providers: [
     {
