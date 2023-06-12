@@ -5,6 +5,7 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { DndModule } from 'ngx-drag-drop';
 
 import { AppComponent } from './app.component';
 import { NavMenuComponent } from './shared/components/elements/nav-menu/nav-menu.component';
@@ -68,7 +69,8 @@ export function HttpLoaderFactory(http: HttpClient) {
         useFactory: HttpLoaderFactory,
         deps: [HttpClient]
       }
-    })
+    }),
+    DndModule
   ],
   providers: [
     {

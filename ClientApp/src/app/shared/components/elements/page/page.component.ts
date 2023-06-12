@@ -1,6 +1,7 @@
 import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { Observable } from 'rxjs';
 import { PDFWebEditAPI } from '../../../../../api/PDFWebEditAPI';
+import { Doc } from '../../../models/doc';
 import { Page } from '../../../models/page';
 
 @Component({
@@ -11,6 +12,7 @@ import { Page } from '../../../models/page';
 export class PageComponent implements OnInit {
 
   @Input() page!: Page;
+  @Input() document!: Doc;
   @Input() size!: Observable<string>;
   @Input() config!: PDFWebEditAPI.Config;
 

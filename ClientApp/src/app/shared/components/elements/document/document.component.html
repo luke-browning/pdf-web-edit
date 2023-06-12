@@ -15,7 +15,14 @@
         <toolbar *ngIf="!docStatus.corrupt && docStatus.passwordProtected" [buttons]="passwordProtectedButtons" [config]="config"></toolbar>
 
         <div #scrollWrapper *ngIf="!docStatus.corrupt && !docStatus.passwordProtected" class="scrolling-wrapper" [class]="size | async" [style.height]="maxPreviewHeight > 0 ? (maxPreviewHeight + 'px !important') : null">
-          <pages [pages]="document.pages" [size]="size" [config]="config" [resetDocumentPreview]="resetDocumentPreview.asObservable()" (onSelectionChange)="selectionChanged($event);" (onMaxPreviewSizeChange)="updatePreviewSize($event);"></pages>
+          <pages [pages]="document.pages"
+                 [document]="document"
+                 [size]="size"
+                 [config]="config"
+                 [resetDocumentPreview]="resetDocumentPreview.asObservable()"
+                 (onSelectionChange)="selectionChanged($event);"
+                 (onMaxPreviewSizeChange)="updatePreviewSize($event);"
+                 (onPageOrderChange)="reorder($event);"></pages>
         </div>
 
         <div *ngIf="docStatus.corrupt">

@@ -3,6 +3,8 @@ import { Observable } from 'rxjs';
 import { PDFWebEditAPI } from '../../../../../api/PDFWebEditAPI';
 import { Page } from '../../../models/page';
 import { PagePreviewLoadEvent, SelectEvent } from '../page/page.component';
+import { Doc } from '../../../models/doc';
+import { DndDropEvent } from 'ngx-drag-drop';
 
 @Component({
   selector: 'pages',
@@ -12,17 +14,54 @@ import { PagePreviewLoadEvent, SelectEvent } from '../page/page.component';
 export class PagesComponent implements OnInit {
 
   @Input() pages!: Page[];
+  @Input() document!: Doc;
   @Input() size!: Observable<string>;
   @Input() config!: PDFWebEditAPI.Config;
   @Input() resetDocumentPreview!: Observable<void>;
 
   @Output() onSelectionChange: EventEmitter<SelectionChangedEvent> = new EventEmitter();
   @Output() onMaxPreviewSizeChange: EventEmitter<MaxPreviewSizeChangedEvent> = new EventEmitter();
+  @Output() onPageOrderChange: EventEmitter<PageOrderChangedEvent> = new EventEmitter();
 
   maxPageWidth = 0;
   maxPageHeight = 0;
 
   constructor() { }
+
+  onDrop(event: DndDropEvent) {
+
+    let orderOfPages: number[] = [];
+
+    this.pages.forEach(page => {
+      orderOfPages.push(page.number);
+    });
+
+    let movedElementIndex = event.data.number - 1;
+    let newElementIndex: number;
+
+    if (event.index! < event.data.number) {
+
+      // Moved left
+      newElementIndex = event.index!;
+
+    } else {
+
+      // Moved right
+      newElementIndex = event.index! - 1;
+    }
+
+    // Only fire the event if the element moves
+    if (movedElementIndex != newElementIndex) {
+
+      // Reorder the list
+      var movedElement = orderOfPages[movedElementIndex];
+      orderOfPages.splice(movedElementIndex, 1);
+      orderOfPages.splice(newElementIndex, 0, movedElement);
+
+      // Emit the change event
+      this.onPageOrderChange.emit({ newPageOrder: orderOfPages });
+    }
+  }
 
   ngOnInit(): void {
 
@@ -74,4 +113,8 @@ export interface SelectionChangedEvent {
 export interface MaxPreviewSizeChangedEvent {
   height: number;
   width: number;
+}
+
+export interface PageOrderChangedEvent {
+  newPageOrder: number[];
 }

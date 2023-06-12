@@ -10,7 +10,7 @@ import { DirectoryPickerComponent } from '../../modals/directory-picker/director
 import { InputBoxComponent } from '../../modals/input-box/input-box.component';
 import { MergeDocmentComponent } from '../../modals/merge-docment/merge-docment.component';
 import { MessageBoxComponent } from '../../modals/message-box/message-box.component';
-import { MaxPreviewSizeChangedEvent, SelectionChangedEvent } from '../pages/pages.component';
+import { MaxPreviewSizeChangedEvent, PageOrderChangedEvent, SelectionChangedEvent } from '../pages/pages.component';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
@@ -410,17 +410,11 @@ export class DocumentComponent implements OnInit {
     }
   }
 
-  reorder($event: Page[]) {
+  reorder($event: PageOrderChangedEvent) {
 
-    let newPageOrder: number[] = [];
+    this.setPagesUnloaded($event.newPageOrder);
 
-    $event.forEach(page => {
-      newPageOrder.push(page.number);
-    });
-
-    this.setPagesUnloaded( newPageOrder);
-
-    this.api.reorderPages(this.directory, this.document.name, newPageOrder, this.document.directory).subscribe(() => {
+    this.api.reorderPages(this.directory, this.document.name, $event.newPageOrder, this.document.directory).subscribe(() => {
 
       this.loadDocumentPages();
       this.setDocumentModifiedState(true);
