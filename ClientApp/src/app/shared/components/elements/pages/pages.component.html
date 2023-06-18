@@ -11,8 +11,9 @@
         [dndType]="document.name"
         [dndDisableIf]="document.pages.length == 1"></page>
 
-  <div class="drop-zone dndPlaceholder" [class]="size | async" [style.height]="maxPageHeight + 'px !important'" dndPlaceholderRef>
+  <div class="drop-zone dndPlaceholder" [class]="size | async" [style.height]="maxPageHeight + 'px !important'" [style.width]="maxPageWidth + 'px !important'" dndPlaceholderRef>
     <div class="drop-zone-icon">
+      <i class="bi bi-download"></i>
     </div>
   </div>
 </div>

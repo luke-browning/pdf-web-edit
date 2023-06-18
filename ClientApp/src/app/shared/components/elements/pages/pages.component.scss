@@ -1,5 +1,12 @@
-page {
-    display: inline-block;
+:host ::ng-deep page {
+  display: inline-block;
+
+  &:last-child {
+
+    .thumb-container {
+      margin-right: 0 !important;
+    }
+  }
 }
 
 .drop-zone {
