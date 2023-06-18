@@ -1,0 +1,100 @@
+toolbar, pages {
+  display: block;
+}
+
+toolbar {
+  margin-bottom: 1rem;
+}
+
+.directory {
+  padding-left: 20px;
+  opacity: 0.7;
+}
+
+/* Scroll wrapper */
+.scrolling-wrapper {
+  overflow-x: hidden;
+  overflow-y: hidden;
+  white-space: nowrap;
+  padding-bottom: 20px;
+}
+
+/* Custom scrollbar */
+.scrollbar {
+  --scrollbar-border-radius: 8px;
+  --scrollbar-padding: 0px;
+  --scrollbar-viewport-margin: 0;
+  --scrollbar-track-color: rgba(0,0,0,0.15);
+  --scrollbar-thumb-color: var(--bs-body-color);
+  --scrollbar-thumb-hover-color: #000;
+  --scrollbar-size: 10px;
+  --scrollbar-hover-size: var(--scrollbar-size);
+  --scrollbar-thumb-transition: height ease-out 150ms, width ease-out 150ms;
+  --scrollbar-track-transition: height ease-out 150ms, width ease-out 150ms;
+}
+
+/* Size of pages */
+.small pages {
+  height: 200px;
+  min-height: 200px;
+  min-width: 141px;
+}
+
+.medium pages {
+  height: 400px;
+  min-width: 282px;
+}
+
+.large pages {
+  height: 800px;
+  min-height: 800px;
+  min-width: 565px;
+}
+
+/* Sizes of thumbnails */
+.scrolling-wrapper.small .thumb-container .thumb {
+  height: 200px;
+  min-height: 200px;
+  min-width: 141px;
+}
+
+.scrolling-wrapper.medium .thumb-container .thumb {
+  height: 400px;
+  min-height: 400px;
+  min-width: 282px;
+}
+
+.scrolling-wrapper.large .thumb-container .thumb {
+  height: 800px;
+  min-height: 800px;
+  min-width: 565px;
+}
+
+/* Alerts */
+.alert {
+    margin-bottom: 0;
+}
+
+.dark {
+
+  .card {
+    border-color: #212529;
+
+    .card-header {
+      background: #212529;
+      color: #fff;
+    }
+
+    .card-body {
+      background: #5f6871;
+    }
+  }
+}
+
+.card {
+  border-radius: 0;
+
+  .card-header {
+    border-radius: 0;
+  }
+}

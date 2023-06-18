@@ -31,9 +31,34 @@
 
   <ItemGroup>
     <!-- Don't publish the SPA source files, but do show them in the project files list -->
+    <Compile Remove="ClientApp\dist\**" />
     <Content Remove="$(SpaRoot)**" />
+    <Content Remove="ClientApp\dist\**" />
+    <EmbeddedResource Remove="ClientApp\dist\**" />
     <None Remove="$(SpaRoot)**" />
+    <None Remove="ClientApp\dist\**" />
     <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="ClientApp\dist\3rdpartylicenses.txt" />
+    <None Remove="ClientApp\dist\assets\fonts\roboto\roboto-v30-latin-regular.eot" />
+    <None Remove="ClientApp\dist\assets\fonts\roboto\roboto-v30-latin-regular.svg" />
+    <None Remove="ClientApp\dist\assets\fonts\roboto\roboto-v30-latin-regular.ttf" />
+    <None Remove="ClientApp\dist\assets\fonts\roboto\roboto-v30-latin-regular.woff" />
+    <None Remove="ClientApp\dist\assets\fonts\roboto\roboto-v30-latin-regular.woff2" />
+    <None Remove="ClientApp\dist\bootstrap-icons.6959d0d983ee318f8880.woff" />
+    <None Remove="ClientApp\dist\bootstrap-icons.b2e5aab643c6f0fd2da6.woff2" />
+    <None Remove="ClientApp\dist\index.html" />
+    <None Remove="ClientApp\dist\main.5e327d990267be918cf9.js" />
+    <None Remove="ClientApp\dist\polyfills.9a1545c58d54af738c0c.js" />
+    <None Remove="ClientApp\dist\roboto-v30-latin-regular.1b1af1e4b3a278058097.svg" />
+    <None Remove="ClientApp\dist\roboto-v30-latin-regular.6b1ef4e4ab8eafee13c1.ttf" />
+    <None Remove="ClientApp\dist\roboto-v30-latin-regular.b009a76ad6afe4ebd301.woff2" />
+    <None Remove="ClientApp\dist\roboto-v30-latin-regular.e2f36b803fec4bdcd1bc.eot" />
+    <None Remove="ClientApp\dist\roboto-v30-latin-regular.f1e2a76794cb86b2aa8e.woff" />
+    <None Remove="ClientApp\dist\runtime.35355e84fe9936437d57.js" />
+    <None Remove="ClientApp\dist\styles.0a1d5d82097a971dad4a.css" />
   </ItemGroup>
 
     <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

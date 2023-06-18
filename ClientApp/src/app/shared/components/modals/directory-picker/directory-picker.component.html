@@ -1,0 +1,24 @@
+<form (submit)="ok()">
+  <div class="modal-header">
+    <h5 class="modal-title" id="exampleModalLabel">{{ 'directoryPicker.title' | translate }}</h5>
+    <button type="button" class="btn-close" aria-label="Close" (click)="close()"></button>
+  </div>
+  <div class="modal-body">
+    <div>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item" aria-current="page">{{ 'directoryPicker.outbox' | translate }}</li>
+        <li class="breadcrumb-item" aria-current="page" *ngFor="let segment of currentPath">{{ segment.name }}</li>
+      </ol>
+    </div>
+
+    <div class="list-group">
+      <button type="button" class="list-group-item list-group-item-action" *ngIf="currentPath.length > 0" (click)="up()">{{ 'directoryPicker.up' | translate }}</button>
+      <button type="button" class="list-group-item list-group-item-action" *ngFor="let folder of currentDirectoryFolders" (click)="setFolder(folder)">{{ folder.name }}</button>
+      <button type="button" class="list-group-item list-group-item-action" *ngIf="currentDirectoryFolders.length == 0" disabled>{{ 'directoryPicker.noFolders' | translate }}</button>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="submit" class="btn btn-primary">{{ 'directoryPicker.buttons.save' | translate }}</button>
+    <button type="button" class="btn btn-secondary" (click)="close()">{{ 'directoryPicker.buttons.close' | translate }}</button>
+  </div>
+</form>

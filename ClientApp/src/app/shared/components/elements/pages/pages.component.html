@@ -1,0 +1,19 @@
+<div class="dndList" [dndDropzone]="[document.name]" [dndHorizontal]="true" dndEffectAllowed="move" (dndDrop)="onDrop($event)">
+  <page *ngFor="let page of pages; let i = index;"
+        [document]="document"
+        [page]="page"
+        [size]="size"
+        [config]="config"
+        (onSelect)="pageSelected($event)"
+        (onPagePreviewLoad)="registerPageSize($event)"
+        [dndDraggable]="page"
+        dndEffectAllowed="move"
+        [dndType]="document.name"
+        [dndDisableIf]="document.pages.length == 1"></page>
+
+  <div class="drop-zone dndPlaceholder" [class]="size | async" [style.height]="maxPageHeight + 'px !important'" [style.width]="maxPageWidth + 'px !important'" dndPlaceholderRef>
+    <div class="drop-zone-icon">
+      <i class="bi bi-download"></i>
+    </div>
+  </div>
+</div>

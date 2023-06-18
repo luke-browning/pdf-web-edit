@@ -1,0 +1,18 @@
+<document *ngFor="let document of filteredDocuments"
+          [document]="document"
+          [documents]="documents"
+          [config]="config"
+          [size]="size"
+          [directory]="directory"
+          [directoryStructure]="directoryStructure"
+          (onNewDocument)="newDocumentEvent($event)"
+          (onReplaceDocument)="replaceDocEvent($event)"
+          (onRemoveDocument)="removeDocEvent($event)"></document>
+
+<div *ngIf="!documentsLoaded" class="text-center text-muted mt-5">
+  {{ 'shared.loading' | translate }}
+</div>
+
+<div *ngIf="documentsLoaded && filteredDocuments.length == 0" class="text-center text-muted mt-5">
+  {{ 'shared.noDocumentsFound' | translate }}
+</div>

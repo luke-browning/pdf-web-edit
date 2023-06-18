@@ -1,0 +1,35 @@
+a.navbar-brand {
+  white-space: normal;
+  text-align: center;
+  word-break: break-all;
+}
+/*
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}*/
+
+.box-shadow {
+  box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+}
+
+.logo-1 {
+  background-color: #f4473a;
+  border-radius: 5px;
+  color: #fff;
+  padding: 0.25em 0.5em;
+  font-weight: bold;
+}
+
+.logo-2 {
+    
+}
+
+#search::placeholder {
+    /*color: white;*/
+}

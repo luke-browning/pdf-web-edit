@@ -1,0 +1,5 @@
+<ng-container *ngFor="let button of buttons">
+  <toolbar-button [button]="button" [showIcon]="showIcons" [showLabel]="showLabels"></toolbar-button>
+
+  <span *ngIf="button.separator" class="separator"></span>
+</ng-container>

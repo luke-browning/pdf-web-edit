@@ -1,0 +1,46 @@
+<div class="row">
+
+  <div class="col" [ngClass]="colourMode == 'light' ? '' : 'dark'">
+    <div class="card mb-3">
+      <div class="card-header">
+        <strong>{{ document.name }}</strong>
+        <span class="directory">{{ document.directory }}</span>
+      </div>
+      <div class="card-body" *ngIf="{ corrupt: document.corrupt | async, passwordProtected: document.passwordProtected | async } as docStatus">
+
+        <toolbar *ngIf="!docStatus.corrupt && !docStatus.passwordProtected && directory == targetDirectories.Inbox" [buttons]="inboxButtons" [config]="config"></toolbar>
+        <toolbar *ngIf="!docStatus.corrupt && !docStatus.passwordProtected && directory == targetDirectories.Outbox" [buttons]="outboxButtons" [config]="config"></toolbar>
+        <toolbar *ngIf="!docStatus.corrupt && !docStatus.passwordProtected && directory == targetDirectories.Archive" [buttons]="archiveButtons" [config]="config"></toolbar>
+        <toolbar *ngIf="docStatus.corrupt && !docStatus.passwordProtected" [buttons]="corruptButtons" [config]="config"></toolbar>
+        <toolbar *ngIf="!docStatus.corrupt && docStatus.passwordProtected" [buttons]="passwordProtectedButtons" [config]="config"></toolbar>
+
+        <ng-scrollbar [autoHeightDisabled]="false" track="horizontal" class="scrollbar">
+          <div scrollViewport #scrollWrapper *ngIf="!docStatus.corrupt && !docStatus.passwordProtected" class="scrolling-wrapper" [class]="size | async" [style.height]="maxPreviewHeight > 0 ? (maxPreviewHeight + 'px !important') : null">
+            <pages [pages]="document.pages"
+                   [document]="document"
+                   [size]="size"
+                   [config]="config"
+                   [resetDocumentPreview]="resetDocumentPreview.asObservable()"
+                   (onSelectionChange)="selectionChanged($event);"
+                   (onMaxPreviewSizeChange)="updatePreviewSize($event);"
+                   (onPageOrderChange)="reorder($event);"></pages>
+          </div>
+        </ng-scrollbar>
+
+        <div *ngIf="docStatus.corrupt">
+          <div class="alert alert-danger" role="alert">
+            <span>{{ 'documents.messages.corrupt' | translate }}</span> <span *ngIf="document.canRevertChanges"> {{ 'documents.messages.corruptHelp' | translate }}</span>
+          </div>
+        </div>
+
+        <div *ngIf="docStatus.passwordProtected">
+          <div class="alert alert-warning" role="alert">
+            {{ 'documents.messages.passwordProtected' | translate }}
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>

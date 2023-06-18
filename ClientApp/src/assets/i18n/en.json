@@ -1,0 +1,190 @@
+{
+  "header": {
+    "branding": {
+      "logo1": "PDF",
+      "logo2": "Web Edit"
+    },
+    "search": {
+      "placeholder": "Search..."
+    },
+    "settings": {
+      "label": "Settings"
+    }
+  },
+  "documents": {
+    "buttons": {
+      "selectAll": "Select All",
+      "deselectAll": "Deselect All",
+      "rotateClockwise": "Rotate Clockwise",
+      "rotateAntiClockwise": "Rotate Anti-Clockwise",
+      "remove": "Remove",
+      "split": "Split",
+      "merge": "Merge",
+      "rename": "Rename",
+      "archive": "Archive",
+      "download": "Download",
+      "revertChanges": "Revert Changes",
+      "saveTo": "Save To",
+      "save": "Save",
+      "reloadPages": "Reload Pages",
+      "moveToInbox": "Move to Inbox",
+      "permanentlyDelete": "Permanently Delete",
+      "unlock": "Unlock"
+    },
+    "messages": {
+      "passwordProtected": "This file is password protected. Please use the unlock feature to decrypt the document.",
+      "corrupt": "This file is corrupt.",
+      "corruptHelp": "You may be able to recover your document by clicking the Revert Changes button above."
+    }
+  },
+  "settings": {
+    "label": "Settings",
+    "sections": {
+      "general": "General",
+      "previews": "Previews",
+      "header": "Header",
+      "directories": "Directories"
+    },
+    "buttons": {
+      "reloadConfiguration": "Reload Configuration",
+      "save": "Save",
+      "cancel": "Cancel"
+    },
+    "general": {
+      "defaultLanguage": "Default Language",
+      "defaultFolder": "Default Folder",
+      "defaultSortColumn": "Default Sort Column",
+      "defaultSortDirection": "Default Sort Direction",
+      "defaultColourMode": "Default Colour Mode",
+      "enableTour": "Enable Tour",
+      "showIcons": "Show Icons",
+      "showLabels": "Show Labels"
+    },
+    "previews": {
+      "defaultSize": "Default Size",
+      "showPageNumber": "Show Page Number",
+      "blur": "Blur image"
+    },
+    "header": {
+      "stickyHeader": "Sticky Header",
+      "showDirectoryPicker": "Show Directory Picker",
+      "showSearch": "Show Search",
+      "showPreviewSizePicker": "Show Preview Size Picker",
+      "showSortPicker": "Show Sort Picker",
+      "showColourModePicker": "Show Colour Mode Picker",
+      "showSettingsButton": "Show Settings Button",
+      "showIcons": "Show Icons",
+      "showLabels": "Show Labels"
+    },
+    "directories": {
+      "inbox": "Inbox",
+      "outbox": "Outbox",
+      "archive": "Archive",
+      "showSaveTo": "Show Save To",
+      "showSave": "Show Save",
+      "showRestore": "Show Restore",
+      "showRevert": "Show Revert",
+      "showDownload": "Show Download",
+      "showDelete": "Show Delete",
+      "showRename": "Show Rename",
+      "showMerge": "Show Merge",
+      "showSplit": "Show Split",
+      "showRemove": "Show Remove",
+      "showRotateClockwise": "Show Rotate Clockwise",
+      "showRotateAntiClockwise": "Show Rotate Anti-Clockwise",
+      "showSelectAll": "Show Select All",
+      "showUnselect": "Show Unselect",
+      "archiveOriginalFileOnSave": "Archive Original File On Save",
+      "deleteDocumentOnArchive": "Delete Document On Archive"
+    }
+  },
+  "directoryPicker": {
+    "title": "Select Folder",
+    "outbox": "Outbox",
+    "up": "..",
+    "noFolders": "No folders to show",
+    "buttons": {
+      "save": "Save",
+      "close": "Close"
+    }
+  },
+  "merge": {
+    "title": "Merge Document",
+    "search": "Search...",
+    "buttons": {
+      "merge": "Merge",
+      "close": "Close"
+    }
+  },
+  "unlockDocument": {
+    "title": "Unlock Document",
+    "message": "This document is password protected. Please enter the password to unlock it.",
+    "buttons": {
+      "unlock": "Unlock",
+      "close": "Close"
+    }
+  },
+  "renameDocument": {
+    "title": "Rename Document",
+    "message": "Enter new name.",
+    "buttons": {
+      "rename": "Rename",
+      "close": "Close"
+    }
+  },
+  "shared": {
+    "folders": {
+      "inbox": "Inbox",
+      "outbox": "Outbox",
+      "archive": "Archive"
+    },
+    "previewSize": {
+      "label": "Page Size",
+      "sizes": {
+        "small": "Small",
+        "medium": "Medium",
+        "large": "Large"
+      }
+    },
+    "sort": {
+      "label": "Sort",
+      "by": {
+        "name": "Name",
+        "created": "Created",
+        "lastModified": "Last Modified"
+      },
+      "direction": {
+        "asc": "Asc",
+        "desc": "Desc"
+      }
+    },
+    "colourMode": {
+      "label": "Colour Mode",
+      "modes": {
+        "light": "Light",
+        "dark": "Dark",
+        "auto": "Auto"
+      }
+    },
+    "languages": {
+      "label": "Language",
+      "language": "English",
+      "languages": {
+        "en": "English",
+        "fr": "Français"
+      }
+    },
+    "loading": "Loading...",
+    "noDocumentsFound": "No documents found."
+  },
+  "errors": {
+    "anErrorOccurred": "An Error Occurred",
+    "unhandledException": "Unhandled exception!",
+    "failedToLoadPreview": "Failed to Load Preview",
+    "noPagesSelectedForRotate": "No pages selected. Please select a page to rotate.",
+    "noPagesSelectedForRemove": "No pages selected. Please select a page to remove.",
+    "splitUnableToLoadNewDocument": "Unable to load new document!",
+    "mergeUnableToLoadUpdatedDocument": "Unable to load updated document!",
+    "fileDoesNotExist": "File does not exist!"
+  }
+}

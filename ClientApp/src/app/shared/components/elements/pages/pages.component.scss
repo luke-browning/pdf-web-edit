@@ -1,0 +1,38 @@
+:host ::ng-deep page {
+  display: inline-block;
+
+  &:last-child {
+
+    .thumb-container {
+      margin-right: 0 !important;
+    }
+  }
+}
+
+.drop-zone {
+  display: inline-block;
+  position: relative;
+  margin-right: 20px;
+  vertical-align: bottom;
+  text-align: center;
+  opacity: 0.5;
+  width: 40px !important;
+  border: 3px dashed #000;
+}
+
+.drop-zone-icon {
+  font-size: 2em;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.dndList {
+  transition: all 300ms ease;
+}
+
+.dndDraggingSource {
+  opacity: 0.5;
+}

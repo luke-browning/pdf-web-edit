@@ -1,7 +1,7 @@
-<body>
-  <app-nav-menu></app-nav-menu>
-  <div class="container-fluid">
-    <router-outlet></router-outlet>
-  </div>
-  <tour-step-template></tour-step-template>
-</body>
+<app-nav-menu [ngClass]="{ 'sticky-top' : stickyHeader }"></app-nav-menu>
+
+<div class="container-fluid">
+  <router-outlet></router-outlet>
+</div>
+
+<tour-step-template></tour-step-template>
