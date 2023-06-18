@@ -3,6 +3,8 @@ PDF Web Edit is a web-based application for manipulating PDF files. It's main pu
 
 ## :rocket: Features
 :heavy_check_mark: List all PDF documents in a directory  
+:heavy_check_mark: Search by document names  
+:heavy_check_mark: Sort by name, creation and modified date  
 :heavy_check_mark: Preview pages  
 :heavy_check_mark: Delete pages  
 :heavy_check_mark: Rotate pages  
@@ -14,13 +16,16 @@ PDF Web Edit is a web-based application for manipulating PDF files. It's main pu
 :heavy_check_mark: Unlock encrypted/password protected documents  
 :heavy_check_mark: Move documents to outbox directory  
 :heavy_check_mark: Multilingual support  
-:heavy_check_mark: Dark mode!
+:heavy_check_mark: Dark mode
 
 ### :hammer: Built With
 ![.Net](https://img.shields.io/badge/.NET-5C2D91?style=for-the-badge&logo=.net&logoColor=white)
 ![Angular](https://img.shields.io/badge/angular-%23DD0031.svg?style=for-the-badge&logo=angular&logoColor=white)
 
-![Screenshot](./Assets/screenshot.png)
+### :camera: Screenshots
+Light | Dark
+--- | ---
+![](./Assets/screenshot.png) | ![](./Assets/screenshot-dark.png)
 
 ## :vertical_traffic_light: Getting Started
 The application works on the assumption that all your documents are pushed into an inbox folder ready for processing. Documents could come from a variety of sources such as a network scanner or another tool doing other pre-processing (e.g. OCR).
