@@ -8,6 +8,7 @@ import { ConfigService } from '../../../../services/config/config.service';
 import { SessionService } from '../../../../services/session/session.service';
 import { SettingsComponent } from '../../modals/settings/settings.component';
 import { TranslateService } from '@ngx-translate/core';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-nav-menu',
@@ -46,9 +47,9 @@ export class NavMenuComponent {
   isExpanded = false;
 
   constructor(private router: Router, private modalService: NgbModal, private configService: ConfigService,
-    private sessionService: SessionService, private translateService: TranslateService) {
+    private sessionService: SessionService, private translateService: TranslateService, private titleService: Title) {
 
-    configService.getConfig().subscribe(config => {
+    configService.getConfig().subscribe((config: PDFWebEditAPI.Config | null | undefined) => {
       this.config = config!;
     });
 
@@ -75,18 +76,18 @@ export class NavMenuComponent {
     });
     
     // Colour mode
-    this.sessionService.colourMode.subscribe((colourMode) => this.colourMode = colourMode);
-    this.sessionService.selectedColourMode.subscribe((selectedColourMode) => this.selectedColourMode = selectedColourMode);
+    this.sessionService.colourMode.subscribe((colourMode: string) => this.colourMode = colourMode);
+    this.sessionService.selectedColourMode.subscribe((selectedColourMode: string) => this.selectedColourMode = selectedColourMode);
 
     // Sorting
-    this.sessionService.sortBy.subscribe((sortBy) => this.sortBy = sortBy);
-    this.sessionService.sortDirection.subscribe((sortDirection) => this.sortDirection = sortDirection);
+    this.sessionService.sortBy.subscribe((sortBy: string) => this.sortBy = sortBy);
+    this.sessionService.sortDirection.subscribe((sortDirection: string) => this.sortDirection = sortDirection);
 
     // Page size
-    this.sessionService.previewSize.subscribe((previewSize) => this.previewSize = previewSize);
+    this.sessionService.previewSize.subscribe((previewSize: string) => this.previewSize = previewSize);
 
     // Translations
-    this.sessionService.language.subscribe((language) => this.language = language);
+    this.sessionService.language.subscribe((language: string) => this.language = language);
 
     // When the language changes, update variables
     translateService.onLangChange.subscribe((lang) => {
@@ -115,6 +116,9 @@ export class NavMenuComponent {
         this.currentDirectoryTranslated = this.translateService.instant('shared.folders.archive');
         break;
     }
+
+    // Update the page title
+    this.titleService.setTitle(this.currentDirectoryTranslated + ' - ' + this.translateService.instant('app.name'));
   }
 
   translateSortOptions() {
@@ -156,7 +160,7 @@ export class NavMenuComponent {
         filter(Boolean),
         debounceTime(0),
         distinctUntilChanged(),
-        tap((text) => {
+        tap(() => {
           this.sessionService.setSearch(this.search.nativeElement.value)
         })
       )

@@ -126,6 +126,9 @@
               <a ngbDropdownItem href="#" (click)="$event.preventDefault(); setLanguage('en')" [class.active]="language == 'en'">
                 <i class="bi bi-geo-alt pe-2"></i> {{ 'shared.languages.languages.en' | translate }}
               </a>
+              <a ngbDropdownItem href="#" (click)="$event.preventDefault(); setLanguage('es')" [class.active]="language == 'es'">
+                <i class="bi bi-geo-alt pe-2"></i> {{ 'shared.languages.languages.es' | translate }}
+              </a>
               <a ngbDropdownItem href="#" (click)="$event.preventDefault(); setLanguage('fr')" [class.active]="language == 'fr'">
                 <i class="bi bi-geo-alt pe-2"></i> {{ 'shared.languages.languages.fr' | translate }}
               </a>

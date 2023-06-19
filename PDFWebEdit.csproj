@@ -20,13 +20,13 @@
     <PackageReference Include="itext7" Version="7.2.5" />
     <PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="6.0.1" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.14.0" />
-    <PackageReference Include="NSwag.MSBuild" Version="13.18.2">
+    <PackageReference Include="NSwag.MSBuild" Version="13.19.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Octokit" Version="4.0.3" />
     <PackageReference Include="SixLabors.ImageSharp" Version="2.1.3" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
 
   <ItemGroup>

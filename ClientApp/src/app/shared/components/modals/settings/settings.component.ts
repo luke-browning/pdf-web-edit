@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { first, tap } from 'rxjs/operators';
 import { PDFWebEditAPI } from '../../../../../api/PDFWebEditAPI';
 import { ConfigService } from '../../../../services/config/config.service';
 
@@ -16,6 +17,7 @@ export class SettingsComponent implements OnInit {
   // Options
   languages = [
     { label: "shared.languages.languages.en", value: "en" },
+    { label: "shared.languages.languages.es", value: "es" },
     { label: "shared.languages.languages.fr", value: "fr" },
   ];
 
@@ -55,7 +57,7 @@ export class SettingsComponent implements OnInit {
   constructor(private activeModal: NgbActiveModal, private configService: ConfigService) {
 
     // Load the app config
-    configService.getConfig().subscribe(config => {
+    configService.getConfig().subscribe((config: PDFWebEditAPI.Config | null | undefined) => {
 
       // Create a copy of the config object so we are not manipulating the 
       // object that is in use throughout the project
@@ -67,16 +69,20 @@ export class SettingsComponent implements OnInit {
   }
 
   reloadConfiguration() {
-    this.configService.reloadConfig().then(config => {
-      this.config = config!;
-    });
+    this.configService.reloadConfig()
+      .pipe(first())
+      .subscribe((config: PDFWebEditAPI.Config | null | undefined) => {
+        this.config = config!;
+      });
   }
 
   ok() {
-    this.configService.saveConfig(this.config).then(config => {
-      this.config = config!;
-      this.activeModal.close(this.config);
-    });
+    this.configService.saveConfig(this.config)
+      .pipe(first())
+      .subscribe((config: PDFWebEditAPI.Config | null | undefined) => {
+        this.config = config!;
+        this.activeModal.close(this.config);
+      });
   }
 
   close() {

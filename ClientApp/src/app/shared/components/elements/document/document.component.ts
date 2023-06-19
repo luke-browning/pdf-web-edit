@@ -58,13 +58,13 @@ export class DocumentComponent implements OnInit {
 
   ngOnInit(): void {
 
-    let sizeSubscription = this.size.subscribe(result => {
+    let sizeSubscription = this.size.subscribe((result: string) => {
       this.setSize(result);
       this.loadDocumentPages();
     });
 
     // Colour mode
-    this.sessionService.colourMode.subscribe((colourMode) => this.colourMode = colourMode);
+    this.sessionService.colourMode.subscribe((colourMode: string) => this.colourMode = colourMode);
 
     this.subscriptions.push(sizeSubscription);
 
@@ -475,7 +475,7 @@ export class DocumentComponent implements OnInit {
 
   revert() {
     this.api.revertChanges(this.directory, this.document.name, this.document.directory).subscribe(() => {
-      this.api.getDocument(this.directory, this.document.name, this.document.directory).subscribe((updatedDocument) => {
+      this.api.getDocument(this.directory, this.document.name, this.document.directory).subscribe((updatedDocument: PDFWebEditAPI.Document | null) => {
 
         // Make sure the document isn't null
         if (updatedDocument != null) {
@@ -545,7 +545,7 @@ export class DocumentComponent implements OnInit {
       false, this.document.name).then(result => {
       if (result) {
         this.api.rename(this.directory, this.document.name, result, this.document.directory).subscribe(() => {
-          this.api.getDocument(this.directory, result, this.document.directory).subscribe((updatedDocument) => {
+          this.api.getDocument(this.directory, result, this.document.directory).subscribe((updatedDocument: PDFWebEditAPI.Document | null) => {
 
             // Make sure the document isn't null
             if (updatedDocument != null) {
@@ -571,7 +571,7 @@ export class DocumentComponent implements OnInit {
       this.translateService.instant('unlockDocument.buttons.close'), true).then(result => {
       if (result) {
         this.api.unlock(this.directory, this.document.name, result, this.document.directory).subscribe(() => {
-          this.api.getDocument(this.directory, this.document.name, this.document.directory).subscribe((updatedDocument) => {
+          this.api.getDocument(this.directory, this.document.name, this.document.directory).subscribe((updatedDocument: PDFWebEditAPI.Document | null) => {
 
             // Make sure the document isn't null
             if (updatedDocument != null) {
@@ -596,7 +596,7 @@ export class DocumentComponent implements OnInit {
   loadDocumentPages(pages?: number[]) {
 
     combineLatest(this.document.corrupt, this.document.passwordProtected,
-      (corrupt, passwordProtected) => ({ corrupt, passwordProtected })).subscribe(res => {
+      (corrupt, passwordProtected) => ({ corrupt, passwordProtected })).subscribe((res: { corrupt: boolean; passwordProtected: boolean; }) => {
 
         if ((!res.corrupt) && (!res.passwordProtected)) {
 

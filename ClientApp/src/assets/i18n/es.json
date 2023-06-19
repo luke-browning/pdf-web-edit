@@ -1,0 +1,208 @@
+{
+  "app": {
+    "name": "PDF Web Edit"
+  },
+  "header": {
+    "branding": {
+      "logo1": "PDF",
+      "logo2": "Web Edit"
+    },
+    "search": {
+      "placeholder": "Buscar..."
+    },
+    "settings": {
+      "label": "Configuración"
+    }
+  },
+  "documents": {
+    "buttons": {
+      "selectAll": "Seleccionar todo",
+      "deselectAll": "Deseleccionar todo",
+      "rotateClockwise": "Rotar en sentido horario",
+      "rotateAntiClockwise": "Rotar en sentido antihorario",
+      "remove": "Eliminar",
+      "split": "Dividir",
+      "merge": "Combinar",
+      "rename": "Cambiar nombre",
+      "archive": "Archivar",
+      "download": "Descargar",
+      "revertChanges": "Revertir cambios",
+      "saveTo": "Guardar en",
+      "save": "Guardar",
+      "reloadPages": "Recargar páginas",
+      "moveToInbox": "Mover a la bandeja de entrada",
+      "permanentlyDelete": "Eliminar permanentemente",
+      "unlock": "Desbloquear"
+    },
+    "messages": {
+      "passwordProtected": "Este archivo está protegido por contraseña. Utilice la función de desbloqueo para descifrar el documento.",
+      "corrupt": "Este archivo está dañado.",
+      "corruptHelp": "Es posible que pueda recuperar su documento haciendo clic en el botón Revertir cambios anterior."
+    }
+  },
+  "settings": {
+    "label": "Configuración",
+    "sections": {
+      "general": "General",
+      "previews": "Previsualizaciones",
+      "header": "Encabezado",
+      "directories": "Directorios"
+    },
+    "buttons": {
+      "reloadConfiguration": "Recargar configuración",
+      "save": "Guardar",
+      "cancel": "Cancelar"
+    },
+    "general": {
+      "defaultLanguage": "Idioma predeterminado",
+      "defaultFolder": "Carpeta predeterminada",
+      "defaultSortColumn": "Columna de ordenación predeterminada",
+      "defaultSortDirection": "Dirección de ordenación predeterminada",
+      "defaultColourMode": "Modo de color predeterminado",
+      "enableTour": "Activar recorrido",
+      "showIcons": "Mostrar iconos",
+      "showLabels": "Mostrar etiquetas"
+    },
+    "previews": {
+      "defaultSize": "Tamaño predeterminado",
+      "showPageNumber": "Mostrar número de página",
+      "blur": "Desenfocar imagen"
+    },
+    "header": {
+      "stickyHeader": "Encabezado fijo",
+      "showDirectoryPicker": "Mostrar selector de directorio",
+      "showSearch": "Mostrar búsqueda",
+      "showPreviewSizePicker": "Mostrar selector de tamaño de vista previa",
+      "showSortPicker": "Mostrar selector de ordenación",
+      "showColourModePicker": "Mostrar selector de modo de color",
+      "showSettingsButton": "Mostrar botón de configuración",
+      "showIcons": "Mostrar iconos",
+      "showLabels": "Mostrar etiquetas"
+    },
+    "directories": {
+      "inbox": "Bandeja de entrada",
+      "outbox": "Bandeja de salida",
+      "archive": "Archivo",
+      "showSaveTo": "Mostrar guardar en",
+      "showSave": "Mostrar guardar",
+      "showRestore": "Mostrar restaurar",
+      "showRevert": "Mostrar revertir",
+      "showDownload": "Mostrar descargar",
+      "showDelete": "Mostrar eliminar",
+      "showRename": "Mostrar cambiar nombre",
+      "showMerge": "Mostrar combinar",
+      "showSplit": "Mostrar dividir",
+      "showRemove": "Mostrar eliminar",
+      "showRotateClockwise": "Mostrar rotar en sentido horario",
+      "showRotateAntiClockwise": "Mostrar rotar en sentido antihorario",
+      "showSelectAll": "Mostrar seleccionar todo",
+      "showUnselect": "Mostrar deseleccionar",
+      "archiveOriginalFileOnSave": "Archivar archivo original al guardar",
+      "deleteDocumentOnArchive": "Eliminar documento al archivar"
+    }
+  },
+  "directoryPicker": {
+    "title": "Seleccionar carpeta",
+    "outbox": "Bandeja de salida",
+    "up": "..",
+    "noFolders": "No hay carpetas para mostrar",
+    "buttons": {
+      "save": "Guardar",
+      "close": "Cerrar"
+    }
+  },
+  "merge": {
+    "title": "Combinar documento",
+    "search": "Buscar...",
+    "buttons": {
+      "merge": "Combinar",
+      "close": "Cerrar"
+    }
+  },
+  "unlockDocument": {
+    "title": "Desbloquear documento",
+    "message": "Este documento está protegido por contraseña. Por favor, ingrese la contraseña para desbloquearlo.",
+    "buttons": {
+      "unlock": "Desbloquear",
+      "close": "Cerrar"
+    }
+  },
+  "renameDocument": {
+    "title": "Cambiar nombre del documento",
+    "message": "Ingrese el nuevo nombre.",
+    "buttons": {
+      "rename": "Cambiar nombre",
+      "close": "Cerrar"
+    }
+  },
+  "shared": {
+    "folders": {
+      "inbox": "Bandeja de entrada",
+      "outbox": "Bandeja de salida",
+      "archive": "Archivo"
+    },
+    "previewSize": {
+      "label": "Tamaño de página",
+      "sizes": {
+        "small": "Pequeño",
+        "medium": "Mediano",
+        "large": "Grande"
+      }
+    },
+    "sort": {
+      "label": "Ordenar",
+      "by": {
+        "name": "Nombre",
+        "created": "Creado",
+        "lastModified": "Última modificación"
+      },
+      "direction": {
+        "asc": "Asc",
+        "desc": "Desc"
+      }
+    },
+    "colourMode": {
+      "label": "Modo de color",
+      "modes": {
+        "light": "Claro",
+        "dark": "Oscuro",
+        "auto": "Automático"
+      }
+    },
+    "languages": {
+      "label": "Idioma",
+      "language": "Español",
+      "languages": {
+        "en": "English",
+        "es": "Español",
+        "fr": "Français"
+      }
+    },
+    "loading": "Cargando...",
+    "noDocumentsFound": "No se encontraron documentos."
+  },
+  "errors": {
+    "anErrorOccurred": "Se produjo un error",
+    "unhandledException": "¡Excepción no controlada!",
+    "failedToLoadPreview": "Error al cargar la vista previa",
+    "noPagesSelectedForRotate": "No se han seleccionado páginas. Por favor, seleccione una página para rotar.",
+    "noPagesSelectedForRemove": "No se han seleccionado páginas. Por favor, seleccione una página para eliminar.",
+    "splitUnableToLoadNewDocument": "¡No se pudo cargar el nuevo documento!",
+    "mergeUnableToLoadUpdatedDocument": "¡No se pudo cargar el documento actualizado!",
+    "fileDoesNotExist": "¡El archivo no existe!"
+  },
+  "tour": {
+    "folderStep": {
+      "content": "Selecciona el directorio que deseas ver junto con todos sus documentos.",
+      "title": "Directorio actual"
+    },
+    "previewStep": {
+      "content": "Elige el tamaño de tus vistas previas.",
+      "title": "Tamaño de la vista previa"
+    },
+    "sortStep": {
+      "content": "Ordena tus documentos por nombre, fecha de creación o última modificación.",
+      "title": "Ordenar documentos"
+    }
+  }
+}
