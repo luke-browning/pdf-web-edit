@@ -1,4 +1,7 @@
 {
+  "app": {
+    "name": "PDF Web Edit"
+  },
   "header": {
     "branding": {
       "logo1": "PDF",
@@ -171,6 +174,7 @@
       "language": "Français",
       "languages": {
         "en": "English",
+        "es": "Español",
         "fr": "Français"
       }
     },
@@ -186,5 +190,19 @@
     "splitUnableToLoadNewDocument": "Impossible de charger le nouveau document !",
     "mergeUnableToLoadUpdatedDocument": "Impossible de charger le document mis à jour !",
     "fileDoesNotExist": "Le fichier n'existe pas !"
+  },
+  "tour": {
+    "folderStep": {
+      "content": "Sélectionnez le répertoire que vous souhaitez afficher avec tous ses documents.",
+      "title": "Répertoire actuel"
+    },
+    "previewStep": {
+      "content": "Choisissez la taille de vos aperçus.",
+      "title": "Taille de l'aperçu"
+    },
+    "sortStep": {
+      "content": "Triez vos documents par nom, date de création ou date de dernière modification.",
+      "title": "Trier les documents"
+    }
   }
 }

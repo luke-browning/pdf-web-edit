@@ -2,6 +2,7 @@ import { ApplicationRef, Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { ConfigService } from '../config/config.service';
 import { TranslateService } from '@ngx-translate/core';
+import { PDFWebEditAPI } from '../../../api/PDFWebEditAPI';
 
 @Injectable({
   providedIn: 'root'
@@ -43,7 +44,7 @@ export class SessionService {
 
     this.readBrowserColourMode();
 
-    configService.getConfig().subscribe(config => {
+    configService.getConfig().subscribe((config: PDFWebEditAPI.Config | null | undefined) => {
 
       // Work out what colour mode we should start with
       let defaultColourMode = config?.generalConfig.defaultColourMode;

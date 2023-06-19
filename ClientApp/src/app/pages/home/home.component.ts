@@ -38,7 +38,7 @@ export class HomeComponent {
     private router: Router, private configService: ConfigService, private sessionService: SessionService) {
 
     // Load the app config
-    configService.getConfig().subscribe(config => {
+    configService.getConfig().subscribe((config: PDFWebEditAPI.Config | null | undefined) => {
       this.config = config!;
 
       this.size.next(this.config?.previewConfig?.defaultSize!);
@@ -68,7 +68,7 @@ export class HomeComponent {
 
         this.sortDocuments();
 
-        this.sessionService.search.subscribe((query) => {
+        this.sessionService.search.subscribe((query: string) => {
           this.filterQuery = query;
           this.updatedFilteredDocuments();
         });
@@ -76,7 +76,7 @@ export class HomeComponent {
       }, error => console.error(error));
 
       // List directories
-      api.getDirectories().subscribe(result => {
+      api.getDirectories().subscribe((result: PDFWebEditAPI.Folder[] | null) => {
         if (result != null) {
           this.directoryStructure = result;
         }
@@ -84,11 +84,11 @@ export class HomeComponent {
     });
 
     // Keep track of the preview size
-    sessionService.previewSize.subscribe((previewSize) => this.size.next(previewSize));
+    sessionService.previewSize.subscribe((previewSize: string) => this.size.next(previewSize));
 
     // Keep track of the sorting
-    sessionService.sortBy.subscribe((sortBy) => this.setSort(sortBy));
-    sessionService.sortDirection.subscribe((sortDirection) => this.setSortDirection(sortDirection));
+    sessionService.sortBy.subscribe((sortBy: string) => this.setSort(sortBy));
+    sessionService.sortDirection.subscribe((sortDirection: string) => this.setSortDirection(sortDirection));
   }
 
   //
