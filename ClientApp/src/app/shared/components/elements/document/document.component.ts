@@ -510,7 +510,10 @@ export class DocumentComponent implements OnInit {
 
   saveTo() {
 
-    const modalRef = this.modalService.open(DirectoryPickerComponent);
+    const modalRef = this.modalService.open(DirectoryPickerComponent, {
+      size: 'lg'
+    });
+
     modalRef.componentInstance.folders = this.directoryStructure;
 
     modalRef.result.then(result => {

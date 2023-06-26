@@ -104,8 +104,12 @@
   "directoryPicker": {
     "title": "Select Folder",
     "outbox": "Outbox",
+    "favourites": "Favourites",
+    "history": "History",
     "up": "..",
     "noFolders": "No folders to show",
+    "addToFavourites": "Add to favourites",
+    "removeFromFavourites": "Remove from favourites",
     "buttons": {
       "save": "Save",
       "close": "Close"

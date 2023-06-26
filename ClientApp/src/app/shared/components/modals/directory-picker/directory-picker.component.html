@@ -4,21 +4,133 @@
     <button type="button" class="btn-close" aria-label="Close" (click)="close()"></button>
   </div>
   <div class="modal-body">
-    <div>
-      <ol class="breadcrumb">
-        <li class="breadcrumb-item" aria-current="page">{{ 'directoryPicker.outbox' | translate }}</li>
-        <li class="breadcrumb-item" aria-current="page" *ngFor="let segment of currentPath">{{ segment.name }}</li>
-      </ol>
+
+    <div class="list-group breadcrumb-container">
+      <div class="list-group-item list-group-item-secondary">
+        <ol class="breadcrumb" *ngIf="pickerMode == pickerModes.Outbox">
+          <li class="breadcrumb-item" aria-current="page">{{ 'directoryPicker.outbox' | translate }}</li>
+          <li class="breadcrumb-item" aria-current="page" *ngFor="let segment of currentPath">{{ segment.name }}</li>
+        </ol>
+
+        <ol class="breadcrumb" *ngIf="pickerMode == pickerModes.Favourites">
+          <li class="breadcrumb-item" aria-current="page">{{ 'directoryPicker.favourites' | translate }}</li>
+        </ol>
+
+        <ol class="breadcrumb" *ngIf="pickerMode == pickerModes.History">
+          <li class="breadcrumb-item" aria-current="page">{{ 'directoryPicker.history' | translate }}</li>
+        </ol>
+      </div>
     </div>
 
-    <div class="list-group">
-      <button type="button" class="list-group-item list-group-item-action" *ngIf="currentPath.length > 0" (click)="up()">{{ 'directoryPicker.up' | translate }}</button>
-      <button type="button" class="list-group-item list-group-item-action" *ngFor="let folder of currentDirectoryFolders" (click)="setFolder(folder)">{{ folder.name }}</button>
-      <button type="button" class="list-group-item list-group-item-action" *ngIf="currentDirectoryFolders.length == 0" disabled>{{ 'directoryPicker.noFolders' | translate }}</button>
+    <div class="row">
+      <div class="col-3">
+        <div class="list-group locations-list">
+          <button type="button" class="list-group-item list-group-item-action" (click)="setPickerMode(pickerModes.Outbox)" [class.active]="pickerMode == pickerModes.Outbox">
+            <i class="bi bi-house-fill"></i>{{ 'directoryPicker.outbox' | translate }}
+          </button>
+
+          <button type="button" class="list-group-item list-group-item-action" (click)="setPickerMode(pickerModes.Favourites)" [class.active]="pickerMode == pickerModes.Favourites">
+            <i class="bi bi-star-fill"></i>{{ 'directoryPicker.favourites' | translate }}
+          </button>
+
+          <button type="button" class="list-group-item list-group-item-action" (click)="setPickerMode(pickerModes.History)" [class.active]="pickerMode == pickerModes.History">
+            <i class="bi bi-clock-history"></i> {{ 'directoryPicker.history' | translate }}
+          </button>
+        </div>
+      </div>
+
+      <div class="col">
+
+        <!-- Outbox -->
+        <div class="list-group" *ngIf="pickerMode == pickerModes.Outbox">
+          <button type="button" class="list-group-item list-group-item-action"
+                  *ngIf="currentPath.length > 0"
+                  (click)="up()">
+            {{ 'directoryPicker.up' | translate }}
+          </button>
+
+
+          <div class="list-group-item sub-list" *ngFor="let folder of sortBy(currentDirectoryFolders, 'name')">
+            <div class="list-group list-group-horizontal list-group-flush">
+              <button type="button" class="list-group-item list-group-item-action" (click)="setFolder(folder)">
+                <i class="bi bi-folder path-icon"></i> {{ folder.name }}
+              </button>
+
+              <button type="button" class="list-group-item list-group-item-action favourite-button"
+                      *ngIf="isFavourite(folder)"
+                      (click)="removeFromFavourites(folder)"
+                      placement="bottom" ngbTooltip="{{ 'directoryPicker.removeFromFavourites' | translate }}" container="body">
+                <i class="bi bi-star-fill"></i>
+              </button>
+
+              <button type="button" class="list-group-item list-group-item-action favourite-button"
+                      *ngIf="!isFavourite(folder)"
+                      (click)="addToFavourites(folder)"
+                      placement="bottom" ngbTooltip="{{ 'directoryPicker.addToFavourites' | translate }}" container="body">
+                <i class="bi bi-star"></i>
+              </button>
+            </div>
+          </div>
+
+          <button type="button" class="list-group-item list-group-item-action"
+                  *ngIf="currentDirectoryFolders.length == 0"
+                  disabled>
+            {{ 'directoryPicker.noFolders' | translate }}
+          </button>
+        </div>
+
+        <!-- Favourites -->
+        <div class="list-group" *ngIf="pickerMode == pickerModes.Favourites">
+          <div class="list-group-item sub-list" *ngFor="let path of sortFavourites(favourites)">
+            <div class="list-group list-group-horizontal list-group-flush">
+              <button type="button" class="list-group-item list-group-item-action" (click)="setFolderByPath(path)">
+                <div>
+                  <i class="bi bi-folder path-icon"></i> {{ getFavouriteName(path) }}
+                </div>
+                <small class="text-muted">{{ getFavouriteContainingFolder(path) }}</small>
+              </button>
+
+              <button type="button" class="list-group-item list-group-item-action favourite-button"
+                      (click)="removeFromFavouritesByPath(path)"
+                      placement="bottom" ngbTooltip="{{ 'directoryPicker.removeFromFavourites' | translate }}" container="body">
+                <i class="bi bi-star-fill"></i>
+              </button>
+            </div>
+          </div>
+
+          <button type="button" class="list-group-item list-group-item-action"
+                  *ngIf="favourites.length == 0"
+                  disabled>
+            {{ 'directoryPicker.noFolders' | translate }}
+          </button>
+        </div>
+
+        <!-- History -->
+        <div class="list-group" *ngIf="pickerMode == pickerModes.History">
+          <div class="list-group-item sub-list" *ngFor="let path of history?.reverse()">
+            <div class="list-group list-group-horizontal list-group-flush">
+              <button type="button" class="list-group-item list-group-item-action" (click)="setFolderByPath(path)">
+                <div><i class="bi bi-folder path-icon"></i> {{ getFavouriteName(path) }}</div>
+                <small class="text-muted">{{ getFavouriteContainingFolder(path) }}</small>
+              </button>
+
+              <button type="button" class="list-group-item list-group-item-action favourite-button" (click)="removeFromHistory(path)">
+                <i class="bi bi-x-lg"></i>
+              </button>
+            </div>
+          </div>
+
+          <button type="button" class="list-group-item list-group-item-action"
+                  *ngIf="history.length == 0"
+                  disabled>
+            {{ 'directoryPicker.noFolders' | translate }}
+          </button>
+        </div>
+      </div>
     </div>
   </div>
   <div class="modal-footer">
-    <button type="submit" class="btn btn-primary">{{ 'directoryPicker.buttons.save' | translate }}</button>
+    <button type="submit" class="btn btn-primary" [disabled]="pickerMode != pickerModes.Outbox">{{ 'directoryPicker.buttons.save' | translate }}</button>
     <button type="button" class="btn btn-secondary" (click)="close()">{{ 'directoryPicker.buttons.close' | translate }}</button>
   </div>
 </form>

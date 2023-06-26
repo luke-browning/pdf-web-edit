@@ -59,6 +59,11 @@
     <None Remove="ClientApp\dist\roboto-v30-latin-regular.f1e2a76794cb86b2aa8e.woff" />
     <None Remove="ClientApp\dist\runtime.35355e84fe9936437d57.js" />
     <None Remove="ClientApp\dist\styles.0a1d5d82097a971dad4a.css" />
+    <None Remove="ClientApp\src\app\shared\models\picker-mode.ts" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <TypeScriptCompile Include="ClientApp\src\app\shared\models\picker-mode.ts" />
   </ItemGroup>
 
     <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

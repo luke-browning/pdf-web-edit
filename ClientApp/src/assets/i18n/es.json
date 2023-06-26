@@ -104,8 +104,12 @@
   "directoryPicker": {
     "title": "Seleccionar carpeta",
     "outbox": "Bandeja de salida",
+    "favourites": "Favoritos",
+    "history": "Historial",
     "up": "..",
     "noFolders": "No hay carpetas para mostrar",
+    "addToFavourites": "Agregar a favoritos",
+    "removeFromFavourites": "Eliminar de favoritos",
     "buttons": {
       "save": "Guardar",
       "close": "Cerrar"

@@ -104,8 +104,12 @@
   "directoryPicker": {
     "title": "Sélectionner un dossier",
     "outbox": "Boîte d'envoi",
+    "favourites": "Favoris",
+    "history": "Historique",
     "up": "..",
     "noFolders": "Aucun dossier à afficher",
+    "addToFavourites": "Ajouter aux favoris",
+    "removeFromFavourites": "Retirer des favoris",
     "buttons": {
       "save": "Enregistrer",
       "close": "Fermer"
