@@ -22,7 +22,7 @@
       </div>
     </div>
 
-    <div class="row">
+    <div class="row directory-container">
       <div class="col-3">
         <div class="list-group locations-list">
           <button type="button" class="list-group-item list-group-item-action" (click)="setPickerMode(pickerModes.Outbox)" [class.active]="pickerMode == pickerModes.Outbox">
@@ -125,6 +125,15 @@
                   disabled>
             {{ 'directoryPicker.noFolders' | translate }}
           </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="row name-container">
+      <div class="col">
+        <div class="input-group">
+          <span class="input-group-text" id="name-addon">Document Name</span>
+          <input type="text" class="form-control" placeholder="Document Name" aria-label="Document Name" aria-describedby="name-addon" [(ngModel)]="name" [ngModelOptions]="{standalone: true}">
         </div>
       </div>
     </div>

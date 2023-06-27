@@ -522,7 +522,8 @@ namespace PDFWebEdit.Services
         /// <param name="name">The name.</param>
         /// <param name="sourceSubDirectory">The source sub directory.</param>
         /// <param name="targetSubDirectory">The target sub directory.</param>
-        public void Save(string name, string? sourceSubDirectory, string? targetSubDirectory)
+        /// <param name="newName">New name.</param>
+        public void Save(string name, string? sourceSubDirectory, string? targetSubDirectory, string newName = null)
         {
             string sourceDirectory = GetTargetDirectoryPath(TargetDirectory.Inbox);
             sourceDirectory = Path.Join(sourceDirectory, sourceSubDirectory ?? string.Empty);
@@ -535,10 +536,10 @@ namespace PDFWebEdit.Services
                 var editedPDFPath = Path.Combine(sourceDirectory, name) + EDITING_PDF_EXTENSION;
                 var originalPDFPath = Path.Combine(sourceDirectory, name) + PDF_EXTENSION;
 
-                string outboxPath = Path.Combine(outboxDirectory, name);
+                string outboxPath = Path.Combine(outboxDirectory, newName ?? name);
 
                 outboxPath += PDF_EXTENSION;
-                var archiveOutboxPath = Path.Combine(_archiveDirectory, name) + PDF_EXTENSION;
+                var archiveOutboxPath = Path.Combine(_archiveDirectory, newName ?? name) + PDF_EXTENSION;
 
                 // Make sure a file doesn't already exist in the outbox location
                 if (File.Exists(outboxPath))

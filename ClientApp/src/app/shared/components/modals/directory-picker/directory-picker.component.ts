@@ -11,6 +11,8 @@ import { PickerMode } from '../../../models/picker-mode';
 export class DirectoryPickerComponent implements OnInit {
 
   @Input() folders: PDFWebEditAPI.Folder[] = [];
+  @Input() name: string | undefined;
+  @Input() showNameEditor!: boolean;
 
   parentFolder?: PDFWebEditAPI.Folder;
   currentPath: PDFWebEditAPI.Folder[] = [];
@@ -200,6 +202,9 @@ export class DirectoryPickerComponent implements OnInit {
       this.history = reorderedHistory;
     }
 
+    // Only store the latest 10 records
+    this.history = this.history.slice(-10);
+
     // Save to local storage
     localStorage.setItem('save_history', this.history.join(','));
   }
@@ -245,7 +250,10 @@ export class DirectoryPickerComponent implements OnInit {
     this.addToHistory(path);
 
     // Close the dialog
-    this.activeModal.close(path);
+    this.activeModal.close({
+      path: path,
+      name: this.showNameEditor ? this.name : null,
+    });
   }
 
   close() {

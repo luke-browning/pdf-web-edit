@@ -515,9 +515,15 @@ export class DocumentComponent implements OnInit {
     });
 
     modalRef.componentInstance.folders = this.directoryStructure;
+    modalRef.componentInstance.name = this.document.name;
+    modalRef.componentInstance.showNameEditor = true;
 
     modalRef.result.then(result => {
-      this.api.saveTo(this.document.name, this.document.directory, result).subscribe(() => {
+
+      let path = result.path;
+      let name = result.name;
+
+      this.api.saveTo(this.document.name, this.document.directory, path, name).subscribe(() => {
         this.onRemoveDocument.emit(this.document.name);
       }, error => this.showMessageBox(error));
     }, () => {

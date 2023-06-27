@@ -1585,9 +1585,10 @@ export class DocumentClient {
      * @param document The document.
      * @param sourceSubDirectory (optional) The subDirectory to move from.
      * @param targetSubDirectory (optional) The subDirectory to save to.
+     * @param newName (optional) New name of the file
      * @return An IActionResult.
      */
-    saveTo(document: string, sourceSubDirectory?: string | null | undefined, targetSubDirectory?: string | null | undefined): Observable<void> {
+    saveTo(document: string, sourceSubDirectory?: string | null | undefined, targetSubDirectory?: string | null | undefined, newName?: string | undefined): Observable<void> {
         let url_ = this.baseUrl + "/api/documents/{document}/saveto?";
         if (document === undefined || document === null)
             throw new Error("The parameter 'document' must be defined.");
@@ -1596,6 +1597,10 @@ export class DocumentClient {
             url_ += "sourceSubDirectory=" + encodeURIComponent("" + sourceSubDirectory) + "&";
         if (targetSubDirectory !== undefined && targetSubDirectory !== null)
             url_ += "targetSubDirectory=" + encodeURIComponent("" + targetSubDirectory) + "&";
+        if (newName === null)
+            throw new Error("The parameter 'newName' cannot be null.");
+        else if (newName !== undefined)
+            url_ += "newName=" + encodeURIComponent("" + newName) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {

@@ -280,13 +280,14 @@
             An IActionResult.
             </returns>
         </member>
-        <member name="M:PDFWebEdit.Controllers.DocumentController.SaveTo(System.String,System.String,System.String)">
+        <member name="M:PDFWebEdit.Controllers.DocumentController.SaveTo(System.String,System.String,System.String,System.String)">
             <summary>
             Saves the specified document from the inbox directory.
             </summary>
             <param name="document">The document.</param>
             <param name="sourceSubDirectory">The subDirectory to move from.</param>
             <param name="targetSubDirectory">The subDirectory to save to.</param>
+            <param name="newName">New name of the file</param>
             <returns>
             An IActionResult.
             </returns>
@@ -1238,13 +1239,14 @@
             <param name="subDirectory">Subdirectory storing document.</param>
             <param name="name">The name.</param>
         </member>
-        <member name="M:PDFWebEdit.Services.DirectoryService.Save(System.String,System.String,System.String)">
+        <member name="M:PDFWebEdit.Services.DirectoryService.Save(System.String,System.String,System.String,System.String)">
             <summary>
             Saves the document to the outbox directory.
             </summary>
             <param name="name">The name.</param>
             <param name="sourceSubDirectory">The source sub directory.</param>
             <param name="targetSubDirectory">The target sub directory.</param>
+            <param name="newName">New name.</param>
         </member>
         <member name="M:PDFWebEdit.Services.DirectoryService.GetTargetDirectoryPath(PDFWebEdit.Enumerations.TargetDirectory)">
             <summary>

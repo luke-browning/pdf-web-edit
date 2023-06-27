@@ -730,6 +730,7 @@ namespace PDFWebEdit.Controllers
         /// <param name="document">The document.</param>
         /// <param name="sourceSubDirectory">The subDirectory to move from.</param>
         /// <param name="targetSubDirectory">The subDirectory to save to.</param>
+        /// <param name="newName">New name of the file</param>
         /// <returns>
         /// An IActionResult.
         /// </returns>
@@ -739,7 +740,7 @@ namespace PDFWebEdit.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
         [ProducesErrorResponseType(typeof(ObjectResult))]
-        public IActionResult SaveTo(string document, string? sourceSubDirectory = null, string? targetSubDirectory = null)
+        public IActionResult SaveTo(string document, string? sourceSubDirectory = null, string? targetSubDirectory = null, string newName = null)
         {
             // Get the path to the document
             var path = _directoryService.GetDocumentPath(TargetDirectory.Inbox, sourceSubDirectory, document);
@@ -748,7 +749,7 @@ namespace PDFWebEdit.Controllers
             {
                 try
                 {
-                    _directoryService.Save(document, sourceSubDirectory, targetSubDirectory);
+                    _directoryService.Save(document, sourceSubDirectory, targetSubDirectory, newName);
 
                     return Ok();
                 }
