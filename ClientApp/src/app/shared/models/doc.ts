@@ -12,4 +12,5 @@ export interface Doc {
     canRevertChanges: BehaviorSubject<boolean>;
     corrupt: BehaviorSubject<boolean>;
     passwordProtected: BehaviorSubject<boolean>;
+    selected: boolean;
 }

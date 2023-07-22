@@ -445,7 +445,7 @@ export class DocumentClient {
      * @return The document.
      */
     downloadDocument(targetDirectory: TargetDirectory, document: string, subDirectory?: string | null | undefined): Observable<FileResponse | null> {
-        let url_ = this.baseUrl + "/api/documents/{targetDirectory}/{document}/download?";
+        let url_ = this.baseUrl + "/api/documents/download/{targetDirectory}/{document}?";
         if (targetDirectory === undefined || targetDirectory === null)
             throw new Error("The parameter 'targetDirectory' must be defined.");
         url_ = url_.replace("{targetDirectory}", encodeURIComponent("" + targetDirectory));
@@ -524,7 +524,7 @@ export class DocumentClient {
      * @return The page count.
      */
     getPageCount(targetDirectory: TargetDirectory, document: string, subDirectory?: string | null | undefined): Observable<number> {
-        let url_ = this.baseUrl + "/api/documents/{targetDirectory}/{document}/page-count?";
+        let url_ = this.baseUrl + "/api/documents/page-count/{targetDirectory}/{document}?";
         if (targetDirectory === undefined || targetDirectory === null)
             throw new Error("The parameter 'targetDirectory' must be defined.");
         url_ = url_.replace("{targetDirectory}", encodeURIComponent("" + targetDirectory));
@@ -603,7 +603,7 @@ export class DocumentClient {
      * @return The page preview.
      */
     getPagePreview(targetDirectory: TargetDirectory, document: string, pageNumber: number, width: number, height: number, subDirectory?: string | null | undefined): Observable<FileResponse | null> {
-        let url_ = this.baseUrl + "/api/documents/{targetDirectory}/{document}/preview/{pageNumber}?";
+        let url_ = this.baseUrl + "/api/documents/preview/{targetDirectory}/{document}/{pageNumber}?";
         if (targetDirectory === undefined || targetDirectory === null)
             throw new Error("The parameter 'targetDirectory' must be defined.");
         url_ = url_.replace("{targetDirectory}", encodeURIComponent("" + targetDirectory));
@@ -694,7 +694,7 @@ export class DocumentClient {
      * @return An IActionResult.
      */
     rename(targetDirectory: TargetDirectory, document: string, newDocumentName: string, subDirectory?: string | null | undefined): Observable<void> {
-        let url_ = this.baseUrl + "/api/documents/{targetDirectory}/{document}/rename/{newDocumentName}?";
+        let url_ = this.baseUrl + "/api/documents/rename/{targetDirectory}/{document}/{newDocumentName}?";
         if (targetDirectory === undefined || targetDirectory === null)
             throw new Error("The parameter 'targetDirectory' must be defined.");
         url_ = url_.replace("{targetDirectory}", encodeURIComponent("" + targetDirectory));
@@ -769,7 +769,7 @@ export class DocumentClient {
      * @return An IActionResult.
      */
     rotatePagesClockwise(targetDirectory: TargetDirectory, document: string, pageNumbers: number[], subDirectory?: string | null | undefined): Observable<void> {
-        let url_ = this.baseUrl + "/api/documents/{targetDirectory}/{document}/rotate-pages-clockwise?";
+        let url_ = this.baseUrl + "/api/documents/rotate-pages-clockwise/{targetDirectory}/{document}?";
         if (targetDirectory === undefined || targetDirectory === null)
             throw new Error("The parameter 'targetDirectory' must be defined.");
         url_ = url_.replace("{targetDirectory}", encodeURIComponent("" + targetDirectory));
@@ -845,7 +845,7 @@ export class DocumentClient {
      * @return An IActionResult.
      */
     rotatePagesAntiClockwise(targetDirectory: TargetDirectory, document: string, pageNumbers: number[], subDirectory?: string | null | undefined): Observable<void> {
-        let url_ = this.baseUrl + "/api/documents/{targetDirectory}/{document}/rotate-pages-anti-clockwise?";
+        let url_ = this.baseUrl + "/api/documents/rotate-pages-anti-clockwise{targetDirectory}/{document}?";
         if (targetDirectory === undefined || targetDirectory === null)
             throw new Error("The parameter 'targetDirectory' must be defined.");
         url_ = url_.replace("{targetDirectory}", encodeURIComponent("" + targetDirectory));
@@ -921,7 +921,7 @@ export class DocumentClient {
      * @return An IActionResult.
      */
     deletePages(targetDirectory: TargetDirectory, document: string, pageNumbers: number[], subDirectory?: string | null | undefined): Observable<void> {
-        let url_ = this.baseUrl + "/api/documents/{targetDirectory}/{document}/delete-pages?";
+        let url_ = this.baseUrl + "/api/documents/delete-pages/{targetDirectory}/{document}?";
         if (targetDirectory === undefined || targetDirectory === null)
             throw new Error("The parameter 'targetDirectory' must be defined.");
         url_ = url_.replace("{targetDirectory}", encodeURIComponent("" + targetDirectory));
@@ -997,7 +997,7 @@ export class DocumentClient {
      * @return An IActionResult.
      */
     reorderPages(targetDirectory: TargetDirectory, document: string, newPageOrder: number[], subDirectory?: string | null | undefined): Observable<void> {
-        let url_ = this.baseUrl + "/api/documents/{targetDirectory}/{document}/reorder-pages?";
+        let url_ = this.baseUrl + "/api/documents/reorder-pages/{targetDirectory}/{document}?";
         if (targetDirectory === undefined || targetDirectory === null)
             throw new Error("The parameter 'targetDirectory' must be defined.");
         url_ = url_.replace("{targetDirectory}", encodeURIComponent("" + targetDirectory));
@@ -1073,7 +1073,7 @@ export class DocumentClient {
      * @return An IActionResult.
      */
     splitPages(targetDirectory: TargetDirectory, document: string, pages: number[], subDirectory?: string | null | undefined): Observable<Document | null> {
-        let url_ = this.baseUrl + "/api/documents/{targetDirectory}/{document}/split-pages?";
+        let url_ = this.baseUrl + "/api/documents/split-pages/{targetDirectory}/{document}?";
         if (targetDirectory === undefined || targetDirectory === null)
             throw new Error("The parameter 'targetDirectory' must be defined.");
         url_ = url_.replace("{targetDirectory}", encodeURIComponent("" + targetDirectory));
@@ -1154,7 +1154,7 @@ export class DocumentClient {
      * @return An IActionResult.
      */
     merge(targetDirectory: TargetDirectory, document: string, mergeDocument: string, subDirectory?: string | null | undefined, mergeDocumentSubDirectory?: string | null | undefined): Observable<Document | null> {
-        let url_ = this.baseUrl + "/api/documents/{targetDirectory}/{document}/merge/{mergeDocument}?";
+        let url_ = this.baseUrl + "/api/documents/merge/{targetDirectory}/{document}/{mergeDocument}?";
         if (targetDirectory === undefined || targetDirectory === null)
             throw new Error("The parameter 'targetDirectory' must be defined.");
         url_ = url_.replace("{targetDirectory}", encodeURIComponent("" + targetDirectory));
@@ -1234,7 +1234,7 @@ export class DocumentClient {
      * @return An IActionResult.
      */
     revertChanges(targetDirectory: TargetDirectory, document: string, subDirectory?: string | null | undefined): Observable<void> {
-        let url_ = this.baseUrl + "/api/documents/{targetDirectory}/{document}/revert?";
+        let url_ = this.baseUrl + "/api/documents/revert/{targetDirectory}/{document}?";
         if (targetDirectory === undefined || targetDirectory === null)
             throw new Error("The parameter 'targetDirectory' must be defined.");
         url_ = url_.replace("{targetDirectory}", encodeURIComponent("" + targetDirectory));
@@ -1305,7 +1305,7 @@ export class DocumentClient {
      * @return An IActionResult.
      */
     archive(targetDirectory: TargetDirectory, document: string, subDirectory?: string | null | undefined): Observable<void> {
-        let url_ = this.baseUrl + "/api/documents/{targetDirectory}/{document}/archive?";
+        let url_ = this.baseUrl + "/api/documents/archive/{targetDirectory}/{document}?";
         if (targetDirectory === undefined || targetDirectory === null)
             throw new Error("The parameter 'targetDirectory' must be defined.");
         url_ = url_.replace("{targetDirectory}", encodeURIComponent("" + targetDirectory));
@@ -1371,13 +1371,16 @@ export class DocumentClient {
     /**
      * Permentently deletes the specified document from the archive.
      * @param document The document.
+     * @param subDirectory (optional) 
      * @return An IActionResult.
      */
-    deleteFromArchive(document: string): Observable<void> {
-        let url_ = this.baseUrl + "/api/documents/{document}/delete";
+    deleteFromArchive(document: string, subDirectory?: string | null | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/documents/delete/{document}?";
         if (document === undefined || document === null)
             throw new Error("The parameter 'document' must be defined.");
         url_ = url_.replace("{document}", encodeURIComponent("" + document));
+        if (subDirectory !== undefined && subDirectory !== null)
+            url_ += "subDirectory=" + encodeURIComponent("" + subDirectory) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -1441,7 +1444,7 @@ export class DocumentClient {
      * @return An IActionResult.
      */
     unlock(targetDirectory: TargetDirectory, document: string, password: string, subDirectory?: string | null | undefined): Observable<void> {
-        let url_ = this.baseUrl + "/api/documents/{targetDirectory}/{document}/unlock?";
+        let url_ = this.baseUrl + "/api/documents/unlock/{targetDirectory}/{document}?";
         if (targetDirectory === undefined || targetDirectory === null)
             throw new Error("The parameter 'targetDirectory' must be defined.");
         url_ = url_.replace("{targetDirectory}", encodeURIComponent("" + targetDirectory));
@@ -1516,7 +1519,7 @@ export class DocumentClient {
      * @return An IActionResult.
      */
     restore(targetDirectory: TargetDirectory, document: string, subDirectory?: string | null | undefined): Observable<void> {
-        let url_ = this.baseUrl + "/api/documents/{document}/restore?";
+        let url_ = this.baseUrl + "/api/documents/restore/{document}?";
         if (document === undefined || document === null)
             throw new Error("The parameter 'document' must be defined.");
         url_ = url_.replace("{document}", encodeURIComponent("" + document));
@@ -1588,8 +1591,8 @@ export class DocumentClient {
      * @param newName (optional) New name of the file
      * @return An IActionResult.
      */
-    saveTo(document: string, sourceSubDirectory?: string | null | undefined, targetSubDirectory?: string | null | undefined, newName?: string | undefined): Observable<void> {
-        let url_ = this.baseUrl + "/api/documents/{document}/saveto?";
+    saveAs(document: string, sourceSubDirectory?: string | null | undefined, targetSubDirectory?: string | null | undefined, newName?: string | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/documents/save-as/{document}?";
         if (document === undefined || document === null)
             throw new Error("The parameter 'document' must be defined.");
         url_ = url_.replace("{document}", encodeURIComponent("" + document));
@@ -1612,11 +1615,11 @@ export class DocumentClient {
         };
 
         return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processSaveTo(response_);
+            return this.processSaveAs(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processSaveTo(response_ as any);
+                    return this.processSaveAs(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<void>;
                 }
@@ -1625,7 +1628,7 @@ export class DocumentClient {
         }));
     }
 
-    protected processSaveTo(response: HttpResponseBase): Observable<void> {
+    protected processSaveAs(response: HttpResponseBase): Observable<void> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -1662,7 +1665,7 @@ export class DocumentClient {
      * @return An IActionResult.
      */
     save(document: string, sourceSubDirectory?: string | null | undefined): Observable<void> {
-        let url_ = this.baseUrl + "/api/documents/{document}/save?";
+        let url_ = this.baseUrl + "/api/documents/save/{document}?";
         if (document === undefined || document === null)
             throw new Error("The parameter 'document' must be defined.");
         url_ = url_.replace("{document}", encodeURIComponent("" + document));
@@ -1721,14 +1724,678 @@ export class DocumentClient {
         }
         return _observableOf(null as any);
     }
+
+    /**
+     * Saves a batch.
+     * @param batch The batch.
+     * @return An IActionResult.
+     */
+    saveBatch(batch: Save[]): Observable<DocumentResult[] | null> {
+        let url_ = this.baseUrl + "/api/documents/batch/save";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(batch);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processSaveBatch(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processSaveBatch(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<DocumentResult[] | null>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<DocumentResult[] | null>;
+        }));
+    }
+
+    protected processSaveBatch(response: HttpResponseBase): Observable<DocumentResult[] | null> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(DocumentResult.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return _observableOf(result200);
+            }));
+        } else if (status === 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An IActionResult.", status, _responseText, _headers);
+            }));
+        } else if (status === 404) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result404: any = null;
+            let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData404)) {
+                result404 = [] as any;
+                for (let item of resultData404)
+                    result404!.push(DocumentResult.fromJS(item));
+            }
+            else {
+                result404 = <any>null;
+            }
+            return throwException("A server side error occurred.", status, _responseText, _headers, result404);
+            }));
+        } else if (status === 207) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result207: any = null;
+            let resultData207 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData207)) {
+                result207 = [] as any;
+                for (let item of resultData207)
+                    result207!.push(DocumentResult.fromJS(item));
+            }
+            else {
+                result207 = <any>null;
+            }
+            return _observableOf(result207);
+            }));
+        } else if (status === 500) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result500: any = null;
+            let resultData500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData500)) {
+                result500 = [] as any;
+                for (let item of resultData500)
+                    result500!.push(DocumentResult.fromJS(item));
+            }
+            else {
+                result500 = <any>null;
+            }
+            return throwException("A server side error occurred.", status, _responseText, _headers, result500);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    /**
+     * Saves a batch.
+     * @param batch The batch.
+     * @return An IActionResult.
+     */
+    saveAsBatch(batch: SaveAs[]): Observable<DocumentResult[] | null> {
+        let url_ = this.baseUrl + "/api/documents/batch/save-as";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(batch);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processSaveAsBatch(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processSaveAsBatch(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<DocumentResult[] | null>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<DocumentResult[] | null>;
+        }));
+    }
+
+    protected processSaveAsBatch(response: HttpResponseBase): Observable<DocumentResult[] | null> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(DocumentResult.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return _observableOf(result200);
+            }));
+        } else if (status === 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An IActionResult.", status, _responseText, _headers);
+            }));
+        } else if (status === 404) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result404: any = null;
+            let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData404)) {
+                result404 = [] as any;
+                for (let item of resultData404)
+                    result404!.push(DocumentResult.fromJS(item));
+            }
+            else {
+                result404 = <any>null;
+            }
+            return throwException("A server side error occurred.", status, _responseText, _headers, result404);
+            }));
+        } else if (status === 207) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result207: any = null;
+            let resultData207 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData207)) {
+                result207 = [] as any;
+                for (let item of resultData207)
+                    result207!.push(DocumentResult.fromJS(item));
+            }
+            else {
+                result207 = <any>null;
+            }
+            return _observableOf(result207);
+            }));
+        } else if (status === 500) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result500: any = null;
+            let resultData500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData500)) {
+                result500 = [] as any;
+                for (let item of resultData500)
+                    result500!.push(DocumentResult.fromJS(item));
+            }
+            else {
+                result500 = <any>null;
+            }
+            return throwException("A server side error occurred.", status, _responseText, _headers, result500);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    /**
+     * Archive batch.
+     * @param batch The batch.
+     * @return An IActionResult.
+     */
+    archiveBatch(batch: Archive[]): Observable<DocumentResult[] | null> {
+        let url_ = this.baseUrl + "/api/documents/batch/archive";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(batch);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processArchiveBatch(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processArchiveBatch(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<DocumentResult[] | null>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<DocumentResult[] | null>;
+        }));
+    }
+
+    protected processArchiveBatch(response: HttpResponseBase): Observable<DocumentResult[] | null> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(DocumentResult.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return _observableOf(result200);
+            }));
+        } else if (status === 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An IActionResult.", status, _responseText, _headers);
+            }));
+        } else if (status === 404) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result404: any = null;
+            let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData404)) {
+                result404 = [] as any;
+                for (let item of resultData404)
+                    result404!.push(DocumentResult.fromJS(item));
+            }
+            else {
+                result404 = <any>null;
+            }
+            return throwException("A server side error occurred.", status, _responseText, _headers, result404);
+            }));
+        } else if (status === 207) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result207: any = null;
+            let resultData207 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData207)) {
+                result207 = [] as any;
+                for (let item of resultData207)
+                    result207!.push(DocumentResult.fromJS(item));
+            }
+            else {
+                result207 = <any>null;
+            }
+            return _observableOf(result207);
+            }));
+        } else if (status === 500) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result500: any = null;
+            let resultData500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData500)) {
+                result500 = [] as any;
+                for (let item of resultData500)
+                    result500!.push(DocumentResult.fromJS(item));
+            }
+            else {
+                result500 = <any>null;
+            }
+            return throwException("A server side error occurred.", status, _responseText, _headers, result500);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    /**
+     * Deletes from archive by batch.
+     * @param batch The batch.
+     * @return An IActionResult.
+     */
+    deleteFromArchiveBatch(batch: Delete[]): Observable<DocumentResult[] | null> {
+        let url_ = this.baseUrl + "/api/documents/batch/delete";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(batch);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDeleteFromArchiveBatch(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDeleteFromArchiveBatch(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<DocumentResult[] | null>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<DocumentResult[] | null>;
+        }));
+    }
+
+    protected processDeleteFromArchiveBatch(response: HttpResponseBase): Observable<DocumentResult[] | null> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(DocumentResult.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return _observableOf(result200);
+            }));
+        } else if (status === 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An IActionResult.", status, _responseText, _headers);
+            }));
+        } else if (status === 404) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result404: any = null;
+            let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData404)) {
+                result404 = [] as any;
+                for (let item of resultData404)
+                    result404!.push(DocumentResult.fromJS(item));
+            }
+            else {
+                result404 = <any>null;
+            }
+            return throwException("A server side error occurred.", status, _responseText, _headers, result404);
+            }));
+        } else if (status === 207) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result207: any = null;
+            let resultData207 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData207)) {
+                result207 = [] as any;
+                for (let item of resultData207)
+                    result207!.push(DocumentResult.fromJS(item));
+            }
+            else {
+                result207 = <any>null;
+            }
+            return _observableOf(result207);
+            }));
+        } else if (status === 500) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result500: any = null;
+            let resultData500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData500)) {
+                result500 = [] as any;
+                for (let item of resultData500)
+                    result500!.push(DocumentResult.fromJS(item));
+            }
+            else {
+                result500 = <any>null;
+            }
+            return throwException("A server side error occurred.", status, _responseText, _headers, result500);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    /**
+     * Downloads the document batch.
+     * @param batch (optional) The batch.
+     * @return An IActionResult.
+     */
+    downloadDocumentBatch(batch?: Download[] | undefined): Observable<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/documents/batch/download?";
+        if (batch === null)
+            throw new Error("The parameter 'batch' cannot be null.");
+        else if (batch !== undefined)
+            batch && batch.forEach((item, index) => {
+                for (let attr in item)
+        			if (item.hasOwnProperty(attr)) {
+        				url_ += "batch[" + index + "]." + attr + "=" + encodeURIComponent("" + (item as any)[attr]) + "&";
+        			}
+            });
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDownloadDocumentBatch(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDownloadDocumentBatch(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<FileResponse | null>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<FileResponse | null>;
+        }));
+    }
+
+    protected processDownloadDocumentBatch(response: HttpResponseBase): Observable<FileResponse | null> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return _observableOf({ fileName: fileName, data: responseBlob as any, status: status, headers: _headers });
+        } else if (status === 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An IActionResult.", status, _responseText, _headers);
+            }));
+        } else if (status === 404) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result404: any = null;
+            let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result404 = resultData404 !== undefined ? resultData404 : <any>null;
+    
+            return throwException("A server side error occurred.", status, _responseText, _headers, result404);
+            }));
+        } else if (status === 207) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result207: any = null;
+            let resultData207 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData207)) {
+                result207 = [] as any;
+                for (let item of resultData207)
+                    result207!.push(DocumentResult.fromJS(item));
+            }
+            else {
+                result207 = <any>null;
+            }
+            return throwException("An IActionResult.", status, _responseText, _headers, result207);
+            }));
+        } else if (status === 500) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result500: any = null;
+            let resultData500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData500)) {
+                result500 = [] as any;
+                for (let item of resultData500)
+                    result500!.push(DocumentResult.fromJS(item));
+            }
+            else {
+                result500 = <any>null;
+            }
+            return throwException("A server side error occurred.", status, _responseText, _headers, result500);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    /**
+     * Restore batch.
+     * @param batch The batch.
+     * @return An IActionResult.
+     */
+    restoreBatch(batch: Restore[]): Observable<DocumentResult[] | null> {
+        let url_ = this.baseUrl + "/api/documents/batch/restore";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(batch);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processRestoreBatch(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processRestoreBatch(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<DocumentResult[] | null>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<DocumentResult[] | null>;
+        }));
+    }
+
+    protected processRestoreBatch(response: HttpResponseBase): Observable<DocumentResult[] | null> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(DocumentResult.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return _observableOf(result200);
+            }));
+        } else if (status === 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An IActionResult.", status, _responseText, _headers);
+            }));
+        } else if (status === 404) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result404: any = null;
+            let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData404)) {
+                result404 = [] as any;
+                for (let item of resultData404)
+                    result404!.push(DocumentResult.fromJS(item));
+            }
+            else {
+                result404 = <any>null;
+            }
+            return throwException("A server side error occurred.", status, _responseText, _headers, result404);
+            }));
+        } else if (status === 207) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result207: any = null;
+            let resultData207 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData207)) {
+                result207 = [] as any;
+                for (let item of resultData207)
+                    result207!.push(DocumentResult.fromJS(item));
+            }
+            else {
+                result207 = <any>null;
+            }
+            return _observableOf(result207);
+            }));
+        } else if (status === 500) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result500: any = null;
+            let resultData500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData500)) {
+                result500 = [] as any;
+                for (let item of resultData500)
+                    result500!.push(DocumentResult.fromJS(item));
+            }
+            else {
+                result500 = <any>null;
+            }
+            return throwException("A server side error occurred.", status, _responseText, _headers, result500);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
 }
 
 /** A configuration. */
 export class Config implements IConfig {
-    /** Gets or sets the header configuration. */
-    headerConfig!: HeaderConfig;
     /** Gets or sets the general configuration. */
     generalConfig!: GeneralConfig;
+    /** Gets or sets the header configuration. */
+    headerConfig!: HeaderConfig;
+    /** Gets or sets the footer configuration. */
+    footerConfig!: FooterConfig;
     /** Gets or sets the preview configuration. */
     previewConfig!: PreviewConfig;
     /** Gets or sets the inbox configuration. */
@@ -1746,8 +2413,9 @@ export class Config implements IConfig {
             }
         }
         if (!data) {
-            this.headerConfig = new HeaderConfig();
             this.generalConfig = new GeneralConfig();
+            this.headerConfig = new HeaderConfig();
+            this.footerConfig = new FooterConfig();
             this.previewConfig = new PreviewConfig();
             this.inboxConfig = new InboxConfig();
             this.outboxConfig = new OutboxConfig();
@@ -1757,8 +2425,9 @@ export class Config implements IConfig {
 
     init(_data?: any) {
         if (_data) {
-            this.headerConfig = _data["headerConfig"] ? HeaderConfig.fromJS(_data["headerConfig"]) : new HeaderConfig();
             this.generalConfig = _data["generalConfig"] ? GeneralConfig.fromJS(_data["generalConfig"]) : new GeneralConfig();
+            this.headerConfig = _data["headerConfig"] ? HeaderConfig.fromJS(_data["headerConfig"]) : new HeaderConfig();
+            this.footerConfig = _data["footerConfig"] ? FooterConfig.fromJS(_data["footerConfig"]) : new FooterConfig();
             this.previewConfig = _data["previewConfig"] ? PreviewConfig.fromJS(_data["previewConfig"]) : new PreviewConfig();
             this.inboxConfig = _data["inboxConfig"] ? InboxConfig.fromJS(_data["inboxConfig"]) : new InboxConfig();
             this.outboxConfig = _data["outboxConfig"] ? OutboxConfig.fromJS(_data["outboxConfig"]) : new OutboxConfig();
@@ -1775,8 +2444,9 @@ export class Config implements IConfig {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["headerConfig"] = this.headerConfig ? this.headerConfig.toJSON() : <any>null;
         data["generalConfig"] = this.generalConfig ? this.generalConfig.toJSON() : <any>null;
+        data["headerConfig"] = this.headerConfig ? this.headerConfig.toJSON() : <any>null;
+        data["footerConfig"] = this.footerConfig ? this.footerConfig.toJSON() : <any>null;
         data["previewConfig"] = this.previewConfig ? this.previewConfig.toJSON() : <any>null;
         data["inboxConfig"] = this.inboxConfig ? this.inboxConfig.toJSON() : <any>null;
         data["outboxConfig"] = this.outboxConfig ? this.outboxConfig.toJSON() : <any>null;
@@ -1787,10 +2457,12 @@ export class Config implements IConfig {
 
 /** A configuration. */
 export interface IConfig {
-    /** Gets or sets the header configuration. */
-    headerConfig: HeaderConfig;
     /** Gets or sets the general configuration. */
     generalConfig: GeneralConfig;
+    /** Gets or sets the header configuration. */
+    headerConfig: HeaderConfig;
+    /** Gets or sets the footer configuration. */
+    footerConfig: FooterConfig;
     /** Gets or sets the preview configuration. */
     previewConfig: PreviewConfig;
     /** Gets or sets the inbox configuration. */
@@ -1799,6 +2471,94 @@ export interface IConfig {
     outboxConfig: OutboxConfig;
     /** Gets or sets the archive configuration. */
     archiveConfig: ArchiveConfig;
+}
+
+/** A general configuration. */
+export class GeneralConfig implements IGeneralConfig {
+    /** Gets or sets the default language. */
+    defaultLanguage!: string;
+    /** Gets or sets a value indicating whether the tour is enabled. */
+    enableTour!: boolean;
+    /** Gets or sets the default folder. */
+    defaultFolder!: string;
+    /** Gets or sets the default sort column. */
+    defaultSortColumn!: string;
+    /** Gets or sets the default sort direction. */
+    defaultSortDirection!: string;
+    /** Gets or sets a value indicating whether the icons is shown. */
+    showIcons!: boolean;
+    /** Gets or sets a value indicating whether the labels is shown. */
+    showLabels!: boolean;
+    /** Gets or sets the default colour mode. */
+    defaultColourMode!: string;
+    /** Gets or sets a value indicating whether the debug mode. */
+    debugMode!: boolean;
+
+    constructor(data?: IGeneralConfig) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.defaultLanguage = _data["defaultLanguage"] !== undefined ? _data["defaultLanguage"] : <any>null;
+            this.enableTour = _data["enableTour"] !== undefined ? _data["enableTour"] : <any>null;
+            this.defaultFolder = _data["defaultFolder"] !== undefined ? _data["defaultFolder"] : <any>null;
+            this.defaultSortColumn = _data["defaultSortColumn"] !== undefined ? _data["defaultSortColumn"] : <any>null;
+            this.defaultSortDirection = _data["defaultSortDirection"] !== undefined ? _data["defaultSortDirection"] : <any>null;
+            this.showIcons = _data["showIcons"] !== undefined ? _data["showIcons"] : <any>null;
+            this.showLabels = _data["showLabels"] !== undefined ? _data["showLabels"] : <any>null;
+            this.defaultColourMode = _data["defaultColourMode"] !== undefined ? _data["defaultColourMode"] : <any>null;
+            this.debugMode = _data["debugMode"] !== undefined ? _data["debugMode"] : <any>null;
+        }
+    }
+
+    static fromJS(data: any): GeneralConfig {
+        data = typeof data === 'object' ? data : {};
+        let result = new GeneralConfig();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["defaultLanguage"] = this.defaultLanguage !== undefined ? this.defaultLanguage : <any>null;
+        data["enableTour"] = this.enableTour !== undefined ? this.enableTour : <any>null;
+        data["defaultFolder"] = this.defaultFolder !== undefined ? this.defaultFolder : <any>null;
+        data["defaultSortColumn"] = this.defaultSortColumn !== undefined ? this.defaultSortColumn : <any>null;
+        data["defaultSortDirection"] = this.defaultSortDirection !== undefined ? this.defaultSortDirection : <any>null;
+        data["showIcons"] = this.showIcons !== undefined ? this.showIcons : <any>null;
+        data["showLabels"] = this.showLabels !== undefined ? this.showLabels : <any>null;
+        data["defaultColourMode"] = this.defaultColourMode !== undefined ? this.defaultColourMode : <any>null;
+        data["debugMode"] = this.debugMode !== undefined ? this.debugMode : <any>null;
+        return data;
+    }
+}
+
+/** A general configuration. */
+export interface IGeneralConfig {
+    /** Gets or sets the default language. */
+    defaultLanguage: string;
+    /** Gets or sets a value indicating whether the tour is enabled. */
+    enableTour: boolean;
+    /** Gets or sets the default folder. */
+    defaultFolder: string;
+    /** Gets or sets the default sort column. */
+    defaultSortColumn: string;
+    /** Gets or sets the default sort direction. */
+    defaultSortDirection: string;
+    /** Gets or sets a value indicating whether the icons is shown. */
+    showIcons: boolean;
+    /** Gets or sets a value indicating whether the labels is shown. */
+    showLabels: boolean;
+    /** Gets or sets the default colour mode. */
+    defaultColourMode: string;
+    /** Gets or sets a value indicating whether the debug mode. */
+    debugMode: boolean;
 }
 
 /** A header configuration. */
@@ -1895,28 +2655,16 @@ export interface IHeaderConfig {
     showLabels: boolean;
 }
 
-/** A general configuration. */
-export class GeneralConfig implements IGeneralConfig {
-    /** Gets or sets the default language. */
-    defaultLanguage!: string;
-    /** Gets or sets a value indicating whether the tour is enabled. */
-    enableTour!: boolean;
-    /** Gets or sets the default folder. */
-    defaultFolder!: string;
-    /** Gets or sets the default sort column. */
-    defaultSortColumn!: string;
-    /** Gets or sets the default sort direction. */
-    defaultSortDirection!: string;
-    /** Gets or sets a value indicating whether the icons is shown. */
-    showIcons!: boolean;
-    /** Gets or sets a value indicating whether the labels is shown. */
-    showLabels!: boolean;
-    /** Gets or sets the default colour mode. */
-    defaultColourMode!: string;
-    /** Gets or sets a value indicating whether the debug mode. */
-    debugMode!: boolean;
+/** A footer configuration. */
+export class FooterConfig implements IFooterConfig {
+    /** Gets or sets a value indicating whether the always is shown. */
+    showAlways!: boolean;
+    /** Gets or sets a value indicating whether the select all is shown. */
+    showSelectAll!: boolean;
+    /** Gets or sets a value indicating whether the deselect all is shown. */
+    showDeselectAll!: boolean;
 
-    constructor(data?: IGeneralConfig) {
+    constructor(data?: IFooterConfig) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -1927,60 +2675,36 @@ export class GeneralConfig implements IGeneralConfig {
 
     init(_data?: any) {
         if (_data) {
-            this.defaultLanguage = _data["defaultLanguage"] !== undefined ? _data["defaultLanguage"] : <any>null;
-            this.enableTour = _data["enableTour"] !== undefined ? _data["enableTour"] : <any>null;
-            this.defaultFolder = _data["defaultFolder"] !== undefined ? _data["defaultFolder"] : <any>null;
-            this.defaultSortColumn = _data["defaultSortColumn"] !== undefined ? _data["defaultSortColumn"] : <any>null;
-            this.defaultSortDirection = _data["defaultSortDirection"] !== undefined ? _data["defaultSortDirection"] : <any>null;
-            this.showIcons = _data["showIcons"] !== undefined ? _data["showIcons"] : <any>null;
-            this.showLabels = _data["showLabels"] !== undefined ? _data["showLabels"] : <any>null;
-            this.defaultColourMode = _data["defaultColourMode"] !== undefined ? _data["defaultColourMode"] : <any>null;
-            this.debugMode = _data["debugMode"] !== undefined ? _data["debugMode"] : <any>null;
+            this.showAlways = _data["showAlways"] !== undefined ? _data["showAlways"] : <any>null;
+            this.showSelectAll = _data["showSelectAll"] !== undefined ? _data["showSelectAll"] : <any>null;
+            this.showDeselectAll = _data["showDeselectAll"] !== undefined ? _data["showDeselectAll"] : <any>null;
         }
     }
 
-    static fromJS(data: any): GeneralConfig {
+    static fromJS(data: any): FooterConfig {
         data = typeof data === 'object' ? data : {};
-        let result = new GeneralConfig();
+        let result = new FooterConfig();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["defaultLanguage"] = this.defaultLanguage !== undefined ? this.defaultLanguage : <any>null;
-        data["enableTour"] = this.enableTour !== undefined ? this.enableTour : <any>null;
-        data["defaultFolder"] = this.defaultFolder !== undefined ? this.defaultFolder : <any>null;
-        data["defaultSortColumn"] = this.defaultSortColumn !== undefined ? this.defaultSortColumn : <any>null;
-        data["defaultSortDirection"] = this.defaultSortDirection !== undefined ? this.defaultSortDirection : <any>null;
-        data["showIcons"] = this.showIcons !== undefined ? this.showIcons : <any>null;
-        data["showLabels"] = this.showLabels !== undefined ? this.showLabels : <any>null;
-        data["defaultColourMode"] = this.defaultColourMode !== undefined ? this.defaultColourMode : <any>null;
-        data["debugMode"] = this.debugMode !== undefined ? this.debugMode : <any>null;
+        data["showAlways"] = this.showAlways !== undefined ? this.showAlways : <any>null;
+        data["showSelectAll"] = this.showSelectAll !== undefined ? this.showSelectAll : <any>null;
+        data["showDeselectAll"] = this.showDeselectAll !== undefined ? this.showDeselectAll : <any>null;
         return data;
     }
 }
 
-/** A general configuration. */
-export interface IGeneralConfig {
-    /** Gets or sets the default language. */
-    defaultLanguage: string;
-    /** Gets or sets a value indicating whether the tour is enabled. */
-    enableTour: boolean;
-    /** Gets or sets the default folder. */
-    defaultFolder: string;
-    /** Gets or sets the default sort column. */
-    defaultSortColumn: string;
-    /** Gets or sets the default sort direction. */
-    defaultSortDirection: string;
-    /** Gets or sets a value indicating whether the icons is shown. */
-    showIcons: boolean;
-    /** Gets or sets a value indicating whether the labels is shown. */
-    showLabels: boolean;
-    /** Gets or sets the default colour mode. */
-    defaultColourMode: string;
-    /** Gets or sets a value indicating whether the debug mode. */
-    debugMode: boolean;
+/** A footer configuration. */
+export interface IFooterConfig {
+    /** Gets or sets a value indicating whether the always is shown. */
+    showAlways: boolean;
+    /** Gets or sets a value indicating whether the select all is shown. */
+    showSelectAll: boolean;
+    /** Gets or sets a value indicating whether the deselect all is shown. */
+    showDeselectAll: boolean;
 }
 
 /** A preview configuration. */
@@ -2037,8 +2761,8 @@ export interface IPreviewConfig {
 
 /** A inbox configuration. */
 export class InboxConfig implements IInboxConfig {
-    /** Gets or sets a value indicating whether the save to is shown. */
-    showSaveTo!: boolean;
+    /** Gets or sets a value indicating whether the save as is shown. */
+    showSaveAs!: boolean;
     /** Gets or sets a value indicating whether the save is shown. */
     showSave!: boolean;
     /** Gets or sets a value indicating whether the revert is shown. */
@@ -2063,6 +2787,14 @@ export class InboxConfig implements IInboxConfig {
     showSelectAll!: boolean;
     /** Gets or sets a value indicating whether the unselect is shown. */
     showUnselect!: boolean;
+    /** Gets or sets a value indicating whether the batch show archive. */
+    batchShowArchive!: boolean;
+    /** Gets or sets a value indicating whether the batch show download. */
+    batchShowDownload!: boolean;
+    /** Gets or sets a value indicating whether the batch show save as. */
+    batchShowSaveAs!: boolean;
+    /** Gets or sets a value indicating whether the batch show save. */
+    batchShowSave!: boolean;
     /** Gets or sets a value indicating whether to archive the original file on save . */
     archiveOriginalFileOnSave!: boolean;
     /** Gets or sets a value indicating whether the document on archive wil be deleted. */
@@ -2079,7 +2811,7 @@ export class InboxConfig implements IInboxConfig {
 
     init(_data?: any) {
         if (_data) {
-            this.showSaveTo = _data["showSaveTo"] !== undefined ? _data["showSaveTo"] : <any>null;
+            this.showSaveAs = _data["showSaveAs"] !== undefined ? _data["showSaveAs"] : <any>null;
             this.showSave = _data["showSave"] !== undefined ? _data["showSave"] : <any>null;
             this.showRevert = _data["showRevert"] !== undefined ? _data["showRevert"] : <any>null;
             this.showDownload = _data["showDownload"] !== undefined ? _data["showDownload"] : <any>null;
@@ -2092,6 +2824,10 @@ export class InboxConfig implements IInboxConfig {
             this.showRotateAntiClockwise = _data["showRotateAntiClockwise"] !== undefined ? _data["showRotateAntiClockwise"] : <any>null;
             this.showSelectAll = _data["showSelectAll"] !== undefined ? _data["showSelectAll"] : <any>null;
             this.showUnselect = _data["showUnselect"] !== undefined ? _data["showUnselect"] : <any>null;
+            this.batchShowArchive = _data["batchShowArchive"] !== undefined ? _data["batchShowArchive"] : <any>null;
+            this.batchShowDownload = _data["batchShowDownload"] !== undefined ? _data["batchShowDownload"] : <any>null;
+            this.batchShowSaveAs = _data["batchShowSaveAs"] !== undefined ? _data["batchShowSaveAs"] : <any>null;
+            this.batchShowSave = _data["batchShowSave"] !== undefined ? _data["batchShowSave"] : <any>null;
             this.archiveOriginalFileOnSave = _data["archiveOriginalFileOnSave"] !== undefined ? _data["archiveOriginalFileOnSave"] : <any>null;
             this.deleteDocumentOnArchive = _data["deleteDocumentOnArchive"] !== undefined ? _data["deleteDocumentOnArchive"] : <any>null;
         }
@@ -2106,7 +2842,7 @@ export class InboxConfig implements IInboxConfig {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["showSaveTo"] = this.showSaveTo !== undefined ? this.showSaveTo : <any>null;
+        data["showSaveAs"] = this.showSaveAs !== undefined ? this.showSaveAs : <any>null;
         data["showSave"] = this.showSave !== undefined ? this.showSave : <any>null;
         data["showRevert"] = this.showRevert !== undefined ? this.showRevert : <any>null;
         data["showDownload"] = this.showDownload !== undefined ? this.showDownload : <any>null;
@@ -2119,6 +2855,10 @@ export class InboxConfig implements IInboxConfig {
         data["showRotateAntiClockwise"] = this.showRotateAntiClockwise !== undefined ? this.showRotateAntiClockwise : <any>null;
         data["showSelectAll"] = this.showSelectAll !== undefined ? this.showSelectAll : <any>null;
         data["showUnselect"] = this.showUnselect !== undefined ? this.showUnselect : <any>null;
+        data["batchShowArchive"] = this.batchShowArchive !== undefined ? this.batchShowArchive : <any>null;
+        data["batchShowDownload"] = this.batchShowDownload !== undefined ? this.batchShowDownload : <any>null;
+        data["batchShowSaveAs"] = this.batchShowSaveAs !== undefined ? this.batchShowSaveAs : <any>null;
+        data["batchShowSave"] = this.batchShowSave !== undefined ? this.batchShowSave : <any>null;
         data["archiveOriginalFileOnSave"] = this.archiveOriginalFileOnSave !== undefined ? this.archiveOriginalFileOnSave : <any>null;
         data["deleteDocumentOnArchive"] = this.deleteDocumentOnArchive !== undefined ? this.deleteDocumentOnArchive : <any>null;
         return data;
@@ -2127,8 +2867,8 @@ export class InboxConfig implements IInboxConfig {
 
 /** A inbox configuration. */
 export interface IInboxConfig {
-    /** Gets or sets a value indicating whether the save to is shown. */
-    showSaveTo: boolean;
+    /** Gets or sets a value indicating whether the save as is shown. */
+    showSaveAs: boolean;
     /** Gets or sets a value indicating whether the save is shown. */
     showSave: boolean;
     /** Gets or sets a value indicating whether the revert is shown. */
@@ -2153,6 +2893,14 @@ export interface IInboxConfig {
     showSelectAll: boolean;
     /** Gets or sets a value indicating whether the unselect is shown. */
     showUnselect: boolean;
+    /** Gets or sets a value indicating whether the batch show archive. */
+    batchShowArchive: boolean;
+    /** Gets or sets a value indicating whether the batch show download. */
+    batchShowDownload: boolean;
+    /** Gets or sets a value indicating whether the batch show save as. */
+    batchShowSaveAs: boolean;
+    /** Gets or sets a value indicating whether the batch show save. */
+    batchShowSave: boolean;
     /** Gets or sets a value indicating whether to archive the original file on save . */
     archiveOriginalFileOnSave: boolean;
     /** Gets or sets a value indicating whether the document on archive wil be deleted. */
@@ -2165,6 +2913,10 @@ export class OutboxConfig implements IOutboxConfig {
     showRestore!: boolean;
     /** Gets or sets a value indicating whether the download is shown. */
     showDownload!: boolean;
+    /** Gets or sets a value indicating whether the batch show restore. */
+    batchShowRestore!: boolean;
+    /** Gets or sets a value indicating whether the batch show download. */
+    batchShowDownload!: boolean;
 
     constructor(data?: IOutboxConfig) {
         if (data) {
@@ -2179,6 +2931,8 @@ export class OutboxConfig implements IOutboxConfig {
         if (_data) {
             this.showRestore = _data["showRestore"] !== undefined ? _data["showRestore"] : <any>null;
             this.showDownload = _data["showDownload"] !== undefined ? _data["showDownload"] : <any>null;
+            this.batchShowRestore = _data["batchShowRestore"] !== undefined ? _data["batchShowRestore"] : <any>null;
+            this.batchShowDownload = _data["batchShowDownload"] !== undefined ? _data["batchShowDownload"] : <any>null;
         }
     }
 
@@ -2193,6 +2947,8 @@ export class OutboxConfig implements IOutboxConfig {
         data = typeof data === 'object' ? data : {};
         data["showRestore"] = this.showRestore !== undefined ? this.showRestore : <any>null;
         data["showDownload"] = this.showDownload !== undefined ? this.showDownload : <any>null;
+        data["batchShowRestore"] = this.batchShowRestore !== undefined ? this.batchShowRestore : <any>null;
+        data["batchShowDownload"] = this.batchShowDownload !== undefined ? this.batchShowDownload : <any>null;
         return data;
     }
 }
@@ -2203,6 +2959,10 @@ export interface IOutboxConfig {
     showRestore: boolean;
     /** Gets or sets a value indicating whether the download is shown. */
     showDownload: boolean;
+    /** Gets or sets a value indicating whether the batch show restore. */
+    batchShowRestore: boolean;
+    /** Gets or sets a value indicating whether the batch show download. */
+    batchShowDownload: boolean;
 }
 
 /** A archive configuration. */
@@ -2213,6 +2973,12 @@ export class ArchiveConfig implements IArchiveConfig {
     showDownload!: boolean;
     /** Gets or sets a value indicating whether the delete is shown. */
     showDelete!: boolean;
+    /** Gets or sets a value indicating whether the batch show restore. */
+    batchShowRestore!: boolean;
+    /** Gets or sets a value indicating whether the batch show download. */
+    batchShowDownload!: boolean;
+    /** Gets or sets a value indicating whether the batch show delete. */
+    batchShowDelete!: boolean;
 
     constructor(data?: IArchiveConfig) {
         if (data) {
@@ -2228,6 +2994,9 @@ export class ArchiveConfig implements IArchiveConfig {
             this.showRestore = _data["showRestore"] !== undefined ? _data["showRestore"] : <any>null;
             this.showDownload = _data["showDownload"] !== undefined ? _data["showDownload"] : <any>null;
             this.showDelete = _data["showDelete"] !== undefined ? _data["showDelete"] : <any>null;
+            this.batchShowRestore = _data["batchShowRestore"] !== undefined ? _data["batchShowRestore"] : <any>null;
+            this.batchShowDownload = _data["batchShowDownload"] !== undefined ? _data["batchShowDownload"] : <any>null;
+            this.batchShowDelete = _data["batchShowDelete"] !== undefined ? _data["batchShowDelete"] : <any>null;
         }
     }
 
@@ -2243,6 +3012,9 @@ export class ArchiveConfig implements IArchiveConfig {
         data["showRestore"] = this.showRestore !== undefined ? this.showRestore : <any>null;
         data["showDownload"] = this.showDownload !== undefined ? this.showDownload : <any>null;
         data["showDelete"] = this.showDelete !== undefined ? this.showDelete : <any>null;
+        data["batchShowRestore"] = this.batchShowRestore !== undefined ? this.batchShowRestore : <any>null;
+        data["batchShowDownload"] = this.batchShowDownload !== undefined ? this.batchShowDownload : <any>null;
+        data["batchShowDelete"] = this.batchShowDelete !== undefined ? this.batchShowDelete : <any>null;
         return data;
     }
 }
@@ -2255,6 +3027,12 @@ export interface IArchiveConfig {
     showDownload: boolean;
     /** Gets or sets a value indicating whether the delete is shown. */
     showDelete: boolean;
+    /** Gets or sets a value indicating whether the batch show restore. */
+    batchShowRestore: boolean;
+    /** Gets or sets a value indicating whether the batch show download. */
+    batchShowDownload: boolean;
+    /** Gets or sets a value indicating whether the batch show delete. */
+    batchShowDelete: boolean;
 }
 
 export class ProblemDetails implements IProblemDetails {
@@ -2485,6 +3263,364 @@ export enum TargetDirectory {
     Inbox = 0,
     Outbox = 1,
     Archive = 2,
+}
+
+/** Encapsulates the result of a document. */
+export class DocumentResult implements IDocumentResult {
+    /** Gets or sets the document. */
+    document!: string;
+    /** Gets or sets the status code. */
+    statusCode!: number;
+    /** Gets or sets information describing the additional. */
+    additionalInformation?: string | null;
+
+    constructor(data?: IDocumentResult) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.document = _data["document"] !== undefined ? _data["document"] : <any>null;
+            this.statusCode = _data["statusCode"] !== undefined ? _data["statusCode"] : <any>null;
+            this.additionalInformation = _data["additionalInformation"] !== undefined ? _data["additionalInformation"] : <any>null;
+        }
+    }
+
+    static fromJS(data: any): DocumentResult {
+        data = typeof data === 'object' ? data : {};
+        let result = new DocumentResult();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["document"] = this.document !== undefined ? this.document : <any>null;
+        data["statusCode"] = this.statusCode !== undefined ? this.statusCode : <any>null;
+        data["additionalInformation"] = this.additionalInformation !== undefined ? this.additionalInformation : <any>null;
+        return data;
+    }
+}
+
+/** Encapsulates the result of a document. */
+export interface IDocumentResult {
+    /** Gets or sets the document. */
+    document: string;
+    /** Gets or sets the status code. */
+    statusCode: number;
+    /** Gets or sets information describing the additional. */
+    additionalInformation?: string | null;
+}
+
+/** A save. */
+export class Save implements ISave {
+    /** Gets or sets the document. */
+    document!: string;
+    /** Gets or sets the pathname of the source sub directory. */
+    sourceSubDirectory?: string | null;
+
+    constructor(data?: ISave) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.document = _data["document"] !== undefined ? _data["document"] : <any>null;
+            this.sourceSubDirectory = _data["sourceSubDirectory"] !== undefined ? _data["sourceSubDirectory"] : <any>null;
+        }
+    }
+
+    static fromJS(data: any): Save {
+        data = typeof data === 'object' ? data : {};
+        let result = new Save();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["document"] = this.document !== undefined ? this.document : <any>null;
+        data["sourceSubDirectory"] = this.sourceSubDirectory !== undefined ? this.sourceSubDirectory : <any>null;
+        return data;
+    }
+}
+
+/** A save. */
+export interface ISave {
+    /** Gets or sets the document. */
+    document: string;
+    /** Gets or sets the pathname of the source sub directory. */
+    sourceSubDirectory?: string | null;
+}
+
+/** A save as. */
+export class SaveAs implements ISaveAs {
+    /** Gets or sets the document. */
+    document!: string;
+    /** Gets or sets the pathname of the source sub directory. */
+    sourceSubDirectory?: string | null;
+    /** Gets or sets the pathname of the target sub directory. */
+    targetSubDirectory?: string | null;
+    /** Gets or sets the name of the new. */
+    newName?: string | null;
+
+    constructor(data?: ISaveAs) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.document = _data["document"] !== undefined ? _data["document"] : <any>null;
+            this.sourceSubDirectory = _data["sourceSubDirectory"] !== undefined ? _data["sourceSubDirectory"] : <any>null;
+            this.targetSubDirectory = _data["targetSubDirectory"] !== undefined ? _data["targetSubDirectory"] : <any>null;
+            this.newName = _data["newName"] !== undefined ? _data["newName"] : <any>null;
+        }
+    }
+
+    static fromJS(data: any): SaveAs {
+        data = typeof data === 'object' ? data : {};
+        let result = new SaveAs();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["document"] = this.document !== undefined ? this.document : <any>null;
+        data["sourceSubDirectory"] = this.sourceSubDirectory !== undefined ? this.sourceSubDirectory : <any>null;
+        data["targetSubDirectory"] = this.targetSubDirectory !== undefined ? this.targetSubDirectory : <any>null;
+        data["newName"] = this.newName !== undefined ? this.newName : <any>null;
+        return data;
+    }
+}
+
+/** A save as. */
+export interface ISaveAs {
+    /** Gets or sets the document. */
+    document: string;
+    /** Gets or sets the pathname of the source sub directory. */
+    sourceSubDirectory?: string | null;
+    /** Gets or sets the pathname of the target sub directory. */
+    targetSubDirectory?: string | null;
+    /** Gets or sets the name of the new. */
+    newName?: string | null;
+}
+
+/** An archive. */
+export class Archive implements IArchive {
+    /** Gets or sets the pathname of the target directory. */
+    targetDirectory!: TargetDirectory;
+    /** Gets or sets the document. */
+    document!: string;
+    /** Gets or sets the pathname of the source sub directory. */
+    subDirectory?: string | null;
+
+    constructor(data?: IArchive) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.targetDirectory = _data["targetDirectory"] !== undefined ? _data["targetDirectory"] : <any>null;
+            this.document = _data["document"] !== undefined ? _data["document"] : <any>null;
+            this.subDirectory = _data["subDirectory"] !== undefined ? _data["subDirectory"] : <any>null;
+        }
+    }
+
+    static fromJS(data: any): Archive {
+        data = typeof data === 'object' ? data : {};
+        let result = new Archive();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["targetDirectory"] = this.targetDirectory !== undefined ? this.targetDirectory : <any>null;
+        data["document"] = this.document !== undefined ? this.document : <any>null;
+        data["subDirectory"] = this.subDirectory !== undefined ? this.subDirectory : <any>null;
+        return data;
+    }
+}
+
+/** An archive. */
+export interface IArchive {
+    /** Gets or sets the pathname of the target directory. */
+    targetDirectory: TargetDirectory;
+    /** Gets or sets the document. */
+    document: string;
+    /** Gets or sets the pathname of the source sub directory. */
+    subDirectory?: string | null;
+}
+
+/** A delete. */
+export class Delete implements IDelete {
+    /** Gets or sets the document. */
+    document!: string;
+    /** Gets or sets the pathname of the source sub directory. */
+    subDirectory?: string | null;
+
+    constructor(data?: IDelete) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.document = _data["document"] !== undefined ? _data["document"] : <any>null;
+            this.subDirectory = _data["subDirectory"] !== undefined ? _data["subDirectory"] : <any>null;
+        }
+    }
+
+    static fromJS(data: any): Delete {
+        data = typeof data === 'object' ? data : {};
+        let result = new Delete();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["document"] = this.document !== undefined ? this.document : <any>null;
+        data["subDirectory"] = this.subDirectory !== undefined ? this.subDirectory : <any>null;
+        return data;
+    }
+}
+
+/** A delete. */
+export interface IDelete {
+    /** Gets or sets the document. */
+    document: string;
+    /** Gets or sets the pathname of the source sub directory. */
+    subDirectory?: string | null;
+}
+
+/** A download. */
+export class Download implements IDownload {
+    /** Gets or sets the pathname of the target directory. */
+    targetDirectory!: TargetDirectory;
+    /** Gets or sets the document. */
+    document!: string;
+    /** Gets or sets the pathname of the source sub directory. */
+    subDirectory?: string | null;
+
+    constructor(data?: IDownload) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.targetDirectory = _data["targetDirectory"] !== undefined ? _data["targetDirectory"] : <any>null;
+            this.document = _data["document"] !== undefined ? _data["document"] : <any>null;
+            this.subDirectory = _data["subDirectory"] !== undefined ? _data["subDirectory"] : <any>null;
+        }
+    }
+
+    static fromJS(data: any): Download {
+        data = typeof data === 'object' ? data : {};
+        let result = new Download();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["targetDirectory"] = this.targetDirectory !== undefined ? this.targetDirectory : <any>null;
+        data["document"] = this.document !== undefined ? this.document : <any>null;
+        data["subDirectory"] = this.subDirectory !== undefined ? this.subDirectory : <any>null;
+        return data;
+    }
+}
+
+/** A download. */
+export interface IDownload {
+    /** Gets or sets the pathname of the target directory. */
+    targetDirectory: TargetDirectory;
+    /** Gets or sets the document. */
+    document: string;
+    /** Gets or sets the pathname of the source sub directory. */
+    subDirectory?: string | null;
+}
+
+/** An restore. */
+export class Restore implements IRestore {
+    /** Gets or sets the pathname of the target directory. */
+    targetDirectory!: TargetDirectory;
+    /** Gets or sets the document. */
+    document!: string;
+    /** Gets or sets the pathname of the source sub directory. */
+    subDirectory?: string | null;
+
+    constructor(data?: IRestore) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.targetDirectory = _data["targetDirectory"] !== undefined ? _data["targetDirectory"] : <any>null;
+            this.document = _data["document"] !== undefined ? _data["document"] : <any>null;
+            this.subDirectory = _data["subDirectory"] !== undefined ? _data["subDirectory"] : <any>null;
+        }
+    }
+
+    static fromJS(data: any): Restore {
+        data = typeof data === 'object' ? data : {};
+        let result = new Restore();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["targetDirectory"] = this.targetDirectory !== undefined ? this.targetDirectory : <any>null;
+        data["document"] = this.document !== undefined ? this.document : <any>null;
+        data["subDirectory"] = this.subDirectory !== undefined ? this.subDirectory : <any>null;
+        return data;
+    }
+}
+
+/** An restore. */
+export interface IRestore {
+    /** Gets or sets the pathname of the target directory. */
+    targetDirectory: TargetDirectory;
+    /** Gets or sets the document. */
+    document: string;
+    /** Gets or sets the pathname of the source sub directory. */
+    subDirectory?: string | null;
 }
 
 export interface FileResponse {

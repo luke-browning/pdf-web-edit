@@ -6,12 +6,12 @@
     public class InboxConfig
     {
         /// <summary>
-        /// Gets or sets a value indicating whether the save to is shown.
+        /// Gets or sets a value indicating whether the save as is shown.
         /// </summary>
         /// <value>
-        /// True if show save to, false if not.
+        /// True if show save as, false if not.
         /// </value>
-        public bool ShowSaveTo { get; set; } = true;
+        public bool ShowSaveAs { get; set; } = true;
 
         /// <summary>
         /// Gets or sets a value indicating whether the save is shown.
@@ -108,6 +108,38 @@
         /// True if show unselect, false if not.
         /// </value>
         public bool ShowUnselect { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the batch show archive.
+        /// </summary>
+        /// <value>
+        /// True if batch show archive, false if not.
+        /// </value>
+        public bool BatchShowArchive { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the batch show download.
+        /// </summary>
+        /// <value>
+        /// True if batch show download, false if not.
+        /// </value>
+        public bool BatchShowDownload { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the batch show save as.
+        /// </summary>
+        /// <value>
+        /// True if batch show save as, false if not.
+        /// </value>
+        public bool BatchShowSaveAs { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the batch show save.
+        /// </summary>
+        /// <value>
+        /// True if batch show save, false if not.
+        /// </value>
+        public bool BatchShowSave { get; set; } = true;
 
         /// <summary>
         /// Gets or sets a value indicating whether to archive the original file on save .

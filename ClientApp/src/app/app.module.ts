@@ -26,6 +26,8 @@ import { ToolbarComponent } from './shared/components/elements/toolbar/toolbar.c
 import { DocumentComponent } from './shared/components/elements/document/document.component';
 import { PagesComponent } from './shared/components/elements/pages/pages.component';
 import { PageComponent } from './shared/components/elements/page/page.component';
+import { FooterComponent } from './shared/components/elements/footer/footer.component';
+import { BatchResultComponent } from './shared/components/modals/batch-result/batch-result.component';
 
 // AoT requires an exported function for factories
 export function HttpLoaderFactory(http: HttpClient) {
@@ -48,7 +50,9 @@ export function HttpLoaderFactory(http: HttpClient) {
     ToolbarComponent,
     DocumentComponent,
     PagesComponent,
-    PageComponent
+    PageComponent,
+    FooterComponent,
+    BatchResultComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),

@@ -1,0 +1,15 @@
+<div class="footer mt-auto py-3 " [ngClass]="colourMode == 'light' ? 'light' : 'dark'">
+  <div class="container-fluid">
+    <div class="d-flex">
+      <div class="flex-grow-1 d-flex justify-content-start align-items-center">
+        <strong *ngIf="getNumberOfSelectedDocuments() == 0" class="text-muted">{{ documents.length }} {{ 'footer.documents' | translate }}</strong>
+        <strong *ngIf="getNumberOfSelectedDocuments() > 0" class="text-muted">{{ 'footer.documentsCount' | translate:getSelectedDocumentParameters() }}</strong>
+      </div>
+      <div class="d-flex justify-content-end">
+        <toolbar *ngIf="directory == targetDirectories.Inbox" [buttons]="inboxButtons" [config]="config" labelPlacement="left" class="d-flex justify-content-end"></toolbar>
+        <toolbar *ngIf="directory == targetDirectories.Outbox" [buttons]="outboxButtons" [config]="config" labelPlacement="left" class="d-flex justify-content-end"></toolbar>
+        <toolbar *ngIf="directory == targetDirectories.Archive" [buttons]="archiveButtons" [config]="config" labelPlacement="left" class="d-flex justify-content-end"></toolbar>
+      </div>
+    </div>
+  </div>
+</div>

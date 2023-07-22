@@ -2,7 +2,11 @@
 using PDFWebEdit.Enumerations;
 using PDFWebEdit.Helpers;
 using PDFWebEdit.Models;
+using PDFWebEdit.Models.Api;
+using PDFWebEdit.Models.Requests.Batch;
+using PDFWebEdit.Models.Requests.Objects;
 using PDFWebEdit.Services;
+using System.IO.Compression;
 
 namespace PDFWebEdit.Controllers
 {
@@ -126,7 +130,7 @@ namespace PDFWebEdit.Controllers
         /// The document.
         /// </returns>
         [HttpGet]
-        [Route("{targetDirectory}/{document}/download")]
+        [Route("download/{targetDirectory}/{document}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(FileContentResult))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
@@ -166,7 +170,7 @@ namespace PDFWebEdit.Controllers
         /// The page count.
         /// </returns>
         [HttpGet]
-        [Route("{targetDirectory}/{document}/page-count")]
+        [Route("page-count/{targetDirectory}/{document}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(int))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
@@ -208,7 +212,7 @@ namespace PDFWebEdit.Controllers
         /// The page preview.
         /// </returns>
         [HttpGet]
-        [Route("{targetDirectory}/{document}/preview/{pageNumber}")]
+        [Route("preview/{targetDirectory}/{document}/{pageNumber}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(FileContentResult))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
@@ -259,7 +263,7 @@ namespace PDFWebEdit.Controllers
         /// An IActionResult.
         /// </returns>
         [HttpPost]
-        [Route("{targetDirectory}/{document}/rename/{newDocumentName}")]
+        [Route("rename/{targetDirectory}/{document}/{newDocumentName}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
@@ -299,7 +303,7 @@ namespace PDFWebEdit.Controllers
         /// An IActionResult.
         /// </returns>
         [HttpPost]
-        [Route("{targetDirectory}/{document}/rotate-pages-clockwise")]
+        [Route("rotate-pages-clockwise/{targetDirectory}/{document}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
@@ -339,7 +343,7 @@ namespace PDFWebEdit.Controllers
         /// An IActionResult.
         /// </returns>
         [HttpPost]
-        [Route("{targetDirectory}/{document}/rotate-pages-anti-clockwise")]
+        [Route("rotate-pages-anti-clockwise{targetDirectory}/{document}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
@@ -379,7 +383,7 @@ namespace PDFWebEdit.Controllers
         /// An IActionResult.
         /// </returns>
         [HttpPost]
-        [Route("{targetDirectory}/{document}/delete-pages")]
+        [Route("delete-pages/{targetDirectory}/{document}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
@@ -419,7 +423,7 @@ namespace PDFWebEdit.Controllers
         /// An IActionResult.
         /// </returns>
         [HttpPost]
-        [Route("{targetDirectory}/{document}/reorder-pages")]
+        [Route("reorder-pages/{targetDirectory}/{document}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
@@ -459,7 +463,7 @@ namespace PDFWebEdit.Controllers
         /// An IActionResult.
         /// </returns>
         [HttpPost]
-        [Route("{targetDirectory}/{document}/split-pages")]
+        [Route("split-pages/{targetDirectory}/{document}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Document))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
@@ -500,7 +504,7 @@ namespace PDFWebEdit.Controllers
         /// An IActionResult.
         /// </returns>
         [HttpPost]
-        [Route("{targetDirectory}/{document}/merge/{mergeDocument}")]
+        [Route("merge/{targetDirectory}/{document}/{mergeDocument}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Document))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
@@ -540,7 +544,7 @@ namespace PDFWebEdit.Controllers
         /// An IActionResult.
         /// </returns>
         [HttpPost]
-        [Route("{targetDirectory}/{document}/revert")]
+        [Route("revert/{targetDirectory}/{document}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
@@ -579,7 +583,7 @@ namespace PDFWebEdit.Controllers
         /// An IActionResult.
         /// </returns>
         [HttpPost]
-        [Route("{targetDirectory}/{document}/archive")]
+        [Route("archive/{targetDirectory}/{document}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
@@ -616,21 +620,21 @@ namespace PDFWebEdit.Controllers
         /// An IActionResult.
         /// </returns>
         [HttpPost]
-        [Route("{document}/delete")]
+        [Route("delete/{document}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
         [ProducesErrorResponseType(typeof(ObjectResult))]
-        public IActionResult DeleteFromArchive(string document)
+        public IActionResult DeleteFromArchive(string document, string? subDirectory = null)
         {
             // Get the path to the document
-            var path = _directoryService.GetDocumentPath(TargetDirectory.Archive, null, document);
+            var path = _directoryService.GetDocumentPath(TargetDirectory.Archive, subDirectory, document);
 
             if (path != null)
             {
                 try
                 {
-                    _directoryService.PermenentlyDeleteFromArchive(document);
+                    _directoryService.PermenentlyDeleteFromArchive(document, subDirectory);
 
                     return Ok();
                 }
@@ -656,7 +660,7 @@ namespace PDFWebEdit.Controllers
         /// An IActionResult.
         /// </returns>
         [HttpPost]
-        [Route("{targetDirectory}/{document}/unlock")]
+        [Route("unlock/{targetDirectory}/{document}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
@@ -695,7 +699,7 @@ namespace PDFWebEdit.Controllers
         /// An IActionResult.
         /// </returns>
         [HttpPost]
-        [Route("{document}/restore")]
+        [Route("restore/{document}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
@@ -735,12 +739,12 @@ namespace PDFWebEdit.Controllers
         /// An IActionResult.
         /// </returns>
         [HttpPost]
-        [Route("{document}/saveto")]
+        [Route("save-as/{document}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
         [ProducesErrorResponseType(typeof(ObjectResult))]
-        public IActionResult SaveTo(string document, string? sourceSubDirectory = null, string? targetSubDirectory = null, string newName = null)
+        public IActionResult SaveAs(string document, string? sourceSubDirectory = null, string? targetSubDirectory = null, string newName = null)
         {
             // Get the path to the document
             var path = _directoryService.GetDocumentPath(TargetDirectory.Inbox, sourceSubDirectory, document);
@@ -755,7 +759,7 @@ namespace PDFWebEdit.Controllers
                 }
                 catch (Exception x)
                 {
-                    return ExceptionHelpers.GetErrorObjectResult("SaveTo", HttpContext, x);
+                    return ExceptionHelpers.GetErrorObjectResult("SaveAs", HttpContext, x);
                 }
             }
             else
@@ -773,7 +777,7 @@ namespace PDFWebEdit.Controllers
         /// An IActionResult.
         /// </returns>
         [HttpPost]
-        [Route("{document}/save")]
+        [Route("save/{document}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
@@ -782,7 +786,7 @@ namespace PDFWebEdit.Controllers
         {
             // Get the path to the document
             var path = _directoryService.GetDocumentPath(TargetDirectory.Inbox, sourceSubDirectory, document);
-
+            
             if (path != null)
             {
                 try
@@ -801,5 +805,314 @@ namespace PDFWebEdit.Controllers
                 return NotFound();
             }
         }
+
+        #region Batch
+
+        /// <summary>
+        /// Saves a batch.
+        /// </summary>
+        /// <param name="batch">The batch.</param>
+        /// <returns>
+        /// An IActionResult.
+        /// </returns>
+        [HttpPost]
+        [Route("batch/save")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BatchResponse<DocumentResult>))]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(BatchResponse<DocumentResult>))]
+        [ProducesResponseType(StatusCodes.Status207MultiStatus, Type = typeof(BatchResponse<DocumentResult>))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(BatchResponse<DocumentResult>))]
+        [ProducesErrorResponseType(typeof(ObjectResult))]
+        public IActionResult SaveBatch([FromBody] List<Save> batch)
+        {
+            var batchResult = new BatchResponse<DocumentResult>();
+
+            // Call each batch item
+            foreach (var item in batch)
+            {
+                // Call the existing API
+                var result = Save(item.Document, item.SourceSubDirectory);
+
+                // Get the status code
+                var statusCode = result.GetStatusCode();
+
+                // Get error
+                string? error = (statusCode == StatusCodes.Status500InternalServerError) ? result.GetErrorMessage() : null;
+
+                // And add the result to the batch
+                batchResult.Add(new DocumentResult
+                {
+                    Document = item.Document,
+                    StatusCode = statusCode,
+                    AdditionalInformation = error
+                });
+            }
+
+            // Send the result of all batch items
+            return StatusCode(batchResult.GetStatusCode(), batchResult);
+        }
+
+        /// <summary>
+        /// Saves a batch.
+        /// </summary>
+        /// <param name="batch">The batch.</param>
+        /// <returns>
+        /// An IActionResult.
+        /// </returns>
+        [HttpPost]
+        [Route("batch/save-as")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BatchResponse<DocumentResult>))]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(BatchResponse<DocumentResult>))]
+        [ProducesResponseType(StatusCodes.Status207MultiStatus, Type = typeof(BatchResponse<DocumentResult>))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(BatchResponse<DocumentResult>))]
+        [ProducesErrorResponseType(typeof(ObjectResult))]
+        public IActionResult SaveAsBatch([FromBody] List<SaveAs> batch)
+        {
+            var batchResult = new BatchResponse<DocumentResult>();
+
+            // Call each batch item
+            foreach (var item in batch)
+            {
+                // Call the existing API
+                var result = SaveAs(item.Document, item.SourceSubDirectory, item.TargetSubDirectory, item.NewName);
+
+                // Get the status code
+                var statusCode = result.GetStatusCode();
+
+                // Get error
+                string? error = (statusCode == StatusCodes.Status500InternalServerError) ? result.GetErrorMessage() : null;
+
+                // And add the result to the batch
+                batchResult.Add(new DocumentResult
+                {
+                    Document = item.Document,
+                    StatusCode = statusCode,
+                    AdditionalInformation = error
+                });
+            }
+
+            // Send the result of all batch items
+            return StatusCode(batchResult.GetStatusCode(), batchResult);
+        }
+
+        /// <summary>
+        /// Archive batch.
+        /// </summary>
+        /// <param name="batch">The batch.</param>
+        /// <returns>
+        /// An IActionResult.
+        /// </returns>
+        [HttpPost]
+        [Route("batch/archive")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BatchResponse<DocumentResult>))]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(BatchResponse<DocumentResult>))]
+        [ProducesResponseType(StatusCodes.Status207MultiStatus, Type = typeof(BatchResponse<DocumentResult>))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(BatchResponse<DocumentResult>))]
+        [ProducesErrorResponseType(typeof(ObjectResult))]
+        public IActionResult ArchiveBatch([FromBody] List<Archive> batch)
+        {
+            var batchResult = new BatchResponse<DocumentResult>();
+
+            // Call each batch item
+            foreach (var item in batch)
+            {
+                // Call the existing API
+                var result = Archive(item.TargetDirectory, item.Document, item.SubDirectory);
+
+                // Get the status code
+                var statusCode = result.GetStatusCode();
+
+                // Get error
+                string? error = (statusCode == StatusCodes.Status500InternalServerError) ? result.GetErrorMessage() : null;
+
+                // And add the result to the batch
+                batchResult.Add(new DocumentResult
+                {
+                    Document = item.Document,
+                    StatusCode = statusCode,
+                    AdditionalInformation = error
+                });
+            }
+
+            // Send the result of all batch items
+            return StatusCode(batchResult.GetStatusCode(), batchResult);
+        }
+
+        /// <summary>
+        /// Deletes from archive by batch.
+        /// </summary>
+        /// <param name="batch">The batch.</param>
+        /// <returns>
+        /// An IActionResult.
+        /// </returns>
+        [HttpPost]
+        [Route("batch/delete")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BatchResponse<DocumentResult>))]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(BatchResponse<DocumentResult>))]
+        [ProducesResponseType(StatusCodes.Status207MultiStatus, Type = typeof(BatchResponse<DocumentResult>))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(BatchResponse<DocumentResult>))]
+        [ProducesErrorResponseType(typeof(ObjectResult))]
+        public IActionResult DeleteFromArchiveBatch([FromBody] List<Delete> batch)
+        {
+            var batchResult = new BatchResponse<DocumentResult>();
+
+            // Call each batch item
+            foreach (var item in batch)
+            {
+                // Call the existing API
+                var result = DeleteFromArchive(item.Document, item.SubDirectory);
+
+                // Get the status code
+                var statusCode = result.GetStatusCode();
+
+                // Get error
+                string? error = (statusCode == StatusCodes.Status500InternalServerError) ? result.GetErrorMessage() : null;
+
+                // And add the result to the batch
+                batchResult.Add(new DocumentResult
+                {
+                    Document = item.Document,
+                    StatusCode = statusCode,
+                    AdditionalInformation = error
+                });
+            }
+
+            // Send the result of all batch items
+            return StatusCode(batchResult.GetStatusCode(), batchResult);
+        }
+
+        /// <summary>
+        /// Downloads the document batch.
+        /// </summary>
+        /// <param name="batch">The batch.</param>
+        /// <returns>
+        /// An IActionResult.
+        /// </returns>
+        [HttpGet]
+        [Route("batch/download")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(FileContentResult))]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(FileContentResult))]
+        [ProducesResponseType(StatusCodes.Status207MultiStatus, Type = typeof(BatchResponse<DocumentResult>))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(BatchResponse<DocumentResult>))]
+        [ProducesErrorResponseType(typeof(ObjectResult))]
+        public IActionResult DownloadDocumentBatch([FromQuery] List<Download> batch)
+        {
+            var batchResult = new BatchResponse<DocumentResult>();
+
+            using (var ms = new MemoryStream())
+            using (var archive = new ZipArchive(ms, ZipArchiveMode.Create, true))
+            {
+                // Call each batch item
+                foreach (var item in batch)
+                {
+                    // Call the existing API
+                    var result = DownloadDocument(item.TargetDirectory, item.Document, item.SubDirectory);
+
+                    // Get error
+                    string? error = result.GetErrorMessage();
+
+                    // And add the file to the archive
+                    if (result is FileContentResult)
+                    {
+                        var fileResult = (FileContentResult)result;
+
+                        var zipArchiveEntry = archive.CreateEntry(fileResult.FileDownloadName, CompressionLevel.Fastest);
+                        using (var zipStream = zipArchiveEntry.Open())
+                        {
+                            zipStream.Write(fileResult.FileContents, 0, fileResult.FileContents.Length);
+                        }
+
+                        // And add the result to the batch
+                        batchResult.Add(new DocumentResult
+                        {
+                            Document = item.Document,
+                            StatusCode = StatusCodes.Status200OK,
+                            AdditionalInformation = error
+                        });
+                    }
+                    else if (result is IActionResult)
+                    {
+                        // Get the status code
+                        var statusCode = result.GetStatusCode();
+
+                        // And add the result to the batch
+                        batchResult.Add(new DocumentResult
+                        {
+                            Document = item.Document,
+                            StatusCode = statusCode,
+                            AdditionalInformation = error
+                        });
+                    }
+                    else
+                    {
+                        throw new Exception("Unknown error");
+                    }
+                }
+
+                // Dispose of the archive to flush the the stream to the memory stream
+                archive.Dispose();
+
+                if (batchResult.GetStatusCode() == StatusCodes.Status200OK)
+                {
+                    // Send the file back
+                    return File(ms.ToArray(), "application/zip", "documents.zip");
+                }
+                else
+                {
+                    // Send the result of all batch items
+                    return StatusCode(batchResult.GetStatusCode(), batchResult);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Restore batch.
+        /// </summary>
+        /// <param name="batch">The batch.</param>
+        /// <returns>
+        /// An IActionResult.
+        /// </returns>
+        [HttpPost]
+        [Route("batch/restore")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BatchResponse<DocumentResult>))]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(BatchResponse<DocumentResult>))]
+        [ProducesResponseType(StatusCodes.Status207MultiStatus, Type = typeof(BatchResponse<DocumentResult>))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(BatchResponse<DocumentResult>))]
+        [ProducesErrorResponseType(typeof(ObjectResult))]
+        public IActionResult RestoreBatch([FromBody] List<Restore> batch)
+        {
+            var batchResult = new BatchResponse<DocumentResult>();
+
+            // Call each batch item
+            foreach (var item in batch)
+            {
+                // Call the existing API
+                var result = Restore(item.TargetDirectory, item.Document, item.SubDirectory);
+
+                // Get the status code
+                var statusCode = result.GetStatusCode();
+
+                // Get error
+                string? error = (statusCode == StatusCodes.Status500InternalServerError) ? result.GetErrorMessage() : null;
+
+                // And add the result to the batch
+                batchResult.Add(new DocumentResult
+                {
+                    Document = item.Document,
+                    StatusCode = statusCode,
+                    AdditionalInformation = error
+                });
+            }
+
+            // Send the result of all batch items
+            return StatusCode(batchResult.GetStatusCode(), batchResult);
+        }
+
+        #endregion
     }
 }

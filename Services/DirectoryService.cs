@@ -221,7 +221,7 @@ namespace PDFWebEdit.Services
             }
             else
             {
-                throw new Exception($"Source file does not exist: {pdfPath}");
+                return null;
             }
         }
 
@@ -453,12 +453,15 @@ namespace PDFWebEdit.Services
         /// </summary>
         /// <exception cref="Exception">Thrown when an exception error condition occurs.</exception>
         /// <param name="name">The name.</param>
-        public void PermenentlyDeleteFromArchive(string name)
+        public void PermenentlyDeleteFromArchive(string name, string? subDirectory)
         {
+            string directory = GetTargetDirectoryPath(TargetDirectory.Archive);
+            directory = Path.Join(directory, subDirectory ?? string.Empty);
+
             lock (__lock)
             {
-                var editedPDFArchivePath = Path.Combine(_archiveDirectory, name) + EDITING_PDF_EXTENSION;
-                var originalPDFArchivePath = Path.Combine(_archiveDirectory, name) + PDF_EXTENSION;
+                var editedPDFArchivePath = Path.Combine(directory, name) + EDITING_PDF_EXTENSION;
+                var originalPDFArchivePath = Path.Combine(directory, name) + PDF_EXTENSION;
 
                 // Move the files
                 if (File.Exists(editedPDFArchivePath))

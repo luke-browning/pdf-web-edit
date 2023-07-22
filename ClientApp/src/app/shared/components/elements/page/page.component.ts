@@ -48,7 +48,7 @@ export class PageComponent implements OnInit {
       this.page.active = activatePage;
 
       // Emit selected event
-      this.onSelect.emit({ pageNumber: this.page.number, multiSelect: $event.ctrlKey, active: this.page.active });
+      this.onSelect.emit({ pageNumber: this.page.number, multiSelect: $event.ctrlKey, rangeSelect: $event.shiftKey, active: this.page.active });
     }
   }
 
@@ -75,6 +75,7 @@ export class PageComponent implements OnInit {
 export interface SelectEvent {
   pageNumber: number;
   multiSelect: boolean;
+  rangeSelect: boolean;
   active: boolean;
 }
 

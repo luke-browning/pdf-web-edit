@@ -34,6 +34,8 @@ export class HomeComponent {
   sort: string = 'Name';
   sortDirection: string = 'Asc';
 
+  alwaysShowFooter: boolean = false;
+
   constructor(private api: PDFWebEditAPI.DocumentClient, private modalService: NgbModal, private route: ActivatedRoute,
     private router: Router, private configService: ConfigService, private sessionService: SessionService) {
 
@@ -45,6 +47,8 @@ export class HomeComponent {
 
       this.sort = this.config?.generalConfig?.defaultSortColumn!;
       this.sortDirection = this.config?.generalConfig?.defaultSortDirection!;
+
+      this.alwaysShowFooter = this.config?.footerConfig.showAlways!;
 
       // Work out the current directory
       switch (router.url) {
@@ -61,26 +65,7 @@ export class HomeComponent {
           break;
       }
 
-      // Load the document list
-      api.getDocuments(this.directory).subscribe(result => {
-
-        this.loadDocuments(result!);
-
-        this.sortDocuments();
-
-        this.sessionService.search.subscribe((query: string) => {
-          this.filterQuery = query;
-          this.updatedFilteredDocuments();
-        });
-
-      }, error => console.error(error));
-
-      // List directories
-      api.getDirectories().subscribe((result: PDFWebEditAPI.Folder[] | null) => {
-        if (result != null) {
-          this.directoryStructure = result;
-        }
-      });
+      this.refreshDocuments();
     });
 
     // Keep track of the preview size
@@ -165,9 +150,45 @@ export class HomeComponent {
     this.updatedFilteredDocuments();
   }
 
+  batchDocumentChanges(changes: PDFWebEditAPI.DocumentResult[]) {
+
+    // Remove documents that succeeded
+    changes.forEach(change => {
+      if (change.statusCode == 200) {
+        this.documents = this.documents.filter(x => x.name !== change.document);
+      }
+    });
+
+    this.updatedFilteredDocuments();
+  }
+
   //
   // Helpers
   //
+
+  refreshDocuments() {
+
+    // Load the document list
+    this.api.getDocuments(this.directory).subscribe(result => {
+
+      this.loadDocuments(result!);
+
+      this.sortDocuments();
+
+      this.sessionService.search.subscribe((query: string) => {
+        this.filterQuery = query;
+        this.updatedFilteredDocuments();
+      });
+
+    }, error => console.error(error));
+
+    // List directories
+    this.api.getDirectories().subscribe((result: PDFWebEditAPI.Folder[] | null) => {
+      if (result != null) {
+        this.directoryStructure = result;
+      }
+    });
+  }
 
   updatedFilteredDocuments() {
     this.filteredDocuments = this.documents.filter(doc => doc.name.toLowerCase().indexOf(this.filterQuery.toLowerCase()) > -1);
@@ -210,6 +231,7 @@ export class HomeComponent {
       canRevertChanges: new BehaviorSubject<boolean>(file.hasChanges),
       corrupt: new BehaviorSubject<boolean>(file.status == PDFWebEditAPI.DocumentStatus.Corrupted),
       passwordProtected: new BehaviorSubject<boolean>(file.status == PDFWebEditAPI.DocumentStatus.PasswordProtected),
+      selected: false
     };
 
     return doc;
@@ -217,5 +239,9 @@ export class HomeComponent {
 
   getDownloadUrl(name: string, directory: string) {
     return '/api/documents/' + this.directory + '/' + name + '/download?subdirectory=' + encodeURIComponent(directory || '');
+  }
+
+  hasDocumentsSelected(): boolean {
+    return (this.documents.filter(x => x.selected).length || 0) > 0;
   }
 }

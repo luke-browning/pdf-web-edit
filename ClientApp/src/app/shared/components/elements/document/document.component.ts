@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { BehaviorSubject, combineLatest, Observable, Subject, Subscription } from 'rxjs';
 import { PDFWebEditAPI } from '../../../../../api/PDFWebEditAPI';
@@ -12,13 +12,14 @@ import { MergeDocmentComponent } from '../../modals/merge-docment/merge-docment.
 import { MessageBoxComponent } from '../../modals/message-box/message-box.component';
 import { MaxPreviewSizeChangedEvent, PageOrderChangedEvent, SelectionChangedEvent } from '../pages/pages.component';
 import { TranslateService } from '@ngx-translate/core';
+import { NgScrollbar, NgScrollbarState } from 'ngx-scrollbar';
 
 @Component({
   selector: 'document',
   templateUrl: './document.component.html',
   styleUrls: ['./document.component.scss']
 })
-export class DocumentComponent implements OnInit {
+export class DocumentComponent implements OnInit, AfterViewInit {
 
   @Input() document!: Doc;
   @Input() size!: Observable<string>;
@@ -31,7 +32,10 @@ export class DocumentComponent implements OnInit {
   @Output() onReplaceDocument: EventEmitter<ReplaceDocument> = new EventEmitter();
   @Output() onRemoveDocument: EventEmitter<string> = new EventEmitter();
 
-  @ViewChild('scrollWrapper', { static: false }) scrollWrapper!: ElementRef;
+  @ViewChild('toolbarScrollbar', { static: false }) toolbarScrollbar!: NgScrollbar;
+  @ViewChild('documentScrollbar', { static: false }) documentScrollbar!: NgScrollbar;
+  @ViewChild('toolbarScrollWrapper', { static: false }) toolbarScrollWrapper!: ElementRef;
+  @ViewChild('documentScrollWrapper', { static: false }) documentScrollWrapper!: ElementRef;
 
   targetDirectories = PDFWebEditAPI.TargetDirectory;
 
@@ -44,8 +48,6 @@ export class DocumentComponent implements OnInit {
   pageHeight = 400;
   pageWidth = 282;
 
-  previewMarginBottom = 20;
-
   maxPreviewHeight!: number;
   resetDocumentPreview: Subject<void> = new Subject<void>();
 
@@ -54,7 +56,11 @@ export class DocumentComponent implements OnInit {
   // Colour modes
   colourMode!: string;
 
-  constructor(private api: PDFWebEditAPI.DocumentClient, private sessionService: SessionService, private modalService: NgbModal, private translateService: TranslateService) { }
+  toolbarScrollable = false;
+  documentScrollable = false;
+
+  constructor(private api: PDFWebEditAPI.DocumentClient, private sessionService: SessionService,
+    private modalService: NgbModal, private translateService: TranslateService, private cdRef: ChangeDetectorRef) { }
 
   ngOnInit(): void {
 
@@ -69,6 +75,12 @@ export class DocumentComponent implements OnInit {
     this.subscriptions.push(sizeSubscription);
 
     this.generateToolbars();
+  }
+
+  ngAfterViewInit(): void {
+    this.toolbarScrollable = (this.toolbarScrollbar.state.isHorizontallyScrollable!);
+    this.documentScrollable = (this.documentScrollbar.state.isHorizontallyScrollable!);
+    this.cdRef.detectChanges();
   }
 
   ngOnDestroy(): void {
@@ -156,12 +168,12 @@ export class DocumentComponent implements OnInit {
       enabled: this.document.canRevertChanges,
       function: this.revert.bind(this)
     }, {
-      label: "documents.buttons.saveTo",
+      label: "documents.buttons.saveAs",
       icon: "bi bi-check2-all",
       separator: false,
-      if: this.config.inboxConfig.showSaveTo,
+      if: this.config.inboxConfig.showSaveAs,
       enabled: new BehaviorSubject<boolean>(true),
-      function: this.saveTo.bind(this)
+      function: this.saveAs.bind(this)
     }, {
       label: "documents.buttons.save",
       icon: "bi bi-check2",
@@ -297,17 +309,25 @@ export class DocumentComponent implements OnInit {
     }
   }
 
+  onToolbarScrollbarUpdate(state: NgScrollbarState) {
+    this.toolbarScrollable = state.isHorizontallyScrollable!;
+  }
+
+  onDocumentScrollbarUpdate(state: NgScrollbarState) {
+    this.documentScrollable = state.isHorizontallyScrollable!;
+  }
+
   //
   // Preview
   // 
 
   updatePreviewSize($event: MaxPreviewSizeChangedEvent) {
-    this.maxPreviewHeight = $event.height + this.previewMarginBottom + this.getScrollWrapperScrollbarHeight();
+    this.maxPreviewHeight = $event.height + this.getDocumentScrollWrapperScrollbarHeight();
   }
 
-  getScrollWrapperScrollbarHeight(): number {
+  getDocumentScrollWrapperScrollbarHeight(): number {
 
-    let div = (this.scrollWrapper.nativeElement as HTMLDivElement);
+    let div = (this.documentScrollWrapper.nativeElement as HTMLDivElement);
     let scrollbarHeight = div.offsetHeight - div.clientHeight;
 
     return scrollbarHeight;
@@ -494,7 +514,7 @@ export class DocumentComponent implements OnInit {
   }
 
   permenentlyDeleteFromArchive() {
-    this.api.deleteFromArchive(this.document.name).subscribe(() => {
+    this.api.deleteFromArchive(this.document.name, this.document.directory).subscribe(() => {
       this.onRemoveDocument.emit(this.document.name);
     }, error => this.showMessageBox(error));
   }
@@ -508,7 +528,7 @@ export class DocumentComponent implements OnInit {
     a.click();
   }
 
-  saveTo() {
+  saveAs() {
 
     const modalRef = this.modalService.open(DirectoryPickerComponent, {
       size: 'lg'
@@ -523,7 +543,7 @@ export class DocumentComponent implements OnInit {
       let path = result.path;
       let name = result.name;
 
-      this.api.saveTo(this.document.name, this.document.directory, path, name).subscribe(() => {
+      this.api.saveAs(this.document.name, this.document.directory, path, name).subscribe(() => {
         this.onRemoveDocument.emit(this.document.name);
       }, error => this.showMessageBox(error));
     }, () => {
@@ -648,11 +668,11 @@ export class DocumentComponent implements OnInit {
   }
 
   getPagePreviewUrl(page: number, width: number, height: number) {
-    return '/api/documents/' + this.directory + '/' + this.document.name + '/preview/' + page + '?subdirectory=' + encodeURIComponent(this.document.directory || '') + '&width=' + width + '&height=' + height + '&t=' + new Date().getTime();
+    return '/api/documents/preview/' + this.directory + '/' + this.document.name + '/' + page + '?subdirectory=' + encodeURIComponent(this.document.directory || '') + '&width=' + width + '&height=' + height + '&t=' + new Date().getTime();
   }
 
   getDownloadUrl(name: string, directory: string) {
-    return '/api/documents/' + this.directory + '/' + name + '/download?subdirectory=' + encodeURIComponent(directory || '');
+    return '/api/documents/download/' + this.directory + '/' + name + '?subdirectory=' + encodeURIComponent(directory || '');
   }
 
   getSelectedPageNumbers(): number[] {

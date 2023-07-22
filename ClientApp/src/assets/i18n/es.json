@@ -14,6 +14,10 @@
       "label": "Configuración"
     }
   },
+  "footer": {
+    "documents": "Documentos",
+    "documentsCount": "{{selectedDocuments}} de {{documents}} documentos seleccionados"
+  },
   "documents": {
     "buttons": {
       "selectAll": "Seleccionar todo",
@@ -27,7 +31,7 @@
       "archive": "Archivar",
       "download": "Descargar",
       "revertChanges": "Revertir cambios",
-      "saveTo": "Guardar en",
+      "saveAs": "Guardar como",
       "save": "Guardar",
       "reloadPages": "Recargar páginas",
       "moveToInbox": "Mover a la bandeja de entrada",
@@ -44,8 +48,9 @@
     "label": "Configuración",
     "sections": {
       "general": "General",
-      "previews": "Previsualizaciones",
       "header": "Encabezado",
+      "footer": "Pie de página",
+      "previews": "Previsualizaciones",
       "directories": "Directorios"
     },
     "buttons": {
@@ -79,11 +84,16 @@
       "showIcons": "Mostrar iconos",
       "showLabels": "Mostrar etiquetas"
     },
+    "footer": {
+      "showAlways": "Mostrar siempre el pie de página",
+      "showSelectAll": "Mostrar seleccionar todo",
+      "showDeselectAll": "Mostrar deseleccionar todo"
+    },
     "directories": {
       "inbox": "Bandeja de entrada",
       "outbox": "Bandeja de salida",
       "archive": "Archivo",
-      "showSaveTo": "Mostrar guardar en",
+      "showSaveAs": "Mostrar guardar como",
       "showSave": "Mostrar guardar",
       "showRestore": "Mostrar restaurar",
       "showRevert": "Mostrar revertir",
@@ -97,6 +107,12 @@
       "showRotateAntiClockwise": "Mostrar rotar en sentido antihorario",
       "showSelectAll": "Mostrar seleccionar todo",
       "showUnselect": "Mostrar deseleccionar",
+      "batchShowArchive": "Mostrar archivo (lote)",
+      "batchShowDownload": "Mostrar descarga (lote)",
+      "batchShowSaveAs": "Mostrar guardar como (lote)",
+      "batchShowSave": "Mostrar guardar (lote)",
+      "batchShowRestore": "Mostrar restaurar (lote)",
+      "batchShowDelete": "Mostrar eliminar (lote)",
       "archiveOriginalFileOnSave": "Archivar archivo original al guardar",
       "deleteDocumentOnArchive": "Eliminar documento al archivar"
     }
@@ -136,6 +152,13 @@
     "message": "Ingrese el nuevo nombre.",
     "buttons": {
       "rename": "Cambiar nombre",
+      "close": "Cerrar"
+    }
+  },
+  "batchResult": {
+    "title": "Resultado",
+    "success": "No se han reportado errores.",
+    "buttons": {
       "close": "Cerrar"
     }
   },

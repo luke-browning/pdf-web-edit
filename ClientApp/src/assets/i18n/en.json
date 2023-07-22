@@ -14,6 +14,10 @@
       "label": "Settings"
     }
   },
+  "footer": {
+    "documents": "Documents",
+    "documentsCount": "{{selectedDocuments}} of {{documents}} Documents selected"
+  },
   "documents": {
     "buttons": {
       "selectAll": "Select All",
@@ -27,7 +31,7 @@
       "archive": "Archive",
       "download": "Download",
       "revertChanges": "Revert Changes",
-      "saveTo": "Save To",
+      "saveAs": "Save As",
       "save": "Save",
       "reloadPages": "Reload Pages",
       "moveToInbox": "Move to Inbox",
@@ -44,8 +48,9 @@
     "label": "Settings",
     "sections": {
       "general": "General",
-      "previews": "Previews",
       "header": "Header",
+      "footer": "Footer",
+      "previews": "Previews",
       "directories": "Directories"
     },
     "buttons": {
@@ -79,11 +84,16 @@
       "showIcons": "Show Icons",
       "showLabels": "Show Labels"
     },
+    "footer": {
+      "showAlways": "Always Show Footer",
+      "showSelectAll": "Show Select All",
+      "showDeselectAll": "Show Deselect All"
+    },
     "directories": {
       "inbox": "Inbox",
       "outbox": "Outbox",
       "archive": "Archive",
-      "showSaveTo": "Show Save To",
+      "showSaveAs": "Show Save As",
       "showSave": "Show Save",
       "showRestore": "Show Restore",
       "showRevert": "Show Revert",
@@ -97,6 +107,12 @@
       "showRotateAntiClockwise": "Show Rotate Anti-Clockwise",
       "showSelectAll": "Show Select All",
       "showUnselect": "Show Unselect",
+      "batchShowArchive": "Show Archive (batch)",
+      "batchShowDownload": "Show Download (batch)",
+      "batchShowSaveAs": "Show Save As (batch)",
+      "batchShowSave": "Show Save (batch)",
+      "batchShowRestore": "Show Restore (batch)",
+      "batchShowDelete": "Show Delete (batch)",
       "archiveOriginalFileOnSave": "Archive Original File On Save",
       "deleteDocumentOnArchive": "Delete Document On Archive"
     }
@@ -136,6 +152,13 @@
     "message": "Enter new name.",
     "buttons": {
       "rename": "Rename",
+      "close": "Close"
+    }
+  },
+  "batchResult": {
+    "title": "Result",
+    "success": "No errors reported.",
+    "buttons": {
       "close": "Close"
     }
   },

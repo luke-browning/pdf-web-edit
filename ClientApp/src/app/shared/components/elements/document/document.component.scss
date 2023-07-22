@@ -2,8 +2,15 @@ toolbar, pages {
   display: block;
 }
 
-toolbar {
+.toolbar-scrollbar {
   margin-bottom: 1rem;
+}
+
+.scrollbar-visible {
+  padding-bottom: 20px;
+}
+
+.pages-scrollbar {
 }
 
 .directory {
@@ -16,7 +23,6 @@ toolbar {
   overflow-x: hidden;
   overflow-y: hidden;
   white-space: nowrap;
-  padding-bottom: 20px;
 }
 
 /* Custom scrollbar */
