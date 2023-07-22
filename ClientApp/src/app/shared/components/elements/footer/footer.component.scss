@@ -1,0 +1,12 @@
+.footer {
+  border-radius: 8px;
+  z-index: 999;
+
+  &.dark {
+    background-color: #131313;
+  }
+
+  &.light {
+    background-color: #ccc;
+  }
+}

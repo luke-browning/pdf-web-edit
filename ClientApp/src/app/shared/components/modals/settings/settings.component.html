@@ -65,30 +65,6 @@
           </ng-template>
         </ng-container>
 
-        <ng-container ngbNavItem="preview">
-          <a ngbNavLink>{{ 'settings.sections.previews' | translate }}</a>
-          <ng-template ngbNavContent>
-
-            <div class="mb-3">
-              <label for="default-size" class="form-label">{{ 'settings.previews.defaultSize' | translate }}</label>
-              <select name="default-size" id="default-size" class="form-select" [(ngModel)]="config.previewConfig.defaultSize">
-                <option *ngFor="let size of sizes" [value]="size.value">{{ size.label | translate }}</option>
-              </select>
-            </div>
-
-            <div class="form-check form-switch mb-3">
-              <input class="form-check-input" type="checkbox" role="switch" name="show-page-number" id="show-page-number" [(ngModel)]="config.previewConfig.showPageNumber">
-              <label class="form-check-label" for="show-page-number">{{ 'settings.previews.showPageNumber' | translate }}</label>
-            </div>
-
-            <div class="form-check form-switch mb-3">
-              <input class="form-check-input" type="checkbox" role="switch" name="blur" id="blur" [(ngModel)]="config.previewConfig.blur">
-              <label class="form-check-label" for="blur">{{ 'settings.previews.blur' | translate }}</label>
-            </div>
-
-          </ng-template>
-        </ng-container>
-
         <ng-container ngbNavItem="header">
           <a ngbNavLink>{{ 'settings.sections.header' | translate }}</a>
           <ng-template ngbNavContent>
@@ -141,6 +117,53 @@
           </ng-template>
         </ng-container>
 
+        <ng-container ngbNavItem="footer">
+          <a ngbNavLink>{{ 'settings.sections.footer' | translate }}</a>
+          <ng-template ngbNavContent>
+
+            <div class="form-check form-switch mb-3">
+              <input class="form-check-input" type="checkbox" role="switch" name="show-always" id="show-always" [(ngModel)]="config.footerConfig.showAlways">
+              <label class="form-check-label" for="show-always">{{ 'settings.footer.showAlways' | translate }}</label>
+            </div>
+
+            <hr />
+
+            <div class="form-check form-switch mb-3">
+              <input class="form-check-input" type="checkbox" role="switch" name="show-directory-picker" id="show-select-all" [(ngModel)]="config.footerConfig.showSelectAll">
+              <label class="form-check-label" for="show-directory-picker">{{ 'settings.footer.showSelectAll' | translate }}</label>
+            </div>
+
+            <div class="form-check form-switch mb-3">
+              <input class="form-check-input" type="checkbox" role="switch" name="show-deselect-all" id="show-deselect-all" [(ngModel)]="config.footerConfig.showDeselectAll">
+              <label class="form-check-label" for="show-deselect-all">{{ 'settings.footer.showDeselectAll' | translate }}</label>
+            </div>
+          </ng-template>
+        </ng-container>
+
+        <ng-container ngbNavItem="preview">
+          <a ngbNavLink>{{ 'settings.sections.previews' | translate }}</a>
+          <ng-template ngbNavContent>
+
+            <div class="mb-3">
+              <label for="default-size" class="form-label">{{ 'settings.previews.defaultSize' | translate }}</label>
+              <select name="default-size" id="default-size" class="form-select" [(ngModel)]="config.previewConfig.defaultSize">
+                <option *ngFor="let size of sizes" [value]="size.value">{{ size.label | translate }}</option>
+              </select>
+            </div>
+
+            <div class="form-check form-switch mb-3">
+              <input class="form-check-input" type="checkbox" role="switch" name="show-page-number" id="show-page-number" [(ngModel)]="config.previewConfig.showPageNumber">
+              <label class="form-check-label" for="show-page-number">{{ 'settings.previews.showPageNumber' | translate }}</label>
+            </div>
+
+            <div class="form-check form-switch mb-3">
+              <input class="form-check-input" type="checkbox" role="switch" name="blur" id="blur" [(ngModel)]="config.previewConfig.blur">
+              <label class="form-check-label" for="blur">{{ 'settings.previews.blur' | translate }}</label>
+            </div>
+
+          </ng-template>
+        </ng-container>
+
         <ng-container ngbNavItem>
           <a ngbNavLink>{{ 'settings.sections.directories' | translate }}</a>
           <ng-template ngbNavContent>
@@ -150,8 +173,8 @@
                 <ng-template ngbPanelContent>
 
                   <div class="form-check form-switch mt-3 mb-3">
-                    <input class="form-check-input" type="checkbox" role="switch" name="show-save-to" id="show-save-to" [(ngModel)]="config.inboxConfig.showSaveTo">
-                    <label class="form-check-label" for="show-save-to">{{ 'settings.directories.showSaveTo' | translate }}</label>
+                    <input class="form-check-input" type="checkbox" role="switch" name="show-save-to" id="show-save-as" [(ngModel)]="config.inboxConfig.showSaveAs">
+                    <label class="form-check-label" for="show-save-as">{{ 'settings.directories.showSaveAs' | translate }}</label>
                   </div>
 
                   <div class="form-check form-switch mb-3">
@@ -166,7 +189,7 @@
 
                   <div class="form-check form-switch mb-3">
                     <input class="form-check-input" type="checkbox" role="switch" name="show-download" id="show-download" [(ngModel)]="config.inboxConfig.showDownload">
-                    <label class="form-check-label" for="show-download">{{ 'settings.directories.showDownloaad' | translate }}</label>
+                    <label class="form-check-label" for="show-download">{{ 'settings.directories.showDownload' | translate }}</label>
                   </div>
 
                   <div class="form-check form-switch mb-3">
@@ -217,6 +240,28 @@
                   <hr />
 
                   <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" role="switch" name="show-batch-archive" id="show-batch-archive" [(ngModel)]="config.inboxConfig.batchShowArchive">
+                    <label class="form-check-label" for="show-batch-archive">{{ 'settings.directories.batchShowArchive' | translate }}</label>
+                  </div>
+
+                  <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" role="switch" name="show-batch-download" id="show-batch-download" [(ngModel)]="config.inboxConfig.batchShowDownload">
+                    <label class="form-check-label" for="show-batch-download">{{ 'settings.directories.batchShowDownload' | translate }}</label>
+                  </div>
+
+                  <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" role="switch" name="show-batch-save-as" id="show-batch-save-as" [(ngModel)]="config.inboxConfig.batchShowSaveAs">
+                    <label class="form-check-label" for="show-batch-save-as">{{ 'settings.directories.batchShowSaveAs' | translate }}</label>
+                  </div>
+
+                  <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" role="switch" name="show-batch-save" id="show-batch-save" [(ngModel)]="config.inboxConfig.batchShowSave">
+                    <label class="form-check-label" for="show-batch-save">{{ 'settings.directories.batchShowSave' | translate }}</label>
+                  </div>
+
+                  <hr />
+
+                  <div class="form-check form-switch mb-3">
                     <input class="form-check-input" type="checkbox" role="switch" name="archive-original-file-on-save" id="archive-original-file-on-save" [(ngModel)]="config.inboxConfig.archiveOriginalFileOnSave">
                     <label class="form-check-label" for="archive-original-file-on-save">{{ 'settings.directories.archiveOriginalFileOnSave' | translate }}</label>
                   </div>
@@ -241,6 +286,18 @@
                     <label class="form-check-label" for="show-download">{{ 'settings.directories.showDownload' | translate }}</label>
                   </div>
 
+                  <hr />
+
+                  <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" role="switch" name="show-batch-restore" id="show-batch-restore" [(ngModel)]="config.outboxConfig.batchShowRestore">
+                    <label class="form-check-label" for="show-batch-restore">{{ 'settings.directories.batchShowRestore' | translate }}</label>
+                  </div>
+
+                  <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" role="switch" name="show-batch-download" id="show-batch-download" [(ngModel)]="config.outboxConfig.batchShowDownload">
+                    <label class="form-check-label" for="show-batch-download">{{ 'settings.directories.batchShowDownload' | translate }}</label>
+                  </div>
+
                 </ng-template>
               </ngb-panel>
               <ngb-panel id="archive" title="{{ 'settings.directories.archive' | translate }}">
@@ -259,6 +316,23 @@
                   <div class="form-check form-switch mb-3">
                     <input class="form-check-input" type="checkbox" role="switch" name="show-delete" id="show-delete" [(ngModel)]="config.archiveConfig.showDelete">
                     <label class="form-check-label" for="show-delete">{{ 'settings.directories.showDelete' | translate }}</label>
+                  </div>
+
+                  <hr />
+
+                  <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" role="switch" name="show-batch-restore" id="show-batch-restore" [(ngModel)]="config.archiveConfig.batchShowRestore">
+                    <label class="form-check-label" for="show-batch-restore">{{ 'settings.directories.batchShowRestore' | translate }}</label>
+                  </div>
+
+                  <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" role="switch" name="show-batch-download" id="show-batch-download" [(ngModel)]="config.archiveConfig.batchShowDownload">
+                    <label class="form-check-label" for="show-batch-download">{{ 'settings.directories.batchShowDownload' | translate }}</label>
+                  </div>
+
+                  <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" role="switch" name="show-batch-delete" id="show-batch-delete" [(ngModel)]="config.archiveConfig.batchShowDelete">
+                    <label class="form-check-label" for="show-batch-delete">{{ 'settings.directories.batchShowDelete' | translate }}</label>
                   </div>
 
                 </ng-template>

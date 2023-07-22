@@ -7,6 +7,10 @@
   vertical-align: bottom;
 }
 
+.thumb-container:hover {
+  border-color: #999;
+}
+
 .thumb-container.active {
   border-color: #f4473a;
 } 

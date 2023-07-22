@@ -3,19 +3,28 @@
   <div class="col" [ngClass]="colourMode == 'light' ? '' : 'dark'">
     <div class="card mb-3">
       <div class="card-header">
-        <strong>{{ document.name }}</strong>
-        <span class="directory">{{ document.directory }}</span>
+        <div class="form-check">
+          <input class="form-check-input me-2" type="checkbox" [(ngModel)]="document.selected">
+          <label class="form-check-label fw-bold d-inline-block" (click)="document.selected = !document.selected">
+            {{ document.name }}
+          </label>
+          <small class="directory">{{ document.directory }}</small>
+        </div>
       </div>
       <div class="card-body" *ngIf="{ corrupt: document.corrupt | async, passwordProtected: document.passwordProtected | async } as docStatus">
 
-        <toolbar *ngIf="!docStatus.corrupt && !docStatus.passwordProtected && directory == targetDirectories.Inbox" [buttons]="inboxButtons" [config]="config"></toolbar>
-        <toolbar *ngIf="!docStatus.corrupt && !docStatus.passwordProtected && directory == targetDirectories.Outbox" [buttons]="outboxButtons" [config]="config"></toolbar>
-        <toolbar *ngIf="!docStatus.corrupt && !docStatus.passwordProtected && directory == targetDirectories.Archive" [buttons]="archiveButtons" [config]="config"></toolbar>
-        <toolbar *ngIf="docStatus.corrupt && !docStatus.passwordProtected" [buttons]="corruptButtons" [config]="config"></toolbar>
-        <toolbar *ngIf="!docStatus.corrupt && docStatus.passwordProtected" [buttons]="passwordProtectedButtons" [config]="config"></toolbar>
+        <ng-scrollbar #toolbarScrollbar [autoHeightDisabled]="false" track="horizontal" class="scrollbar toolbar-scrollbar" [class.scrollbar-visible]="toolbarScrollable" style="height: 50px" (updated)="onToolbarScrollbarUpdate(toolbarScrollbar.state)">
+          <div #toolbarScrollWrapper class="scrolling-wrapper">
+            <toolbar *ngIf="!docStatus.corrupt && !docStatus.passwordProtected && directory == targetDirectories.Inbox" [buttons]="inboxButtons" [config]="config"></toolbar>
+            <toolbar *ngIf="directory == targetDirectories.Outbox" [buttons]="outboxButtons" [config]="config"></toolbar>
+            <toolbar *ngIf="directory == targetDirectories.Archive" [buttons]="archiveButtons" [config]="config"></toolbar>
+            <toolbar *ngIf="docStatus.corrupt && !docStatus.passwordProtected && directory == targetDirectories.Inbox" [buttons]="corruptButtons" [config]="config"></toolbar>
+            <toolbar *ngIf="!docStatus.corrupt && docStatus.passwordProtected && directory == targetDirectories.Inbox" [buttons]="passwordProtectedButtons" [config]="config"></toolbar>
+          </div>
+        </ng-scrollbar>
 
-        <ng-scrollbar [autoHeightDisabled]="false" track="horizontal" class="scrollbar">
-          <div scrollViewport #scrollWrapper *ngIf="!docStatus.corrupt && !docStatus.passwordProtected" class="scrolling-wrapper" [class]="size | async" [style.height]="maxPreviewHeight > 0 ? (maxPreviewHeight + 'px !important') : null">
+        <ng-scrollbar #documentScrollbar [autoHeightDisabled]="false" track="horizontal" class="scrollbar pages-scrollbar" [class.scrollbar-visible]="documentScrollable" (updated)="onDocumentScrollbarUpdate(documentScrollbar.state)">
+          <div #documentScrollWrapper *ngIf="!docStatus.corrupt && !docStatus.passwordProtected" class="scrolling-wrapper" [class]="size | async" [style.height]="maxPreviewHeight > 0 ? (maxPreviewHeight + 'px !important') : null">
             <pages [pages]="document.pages"
                    [document]="document"
                    [size]="size"

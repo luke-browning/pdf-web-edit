@@ -1,0 +1,30 @@
+.breadcrumb {
+    margin-bottom: 0;
+}
+
+.breadcrumb-container,
+.directory-container {
+  margin-bottom: 20px;
+}
+
+.locations-list {
+    .bi {
+        padding-right: 10px;
+    }
+}
+
+.sub-list {
+    padding: 0;
+
+    .list-group-item {
+        border: 0;
+    }
+
+    .favourite-button {
+        width: 50px;
+    }
+}
+
+.path-icon {
+    padding-right: 5px;
+}

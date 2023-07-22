@@ -6,6 +6,14 @@
     public class Config
     {
         /// <summary>
+        /// Gets or sets the general configuration.
+        /// </summary>
+        /// <value>
+        /// The general configuration.
+        /// </value>
+        public GeneralConfig GeneralConfig { get; set; } = new GeneralConfig();
+
+        /// <summary>
         /// Gets or sets the header configuration.
         /// </summary>
         /// <value>
@@ -14,12 +22,12 @@
         public HeaderConfig HeaderConfig { get; set; } = new HeaderConfig();
 
         /// <summary>
-        /// Gets or sets the general configuration.
+        /// Gets or sets the footer configuration.
         /// </summary>
         /// <value>
-        /// The general configuration.
+        /// The footer configuration.
         /// </value>
-        public GeneralConfig GeneralConfig { get; set; } = new GeneralConfig();
+        public FooterConfig FooterConfig { get; set; } = new FooterConfig();
 
         /// <summary>
         /// Gets or sets the preview configuration.

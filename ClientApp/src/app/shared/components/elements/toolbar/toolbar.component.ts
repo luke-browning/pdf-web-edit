@@ -11,6 +11,7 @@ export class ToolbarComponent implements OnInit {
 
   @Input() buttons!: Array<ToolbarButton>;
   @Input() config!: PDFWebEditAPI.Config;
+  @Input() labelPlacement!: string;
 
   showLabels = true;
   showIcons = true;

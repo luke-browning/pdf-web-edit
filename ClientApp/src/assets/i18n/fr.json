@@ -14,6 +14,10 @@
       "label": "Paramètres"
     }
   },
+  "footer": {
+    "documents": "Documents",
+    "documentsCount": "{{selectedDocuments}} sur {{documents}} documents sélectionnés"
+  },
   "documents": {
     "buttons": {
       "selectAll": "Sélectionner tout",
@@ -27,7 +31,7 @@
       "archive": "Archiver",
       "download": "Télécharger",
       "revertChanges": "Annuler les modifications",
-      "saveTo": "Enregistrer dans",
+      "saveAs": "Enregistrer sous",
       "save": "Enregistrer",
       "reloadPages": "Recharger les pages",
       "moveToInbox": "Déplacer vers la boîte de réception",
@@ -44,8 +48,9 @@
     "label": "Paramètres",
     "sections": {
       "general": "Général",
-      "previews": "Aperçus",
       "header": "En-tête",
+      "footer": "Pied de page",
+      "previews": "Aperçus",
       "directories": "Répertoires"
     },
     "buttons": {
@@ -79,11 +84,16 @@
       "showIcons": "Afficher les icônes",
       "showLabels": "Afficher les étiquettes"
     },
+    "footer": {
+      "showAlways": "Afficher toujours le pied de page",
+      "showSelectAll": "Afficher tout sélectionner",
+      "showDeselectAll": "Afficher tout désélectionner"
+    },
     "directories": {
       "inbox": "Boîte de réception",
       "outbox": "Boîte d'envoi",
       "archive": "Archive",
-      "showSaveTo": "Afficher Enregistrer dans",
+      "showSaveAs": "Afficher Enregistrer sous",
       "showSave": "Afficher Enregistrer",
       "showRestore": "Afficher Restaurer",
       "showRevert": "Afficher Annuler",
@@ -97,6 +107,12 @@
       "showRotateAntiClockwise": "Afficher Rotation anti-horaire",
       "showSelectAll": "Afficher Sélectionner tout",
       "showUnselect": "Afficher Désélectionner",
+      "batchShowArchive": "Afficher l'archive (lot)",
+      "batchShowDownload": "Afficher le téléchargement (lot)",
+      "batchShowSaveAs": "Afficher l'enregistrement sous (lot)",
+      "batchShowSave": "Afficher l'enregistrement (lot)",
+      "batchShowRestore": "Afficher la restauration (lot)",
+      "batchShowDelete": "Afficher la suppression (lot)",
       "archiveOriginalFileOnSave": "Archiver le fichier original lors de l'enregistrement",
       "deleteDocumentOnArchive": "Supprimer le document lors de l'archivage"
     }
@@ -104,8 +120,12 @@
   "directoryPicker": {
     "title": "Sélectionner un dossier",
     "outbox": "Boîte d'envoi",
+    "favourites": "Favoris",
+    "history": "Historique",
     "up": "..",
     "noFolders": "Aucun dossier à afficher",
+    "addToFavourites": "Ajouter aux favoris",
+    "removeFromFavourites": "Retirer des favoris",
     "buttons": {
       "save": "Enregistrer",
       "close": "Fermer"
@@ -132,6 +152,13 @@
     "message": "Entrer le nouveau nom.",
     "buttons": {
       "rename": "Renommer",
+      "close": "Fermer"
+    }
+  },
+  "batchResult": {
+    "title": "Résultat",
+    "success": "Aucune erreur signalée.",
+    "buttons": {
       "close": "Fermer"
     }
   },

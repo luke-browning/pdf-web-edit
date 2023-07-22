@@ -16,3 +16,14 @@
 <div *ngIf="documentsLoaded && filteredDocuments.length == 0" class="text-center text-muted mt-5">
   {{ 'shared.noDocumentsFound' | translate }}
 </div>
+
+<div class="footer-padding" *ngIf="alwaysShowFooter || hasDocumentsSelected()">
+  <!-- Leave space for footer to fill in so it doesnt cover the last document -->
+</div>
+
+<footer *ngIf="alwaysShowFooter || hasDocumentsSelected()"
+        [documents]="documents"
+        [config]="config"
+        [directoryStructure]="directoryStructure"
+        [directory]="directory"
+        (onDocumentChanges)="batchDocumentChanges($event)"></footer>

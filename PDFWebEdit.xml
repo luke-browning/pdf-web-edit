@@ -248,7 +248,7 @@
             An IActionResult.
             </returns>
         </member>
-        <member name="M:PDFWebEdit.Controllers.DocumentController.DeleteFromArchive(System.String)">
+        <member name="M:PDFWebEdit.Controllers.DocumentController.DeleteFromArchive(System.String,System.String)">
             <summary>
             Permentently deletes the specified document from the archive.
             </summary>
@@ -280,13 +280,14 @@
             An IActionResult.
             </returns>
         </member>
-        <member name="M:PDFWebEdit.Controllers.DocumentController.SaveTo(System.String,System.String,System.String)">
+        <member name="M:PDFWebEdit.Controllers.DocumentController.SaveAs(System.String,System.String,System.String,System.String)">
             <summary>
             Saves the specified document from the inbox directory.
             </summary>
             <param name="document">The document.</param>
             <param name="sourceSubDirectory">The subDirectory to move from.</param>
             <param name="targetSubDirectory">The subDirectory to save to.</param>
+            <param name="newName">New name of the file</param>
             <returns>
             An IActionResult.
             </returns>
@@ -297,6 +298,60 @@
             </summary>
             <param name="document">The document.</param>
             <param name="sourceSubDirectory">The subDirectory to move from.</param>
+            <returns>
+            An IActionResult.
+            </returns>
+        </member>
+        <member name="M:PDFWebEdit.Controllers.DocumentController.SaveBatch(System.Collections.Generic.List{PDFWebEdit.Models.Requests.Objects.Save})">
+            <summary>
+            Saves a batch.
+            </summary>
+            <param name="batch">The batch.</param>
+            <returns>
+            An IActionResult.
+            </returns>
+        </member>
+        <member name="M:PDFWebEdit.Controllers.DocumentController.SaveAsBatch(System.Collections.Generic.List{PDFWebEdit.Models.Requests.Objects.SaveAs})">
+            <summary>
+            Saves a batch.
+            </summary>
+            <param name="batch">The batch.</param>
+            <returns>
+            An IActionResult.
+            </returns>
+        </member>
+        <member name="M:PDFWebEdit.Controllers.DocumentController.ArchiveBatch(System.Collections.Generic.List{PDFWebEdit.Models.Requests.Objects.Archive})">
+            <summary>
+            Archive batch.
+            </summary>
+            <param name="batch">The batch.</param>
+            <returns>
+            An IActionResult.
+            </returns>
+        </member>
+        <member name="M:PDFWebEdit.Controllers.DocumentController.DeleteFromArchiveBatch(System.Collections.Generic.List{PDFWebEdit.Models.Requests.Objects.Delete})">
+            <summary>
+            Deletes from archive by batch.
+            </summary>
+            <param name="batch">The batch.</param>
+            <returns>
+            An IActionResult.
+            </returns>
+        </member>
+        <member name="M:PDFWebEdit.Controllers.DocumentController.DownloadDocumentBatch(System.Collections.Generic.List{PDFWebEdit.Models.Requests.Objects.Download})">
+            <summary>
+            Downloads the document batch.
+            </summary>
+            <param name="batch">The batch.</param>
+            <returns>
+            An IActionResult.
+            </returns>
+        </member>
+        <member name="M:PDFWebEdit.Controllers.DocumentController.RestoreBatch(System.Collections.Generic.List{PDFWebEdit.Models.Requests.Objects.Restore})">
+            <summary>
+            Restore batch.
+            </summary>
+            <param name="batch">The batch.</param>
             <returns>
             An IActionResult.
             </returns>
@@ -340,6 +395,29 @@
             <summary>
             An enum constant representing the archive option.
             </summary>
+        </member>
+        <member name="T:PDFWebEdit.Helpers.ActionResultHelpers">
+            <summary>
+            An action result helpers.
+            </summary>
+        </member>
+        <member name="M:PDFWebEdit.Helpers.ActionResultHelpers.GetStatusCode(Microsoft.AspNetCore.Mvc.IActionResult)">
+            <summary>
+            An IActionResult extension method that tries to get the HTTP status code from the result.
+            </summary>
+            <param name="actionResult">The actionResult to act on.</param>
+            <returns>
+            The status code.
+            </returns>
+        </member>
+        <member name="M:PDFWebEdit.Helpers.ActionResultHelpers.GetErrorMessage(Microsoft.AspNetCore.Mvc.IActionResult)">
+            <summary>
+            An IActionResult extension method that tries to read an error message from the result.
+            </summary>
+            <param name="actionResult">The actionResult to act on.</param>
+            <returns>
+            The error message.
+            </returns>
         </member>
         <member name="T:PDFWebEdit.Helpers.DirectoryHelpers">
             <summary>
@@ -451,10 +529,42 @@
             True if show delete, false if not.
             </value>
         </member>
+        <member name="P:PDFWebEdit.Models.Config.ArchiveConfig.BatchShowRestore">
+            <summary>
+            Gets or sets a value indicating whether the batch show restore.
+            </summary>
+            <value>
+            True if batch show restore, false if not.
+            </value>
+        </member>
+        <member name="P:PDFWebEdit.Models.Config.ArchiveConfig.BatchShowDownload">
+            <summary>
+            Gets or sets a value indicating whether the batch show download.
+            </summary>
+            <value>
+            True if batch show download, false if not.
+            </value>
+        </member>
+        <member name="P:PDFWebEdit.Models.Config.ArchiveConfig.BatchShowDelete">
+            <summary>
+            Gets or sets a value indicating whether the batch show delete.
+            </summary>
+            <value>
+            True if batch show delete, false if not.
+            </value>
+        </member>
         <member name="T:PDFWebEdit.Models.Config.Config">
             <summary>
             A configuration.
             </summary>
+        </member>
+        <member name="P:PDFWebEdit.Models.Config.Config.GeneralConfig">
+            <summary>
+            Gets or sets the general configuration.
+            </summary>
+            <value>
+            The general configuration.
+            </value>
         </member>
         <member name="P:PDFWebEdit.Models.Config.Config.HeaderConfig">
             <summary>
@@ -464,12 +574,12 @@
             The header configuration.
             </value>
         </member>
-        <member name="P:PDFWebEdit.Models.Config.Config.GeneralConfig">
+        <member name="P:PDFWebEdit.Models.Config.Config.FooterConfig">
             <summary>
-            Gets or sets the general configuration.
+            Gets or sets the footer configuration.
             </summary>
             <value>
-            The general configuration.
+            The footer configuration.
             </value>
         </member>
         <member name="P:PDFWebEdit.Models.Config.Config.PreviewConfig">
@@ -502,6 +612,35 @@
             </summary>
             <value>
             The archive configuration.
+            </value>
+        </member>
+        <member name="T:PDFWebEdit.Models.Config.FooterConfig">
+            <summary>
+            A footer configuration.
+            </summary>
+        </member>
+        <member name="P:PDFWebEdit.Models.Config.FooterConfig.ShowAlways">
+            <summary>
+            Gets or sets a value indicating whether the always is shown.
+            </summary>
+            <value>
+            True if show always, false if not.
+            </value>
+        </member>
+        <member name="P:PDFWebEdit.Models.Config.FooterConfig.ShowSelectAll">
+            <summary>
+            Gets or sets a value indicating whether the select all is shown.
+            </summary>
+            <value>
+            True if show select all, false if not.
+            </value>
+        </member>
+        <member name="P:PDFWebEdit.Models.Config.FooterConfig.ShowDeselectAll">
+            <summary>
+            Gets or sets a value indicating whether the deselect all is shown.
+            </summary>
+            <value>
+            True if show deselect all, false if not.
             </value>
         </member>
         <member name="T:PDFWebEdit.Models.Config.GeneralConfig">
@@ -671,12 +810,12 @@
             A inbox configuration.
             </summary>
         </member>
-        <member name="P:PDFWebEdit.Models.Config.InboxConfig.ShowSaveTo">
+        <member name="P:PDFWebEdit.Models.Config.InboxConfig.ShowSaveAs">
             <summary>
-            Gets or sets a value indicating whether the save to is shown.
+            Gets or sets a value indicating whether the save as is shown.
             </summary>
             <value>
-            True if show save to, false if not.
+            True if show save as, false if not.
             </value>
         </member>
         <member name="P:PDFWebEdit.Models.Config.InboxConfig.ShowSave">
@@ -775,6 +914,38 @@
             True if show unselect, false if not.
             </value>
         </member>
+        <member name="P:PDFWebEdit.Models.Config.InboxConfig.BatchShowArchive">
+            <summary>
+            Gets or sets a value indicating whether the batch show archive.
+            </summary>
+            <value>
+            True if batch show archive, false if not.
+            </value>
+        </member>
+        <member name="P:PDFWebEdit.Models.Config.InboxConfig.BatchShowDownload">
+            <summary>
+            Gets or sets a value indicating whether the batch show download.
+            </summary>
+            <value>
+            True if batch show download, false if not.
+            </value>
+        </member>
+        <member name="P:PDFWebEdit.Models.Config.InboxConfig.BatchShowSaveAs">
+            <summary>
+            Gets or sets a value indicating whether the batch show save as.
+            </summary>
+            <value>
+            True if batch show save as, false if not.
+            </value>
+        </member>
+        <member name="P:PDFWebEdit.Models.Config.InboxConfig.BatchShowSave">
+            <summary>
+            Gets or sets a value indicating whether the batch show save.
+            </summary>
+            <value>
+            True if batch show save, false if not.
+            </value>
+        </member>
         <member name="P:PDFWebEdit.Models.Config.InboxConfig.ArchiveOriginalFileOnSave">
             <summary>
             Gets or sets a value indicating whether to archive the original file on save .
@@ -810,6 +981,22 @@
             </summary>
             <value>
             True if show download, false if not.
+            </value>
+        </member>
+        <member name="P:PDFWebEdit.Models.Config.OutboxConfig.BatchShowRestore">
+            <summary>
+            Gets or sets a value indicating whether the batch show restore.
+            </summary>
+            <value>
+            True if batch show restore, false if not.
+            </value>
+        </member>
+        <member name="P:PDFWebEdit.Models.Config.OutboxConfig.BatchShowDownload">
+            <summary>
+            Gets or sets a value indicating whether the batch show download.
+            </summary>
+            <value>
+            True if batch show download, false if not.
             </value>
         </member>
         <member name="T:PDFWebEdit.Models.Config.PreviewConfig">
@@ -939,6 +1126,215 @@
             </summary>
             <value>
             The sub folders.
+            </value>
+        </member>
+        <member name="T:PDFWebEdit.Models.Api.BatchResponse`1">
+            <summary>
+            A batch response.
+            </summary>
+            <typeparam name="T">Generic type parameter.</typeparam>
+        </member>
+        <member name="M:PDFWebEdit.Models.Api.BatchResponse`1.GetStatusCode">
+            <summary>
+            Gets status code based on the response values.
+            </summary>
+            <returns>
+            The status code.
+            </returns>
+        </member>
+        <member name="T:PDFWebEdit.Models.Requests.Batch.DocumentResult">
+            <summary>
+            Encapsulates the result of a document.
+            </summary>
+        </member>
+        <member name="P:PDFWebEdit.Models.Requests.Batch.DocumentResult.Document">
+            <summary>
+            Gets or sets the document.
+            </summary>
+            <value>
+            The document.
+            </value>
+        </member>
+        <member name="P:PDFWebEdit.Models.Requests.Batch.DocumentResult.StatusCode">
+            <summary>
+            Gets or sets the status code.
+            </summary>
+            <value>
+            The status code.
+            </value>
+        </member>
+        <member name="P:PDFWebEdit.Models.Requests.Batch.DocumentResult.AdditionalInformation">
+            <summary>
+            Gets or sets information describing the additional.
+            </summary>
+            <value>
+            Information describing the additional.
+            </value>
+        </member>
+        <member name="T:PDFWebEdit.Models.Requests.Objects.Archive">
+            <summary>
+            An archive.
+            </summary>
+        </member>
+        <member name="P:PDFWebEdit.Models.Requests.Objects.Archive.TargetDirectory">
+            <summary>
+            Gets or sets the pathname of the target directory.
+            </summary>
+            <value>
+            The pathname of the target directory.
+            </value>
+        </member>
+        <member name="P:PDFWebEdit.Models.Requests.Objects.Archive.Document">
+            <summary>
+            Gets or sets the document.
+            </summary>
+            <value>
+            The document.
+            </value>
+        </member>
+        <member name="P:PDFWebEdit.Models.Requests.Objects.Archive.SubDirectory">
+            <summary>
+            Gets or sets the pathname of the source sub directory.
+            </summary>
+            <value>
+            The pathname of the source sub directory.
+            </value>
+        </member>
+        <member name="T:PDFWebEdit.Models.Requests.Objects.Delete">
+            <summary>
+            A delete.
+            </summary>
+        </member>
+        <member name="P:PDFWebEdit.Models.Requests.Objects.Delete.Document">
+            <summary>
+            Gets or sets the document.
+            </summary>
+            <value>
+            The document.
+            </value>
+        </member>
+        <member name="P:PDFWebEdit.Models.Requests.Objects.Delete.SubDirectory">
+            <summary>
+            Gets or sets the pathname of the source sub directory.
+            </summary>
+            <value>
+            The pathname of the source sub directory.
+            </value>
+        </member>
+        <member name="T:PDFWebEdit.Models.Requests.Objects.Download">
+            <summary>
+            A download.
+            </summary>
+        </member>
+        <member name="P:PDFWebEdit.Models.Requests.Objects.Download.TargetDirectory">
+            <summary>
+            Gets or sets the pathname of the target directory.
+            </summary>
+            <value>
+            The pathname of the target directory.
+            </value>
+        </member>
+        <member name="P:PDFWebEdit.Models.Requests.Objects.Download.Document">
+            <summary>
+            Gets or sets the document.
+            </summary>
+            <value>
+            The document.
+            </value>
+        </member>
+        <member name="P:PDFWebEdit.Models.Requests.Objects.Download.SubDirectory">
+            <summary>
+            Gets or sets the pathname of the source sub directory.
+            </summary>
+            <value>
+            The pathname of the source sub directory.
+            </value>
+        </member>
+        <member name="T:PDFWebEdit.Models.Requests.Objects.Restore">
+            <summary>
+            An restore.
+            </summary>
+        </member>
+        <member name="P:PDFWebEdit.Models.Requests.Objects.Restore.TargetDirectory">
+            <summary>
+            Gets or sets the pathname of the target directory.
+            </summary>
+            <value>
+            The pathname of the target directory.
+            </value>
+        </member>
+        <member name="P:PDFWebEdit.Models.Requests.Objects.Restore.Document">
+            <summary>
+            Gets or sets the document.
+            </summary>
+            <value>
+            The document.
+            </value>
+        </member>
+        <member name="P:PDFWebEdit.Models.Requests.Objects.Restore.SubDirectory">
+            <summary>
+            Gets or sets the pathname of the source sub directory.
+            </summary>
+            <value>
+            The pathname of the source sub directory.
+            </value>
+        </member>
+        <member name="T:PDFWebEdit.Models.Requests.Objects.Save">
+            <summary>
+            A save.
+            </summary>
+        </member>
+        <member name="P:PDFWebEdit.Models.Requests.Objects.Save.Document">
+            <summary>
+            Gets or sets the document.
+            </summary>
+            <value>
+            The document.
+            </value>
+        </member>
+        <member name="P:PDFWebEdit.Models.Requests.Objects.Save.SourceSubDirectory">
+            <summary>
+            Gets or sets the pathname of the source sub directory.
+            </summary>
+            <value>
+            The pathname of the source sub directory.
+            </value>
+        </member>
+        <member name="T:PDFWebEdit.Models.Requests.Objects.SaveAs">
+            <summary>
+            A save as.
+            </summary>
+        </member>
+        <member name="P:PDFWebEdit.Models.Requests.Objects.SaveAs.Document">
+            <summary>
+            Gets or sets the document.
+            </summary>
+            <value>
+            The document.
+            </value>
+        </member>
+        <member name="P:PDFWebEdit.Models.Requests.Objects.SaveAs.SourceSubDirectory">
+            <summary>
+            Gets or sets the pathname of the source sub directory.
+            </summary>
+            <value>
+            The pathname of the source sub directory.
+            </value>
+        </member>
+        <member name="P:PDFWebEdit.Models.Requests.Objects.SaveAs.TargetSubDirectory">
+            <summary>
+            Gets or sets the pathname of the target sub directory.
+            </summary>
+            <value>
+            The pathname of the target sub directory.
+            </value>
+        </member>
+        <member name="P:PDFWebEdit.Models.Requests.Objects.SaveAs.NewName">
+            <summary>
+            Gets or sets the name of the new.
+            </summary>
+            <value>
+            The name of the new.
             </value>
         </member>
         <member name="T:PDFWebEdit.Models.Status">
@@ -1223,7 +1619,7 @@
             <param name="subDirectory">Subdirectory storing document.</param>
             <param name="name">The name.</param>
         </member>
-        <member name="M:PDFWebEdit.Services.DirectoryService.PermenentlyDeleteFromArchive(System.String)">
+        <member name="M:PDFWebEdit.Services.DirectoryService.PermenentlyDeleteFromArchive(System.String,System.String)">
             <summary>
             Permenently delete from archive.
             </summary>
@@ -1238,13 +1634,14 @@
             <param name="subDirectory">Subdirectory storing document.</param>
             <param name="name">The name.</param>
         </member>
-        <member name="M:PDFWebEdit.Services.DirectoryService.Save(System.String,System.String,System.String)">
+        <member name="M:PDFWebEdit.Services.DirectoryService.Save(System.String,System.String,System.String,System.String)">
             <summary>
             Saves the document to the outbox directory.
             </summary>
             <param name="name">The name.</param>
             <param name="sourceSubDirectory">The source sub directory.</param>
             <param name="targetSubDirectory">The target sub directory.</param>
+            <param name="newName">New name.</param>
         </member>
         <member name="M:PDFWebEdit.Services.DirectoryService.GetTargetDirectoryPath(PDFWebEdit.Enumerations.TargetDirectory)">
             <summary>

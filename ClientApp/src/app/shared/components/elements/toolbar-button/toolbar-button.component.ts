@@ -11,6 +11,7 @@ export class ToolbarButtonComponent implements OnInit {
   @Input() button!: ToolbarButton;
   @Input() showIcon!: boolean;
   @Input() showLabel!: boolean;
+  @Input() labelPlacement!: string | null;
 
   constructor() { }
 

@@ -1,0 +1,33 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{ 'batchResult.title' | translate }}</h5>
+  <button type="button" class="btn-close" aria-label="Close" (click)="close()"></button>
+</div>
+<div class="modal-body">
+  <div ngbAccordion [closeOthers]="true" class="accordion-flush">
+    <div ngbAccordionItem *ngFor="let result of results">
+      <h2 ngbAccordionHeader>
+        <button ngbAccordionButton>
+          <i *ngIf="result.statusCode != 200" class="bi bi-exclamation-circle-fill text-danger"></i>
+          <i *ngIf="result.statusCode == 200" class="bi bi-check-circle-fill text-success"></i>
+          &nbsp;{{ result.document }}
+        </button>
+      </h2>
+      <div ngbAccordionCollapse>
+        <div ngbAccordionBody class="text-muted">
+          <ng-template>
+            <div *ngIf="result.statusCode != 200">
+              {{ result.additionalInformation }}
+            </div>
+
+            <div *ngIf="result.statusCode == 200">
+              {{ 'batchResult.success' | translate }}
+            </div>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" (click)="close()">{{ 'batchResult.buttons.close' | translate }}</button>
+</div>
