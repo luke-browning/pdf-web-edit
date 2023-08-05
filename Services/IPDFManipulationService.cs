@@ -45,6 +45,14 @@ namespace PDFWebEdit.Services
         public void ReorderPages(TargetDirectory targetDirectory, string document, List<int> newPageOrder, string? subDirectory = null);
 
         /// <summary>
+        /// Reverse pages order.
+        /// </summary>
+        /// <param name="targetDirectory">Target directory.</param>
+        /// <param name="document">The document.</param>
+        /// <param name="subDirectory">Subdirectory storing document.</param>
+        public void ReversePagesOrder(TargetDirectory targetDirectory, string document, string? subDirectory = null);
+
+        /// <summary>
         /// Splits the pages into a new document.
         /// </summary>
         /// <param name="targetDirectory">Target directory.</param>

@@ -24,6 +24,7 @@
       "deselectAll": "Deseleccionar todo",
       "rotateClockwise": "Rotar en sentido horario",
       "rotateAntiClockwise": "Rotar en sentido antihorario",
+      "reversePageOrder": "Orden inverso de páginas",
       "remove": "Eliminar",
       "split": "Dividir",
       "merge": "Combinar",
@@ -64,6 +65,7 @@
       "defaultSortColumn": "Columna de ordenación predeterminada",
       "defaultSortDirection": "Dirección de ordenación predeterminada",
       "defaultColourMode": "Modo de color predeterminado",
+      "defaultShowFilesOnSaveAs": "Mostrar archivos por defecto al guardar como",
       "enableTour": "Activar recorrido",
       "showIcons": "Mostrar iconos",
       "showLabels": "Mostrar etiquetas"
@@ -105,6 +107,7 @@
       "showRemove": "Mostrar eliminar",
       "showRotateClockwise": "Mostrar rotar en sentido horario",
       "showRotateAntiClockwise": "Mostrar rotar en sentido antihorario",
+      "showReversePageOrder": "Mostrar orden inverso de páginas",
       "showSelectAll": "Mostrar seleccionar todo",
       "showUnselect": "Mostrar deseleccionar",
       "batchShowArchive": "Mostrar archivo (lote)",
@@ -122,11 +125,23 @@
     "outbox": "Bandeja de salida",
     "favourites": "Favoritos",
     "history": "Historial",
+    "showFiles": "Mostrar archivos",
     "up": "..",
     "noFolders": "No hay carpetas para mostrar",
     "addToFavourites": "Agregar a favoritos",
     "removeFromFavourites": "Eliminar de favoritos",
+    "documentName": "Nombre del documento",
+    "copyName": "Usar como nombre de documento",
+    "createDirectory": {
+      "title": "Nueva carpeta",
+      "message": "Ingrese el nombre de la nueva carpeta.",
+      "buttons": {
+        "create": "Crear",
+        "close": "Cerrar"
+      }
+    },
     "buttons": {
+      "addDirectory": "Nueva carpeta",
       "save": "Guardar",
       "close": "Cerrar"
     }

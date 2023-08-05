@@ -7,9 +7,12 @@
   margin-bottom: 20px;
 }
 
-.locations-list {
-    .bi {
-        padding-right: 10px;
+.locations-list,
+.location-options-list {
+
+    .bi,
+    .form-check-input {
+        margin-right: 10px;
     }
 }
 
@@ -27,4 +30,8 @@
 
 .path-icon {
     padding-right: 5px;
+}
+
+.after-list-button {
+    margin-top: 10px;
 }

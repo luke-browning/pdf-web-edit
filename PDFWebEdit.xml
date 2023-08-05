@@ -85,6 +85,27 @@
             An enumerator that allows foreach to be used to process the directories in this collection.
             </returns>
         </member>
+        <member name="M:PDFWebEdit.Controllers.DocumentController.GetDirectoryDocuments(PDFWebEdit.Enumerations.TargetDirectory,System.String)">
+            <summary>
+            Gets directory documents.
+            </summary>
+            <param name="targetDirectory">The target directory.</param>
+            <param name="subDirectory">The sub directory containing the document.</param>
+            <returns>
+            The directory documents.
+            </returns>
+        </member>
+        <member name="M:PDFWebEdit.Controllers.DocumentController.CreateDirectory(PDFWebEdit.Enumerations.TargetDirectory,System.String,System.String)">
+            <summary>
+            Creates a directory.
+            </summary>
+            <param name="targetDirectory">The target directory.</param>
+            <param name="name">The name.</param>
+            <param name="subDirectory">The sub directory containing the document.</param>
+            <returns>
+            The new directory.
+            </returns>
+        </member>
         <member name="M:PDFWebEdit.Controllers.DocumentController.GetDocuments(PDFWebEdit.Enumerations.TargetDirectory)">
             <summary>
             Gets the documents in the selected folder.
@@ -196,6 +217,17 @@
             <param name="targetDirectory">The target directory.</param>
             <param name="document">The document.</param>
             <param name="newPageOrder">The new page order.</param>
+            <param name="subDirectory">The sub directory containing the document.</param>
+            <returns>
+            An IActionResult.
+            </returns>
+        </member>
+        <member name="M:PDFWebEdit.Controllers.DocumentController.ReversePagesOrder(PDFWebEdit.Enumerations.TargetDirectory,System.String,System.String)">
+            <summary>
+            Reverse pages order.
+            </summary>
+            <param name="targetDirectory">The target directory.</param>
+            <param name="document">The document.</param>
             <param name="subDirectory">The sub directory containing the document.</param>
             <returns>
             An IActionResult.
@@ -712,6 +744,14 @@
             The colour mode.
             </value>
         </member>
+        <member name="P:PDFWebEdit.Models.Config.GeneralConfig.DefaultShowFilesOnSaveAs">
+            <summary>
+            Gets or sets a value indicating whether the default show files on save as.
+            </summary>
+            <value>
+            True if default show files on save as, false if not.
+            </value>
+        </member>
         <member name="P:PDFWebEdit.Models.Config.GeneralConfig.DebugMode">
             <summary>
             Gets or sets a value indicating whether the debug mode.
@@ -856,6 +896,14 @@
             </summary>
             <value>
             True if show rename, false if not.
+            </value>
+        </member>
+        <member name="P:PDFWebEdit.Models.Config.InboxConfig.ShowReversePageOrder">
+            <summary>
+            Gets or sets a value indicating whether the reverse page order is shown.
+            </summary>
+            <value>
+            True if show reverse page order, false if not.
             </value>
         </member>
         <member name="P:PDFWebEdit.Models.Config.InboxConfig.ShowMerge">
@@ -1524,14 +1572,27 @@
             An enumerator that allows foreach to be used to process the folders in this collection.
             </returns>
         </member>
-        <member name="M:PDFWebEdit.Services.DirectoryService.GetDocumentList(PDFWebEdit.Enumerations.TargetDirectory,System.Boolean)">
+        <member name="M:PDFWebEdit.Services.DirectoryService.GetDocumentList(PDFWebEdit.Enumerations.TargetDirectory,System.String,System.Boolean)">
             <summary>
             Gets the document lists in this collection.
             </summary>
             <param name="targetDirectory">Target directory.</param>
+            <param name="subDirectory">The sub-directory.</param>
             <param name="includeSubdirectories">Include documents in subdirectories.</param>
             <returns>
             An enumerator that allows foreach to be used to process the document lists in this collection.
+            </returns>
+        </member>
+        <member name="M:PDFWebEdit.Services.DirectoryService.CreateFolder(PDFWebEdit.Enumerations.TargetDirectory,System.String,System.String)">
+            <summary>
+            Creates a folder.
+            </summary>
+            <exception cref="T:System.Exception">Thrown when an exception error condition occurs.</exception>
+            <param name="targetDirectory">Target directory.</param>
+            <param name="name">The name.</param>
+            <param name="subDirectory">The sub-directory.</param>
+            <returns>
+            The new folder.
             </returns>
         </member>
         <member name="M:PDFWebEdit.Services.DirectoryService.GetDocument(PDFWebEdit.Enumerations.TargetDirectory,System.String,System.String)">
@@ -1748,6 +1809,14 @@
             <param name="newPageOrder">The new page order.</param>
             <param name="subDirectory">Subdirectory storing document.</param>
         </member>
+        <member name="M:PDFWebEdit.Services.IPDFManipulationService.ReversePagesOrder(PDFWebEdit.Enumerations.TargetDirectory,System.String,System.String)">
+            <summary>
+            Reverse pages order.
+            </summary>
+            <param name="targetDirectory">Target directory.</param>
+            <param name="document">The document.</param>
+            <param name="subDirectory">Subdirectory storing document.</param>
+        </member>
         <member name="M:PDFWebEdit.Services.IPDFManipulationService.SplitPages(PDFWebEdit.Enumerations.TargetDirectory,System.String,System.Collections.Generic.List{System.Int32},System.String)">
             <summary>
             Splits the pages into a new document.
@@ -1889,6 +1958,16 @@
             <param name="document">The document.</param>
             <param name="newPageOrder">The new page order.</param>
             <param name="subDirectory">Subdirectory storing document.</param>
+        </member>
+        <member name="M:PDFWebEdit.Services.iTextPDFManipulationService.ReversePagesOrder(PDFWebEdit.Enumerations.TargetDirectory,System.String,System.String)">
+            <summary>
+            Reverse pages order.
+            </summary>
+            <exception cref="T:System.Exception">Thrown when an exception error condition occurs.</exception>
+            <param name="targetDirectory">Target directory.</param>
+            <param name="document">The document.</param>
+            <param name="subDirectory">Subdirectory storing document.</param>
+            <seealso cref="M:PDFWebEdit.Services.IPDFManipulationService.ReversePagesOrder(PDFWebEdit.Enumerations.TargetDirectory,System.String,System.String)"/>
         </member>
         <member name="M:PDFWebEdit.Services.iTextPDFManipulationService.SplitPages(PDFWebEdit.Enumerations.TargetDirectory,System.String,System.Collections.Generic.List{System.Int32},System.String)">
             <summary>

@@ -54,6 +54,14 @@
         public bool ShowRename { get; set; } = true;
 
         /// <summary>
+        /// Gets or sets a value indicating whether the reverse page order is shown.
+        /// </summary>
+        /// <value>
+        /// True if show reverse page order, false if not.
+        /// </value>
+        public bool ShowReversePageOrder { get; set; } = true;
+
+        /// <summary>
         /// Gets or sets a value indicating whether the merge is shown.
         /// </summary>
         /// <value>

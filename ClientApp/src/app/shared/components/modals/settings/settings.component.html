@@ -48,6 +48,13 @@
             </div>
 
             <div class="form-check form-switch mb-3">
+              <input class="form-check-input" type="checkbox" role="switch" name="show-files-on-save-as" id="show-files-on-save-as" [(ngModel)]="config.generalConfig.defaultShowFilesOnSaveAs">
+              <label class="form-check-label" for="show-files-on-save-as">{{ 'settings.general.defaultShowFilesOnSaveAs' | translate }}</label>
+            </div>
+
+            <hr />
+
+            <div class="form-check form-switch mb-3">
               <input class="form-check-input" type="checkbox" role="switch" name="enable-tour" id="enable-tour" [(ngModel)]="config.generalConfig.enableTour">
               <label class="form-check-label" for="enable-tour">{{ 'settings.general.enableTour' | translate }}</label>
             </div>
@@ -225,6 +232,11 @@
                   <div class="form-check form-switch mb-3">
                     <input class="form-check-input" type="checkbox" role="switch" name="show-rotate-anti-clockwise" id="show-rotate-anti-clockwise" [(ngModel)]="config.inboxConfig.showRotateAntiClockwise">
                     <label class="form-check-label" for="show-rotate-anti-clockwise">{{ 'settings.directories.showRotateAntiClockwise' | translate }}</label>
+                  </div>
+
+                  <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" role="switch" name="show-reverse-page-order" id="show-reverse-page-order" [(ngModel)]="config.inboxConfig.showReversePageOrder">
+                    <label class="form-check-label" for="show-reverse-page-order">{{ 'settings.directories.showReversePageOrder' | translate }}</label>
                   </div>
 
                   <div class="form-check form-switch mb-3">

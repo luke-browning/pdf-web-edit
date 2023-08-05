@@ -93,13 +93,15 @@ namespace PDFWebEdit.Services
         /// Gets the document lists in this collection.
         /// </summary>
         /// <param name="targetDirectory">Target directory.</param>
+        /// <param name="subDirectory">The sub-directory.</param>
         /// <param name="includeSubdirectories">Include documents in subdirectories.</param>
         /// <returns>
         /// An enumerator that allows foreach to be used to process the document lists in this collection.
         /// </returns>
-        public IEnumerable<Document> GetDocumentList(TargetDirectory targetDirectory, bool includeSubdirectories = false)
+        public IEnumerable<Document> GetDocumentList(TargetDirectory targetDirectory, string subDirectory = null, bool includeSubdirectories = false)
         {
             string directory = GetTargetDirectoryPath(targetDirectory);
+            directory = Path.Join(directory, subDirectory ?? string.Empty);
 
             // Search options
             var searchOption = SearchOption.TopDirectoryOnly;
@@ -130,6 +132,39 @@ namespace PDFWebEdit.Services
                 });
 
             return documents;
+        }
+
+        /// <summary>
+        /// Creates a folder.
+        /// </summary>
+        /// <exception cref="Exception">Thrown when an exception error condition occurs.</exception>
+        /// <param name="targetDirectory">Target directory.</param>
+        /// <param name="name">The name.</param>
+        /// <param name="subDirectory">The sub-directory.</param>
+        /// <returns>
+        /// The new folder.
+        /// </returns>
+        public Folder CreateFolder(TargetDirectory targetDirectory, string name, string subDirectory = null)
+        {
+            string directory = GetTargetDirectoryPath(targetDirectory);
+            directory = Path.Join(directory, subDirectory ?? string.Empty);
+            directory = Path.Combine(directory, name);
+
+            // Check if the directory already exists
+            if (Directory.Exists(directory))
+            {
+                throw new Exception($"A folder with the name '{name}' already exists.");
+            }
+
+            // Create the new directory
+            Directory.CreateDirectory(directory);
+
+            // Return the new folder details
+            return new Folder
+            {
+                Name = name,
+                SubFolders = new List<Folder>()
+            };
         }
 
         /// <summary>

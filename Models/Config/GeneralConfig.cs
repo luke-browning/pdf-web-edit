@@ -72,6 +72,14 @@ namespace PDFWebEdit.Models.Config
         public string DefaultColourMode { get; set; } = "auto";
 
         /// <summary>
+        /// Gets or sets a value indicating whether the default show files on save as.
+        /// </summary>
+        /// <value>
+        /// True if default show files on save as, false if not.
+        /// </value>
+        public bool DefaultShowFilesOnSaveAs { get; set; } = true;
+
+        /// <summary>
         /// Gets or sets a value indicating whether the debug mode.
         /// </summary>
         /// <value>
