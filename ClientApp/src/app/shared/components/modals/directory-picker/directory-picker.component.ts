@@ -1,6 +1,9 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { TranslateService } from '@ngx-translate/core';
 import { PDFWebEditAPI } from '../../../../../api/PDFWebEditAPI';
+import { SessionService } from '../../../../services/session/session.service';
+import { UiService } from '../../../../services/ui/ui.service';
 import { PickerMode } from '../../../models/picker-mode';
 
 @Component({
@@ -14,9 +17,13 @@ export class DirectoryPickerComponent implements OnInit {
   @Input() name: string | undefined;
   @Input() showNameEditor!: boolean;
 
+  targetDirectory = PDFWebEditAPI.TargetDirectory.Outbox;
+
   parentFolder?: PDFWebEditAPI.Folder;
   currentPath: PDFWebEditAPI.Folder[] = [];
   currentDirectoryFolders: PDFWebEditAPI.Folder[] = [];
+
+  folderFiles: PDFWebEditAPI.Document[] = [];
 
   pickerModes = PickerMode;
   pickerMode: PickerMode = PickerMode.Outbox;
@@ -24,16 +31,23 @@ export class DirectoryPickerComponent implements OnInit {
   favourites: string[] = [];
   history: string[] = [];
 
-  constructor(private activeModal: NgbActiveModal) { }
+  showFiles = false;
+
+  constructor(private activeModal: NgbActiveModal, private api: PDFWebEditAPI.DocumentClient, private uiService: UiService,
+    private sessionService: SessionService, private modalService: NgbModal, private translateService: TranslateService) { }
 
   ngOnInit(): void {
 
     this.currentPath = [];
     this.currentDirectoryFolders = this.folders;
+    this.getFolderFiles();
 
     // Load history and favourites
     this.favourites = (localStorage.getItem('save_favourites') || '').split(',').filter(n => n);
     this.history = (localStorage.getItem('save_history') || '').split(',').filter(n => n);
+
+    // Show files
+    this.sessionService.showFilesOnSaveAs.subscribe(x => this.showFiles = x);
   }
 
   up() {
@@ -44,12 +58,49 @@ export class DirectoryPickerComponent implements OnInit {
     } else {
       this.currentDirectoryFolders = this.currentPath[this.currentPath.length - 1].subFolders;
     }
+
+    this.getFolderFiles();
   }
 
   setFolder(folder: PDFWebEditAPI.Folder) {
     this.parentFolder = folder;
     this.currentPath.push(folder);
     this.currentDirectoryFolders = folder.subFolders;
+
+    this.getFolderFiles();
+  }
+
+  getFolderFiles() {
+
+    var currentDirectory = this.getCurrentSubDirectory();
+
+    this.api.getDirectoryDocuments(this.targetDirectory, currentDirectory).subscribe(result => {
+      this.folderFiles = result!;
+    });
+  }
+
+  getCurrentSubDirectory() {
+    return this.currentPath.map(x => x.name).join('/');
+  }
+
+  createDirectory() {
+
+    this.uiService.showInputBox(this.translateService.instant('directoryPicker.createDirectory.message'), this.translateService.instant('directoryPicker.createDirectory.title'),
+      this.translateService.instant('directoryPicker.createDirectory.buttons.create'), this.translateService.instant('directoryPicker.createDirectory.buttons.close'),
+      false).then(result => {
+        if (result) {
+
+          var currentDirectory = this.getCurrentSubDirectory();
+
+          this.api.createDirectory(this.targetDirectory, result, currentDirectory).subscribe(folder => {
+            this.currentDirectoryFolders.push(folder!);
+          }, error => this.uiService.showMessageBox(error.detail));
+        }
+      }, () => {
+
+        // Dismissed
+        return;
+      });
   }
 
   setFolderByPath(path: string) {
@@ -93,6 +144,9 @@ export class DirectoryPickerComponent implements OnInit {
 
     // Switch to the outbox view listing directories
     this.setPickerMode(PickerMode.Outbox);
+
+    // Load the files
+    this.getFolderFiles();
   }
 
   setPickerMode(mode: PickerMode) {
@@ -239,6 +293,10 @@ export class DirectoryPickerComponent implements OnInit {
 
       return a > b ? 1 : a === b ? 0 : -1;
     });
+  }
+
+  updateShowFilesDefault($event: any) {
+    this.sessionService.setShowFilesOnSaveAs(this.showFiles);
   }
 
   ok() {

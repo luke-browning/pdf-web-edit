@@ -40,6 +40,10 @@ export class SessionService {
   private language$ = new BehaviorSubject<string>('');
   language = this.language$.asObservable();
 
+  // Show Files on Save As
+  private showFilesOnSaveAs$ = new BehaviorSubject<boolean>(false);
+  showFilesOnSaveAs = this.showFilesOnSaveAs$.asObservable();
+
   constructor(private ref: ApplicationRef, private configService: ConfigService, private translate: TranslateService) {
 
     this.readBrowserColourMode();
@@ -75,6 +79,12 @@ export class SessionService {
       let localStorageLanguage = localStorage.getItem('language');
 
       this.setLanguage(localStorageLanguage || defaultLanguage || 'en');
+
+      // Work out if we should show files to start with
+      let defaultShowFilesOnSaveAs = config?.generalConfig.defaultShowFilesOnSaveAs;
+      let localStorageShowFilesOnSaveAs = localStorage.getItem('show_files') == 'true';
+
+      this.setShowFilesOnSaveAs(localStorageShowFilesOnSaveAs || defaultShowFilesOnSaveAs || false);
     });
   }
 
@@ -133,6 +143,13 @@ export class SessionService {
     // Save the currently selected sort direction
     this.sortDirection$.next(sortDirection);
     localStorage.setItem('sort_direction', sortDirection);
+  }
+
+  setShowFilesOnSaveAs(showFilesOnSaveAs: boolean) {
+
+    // Save the currently selected sort direction
+    this.showFilesOnSaveAs$.next(showFilesOnSaveAs);
+    localStorage.setItem('show_files', showFilesOnSaveAs ? 'true' : 'false');
   }
 
   setSearch(search: string) {

@@ -13,6 +13,7 @@ import { MessageBoxComponent } from '../../modals/message-box/message-box.compon
 import { MaxPreviewSizeChangedEvent, PageOrderChangedEvent, SelectionChangedEvent } from '../pages/pages.component';
 import { TranslateService } from '@ngx-translate/core';
 import { NgScrollbar, NgScrollbarState } from 'ngx-scrollbar';
+import { UiService } from '../../../../services/ui/ui.service';
 
 @Component({
   selector: 'document',
@@ -59,7 +60,7 @@ export class DocumentComponent implements OnInit, AfterViewInit {
   toolbarScrollable = false;
   documentScrollable = false;
 
-  constructor(private api: PDFWebEditAPI.DocumentClient, private sessionService: SessionService,
+  constructor(private api: PDFWebEditAPI.DocumentClient, private sessionService: SessionService, private uiService: UiService,
     private modalService: NgbModal, private translateService: TranslateService, private cdRef: ChangeDetectorRef) { }
 
   ngOnInit(): void {
@@ -119,9 +120,16 @@ export class DocumentComponent implements OnInit, AfterViewInit {
       enabled: this.document.hasSelectedPages,
       function: this.rotateAntiClockwise.bind(this)
     }, {
+      label: "documents.buttons.reversePageOrder",
+      icon: "bi bi-arrow-left-right",
+      separator: false,
+      if: this.config.inboxConfig.showReversePageOrder,
+      enabled: new BehaviorSubject<boolean>(true),
+      function: this.reverseOrder.bind(this)
+    }, {
       label: "documents.buttons.remove",
       icon: "bi bi-x-lg",
-      separator: false,
+      separator: true,
       if: this.config.inboxConfig.showRemove,
       enabled: this.document.hasSelectedPages,
       function: this.remove.bind(this)
@@ -137,7 +145,7 @@ export class DocumentComponent implements OnInit, AfterViewInit {
       icon: "bi bi-union",
       separator: true,
       if: this.config.inboxConfig.showMerge,
-      enabled: this.document.hasSelectedPages,
+      enabled: new BehaviorSubject<boolean>(true),
       function: this.merge.bind(this)
     }, {
       label: "documents.buttons.rename",
@@ -375,11 +383,11 @@ export class DocumentComponent implements OnInit, AfterViewInit {
 
       }, error => {
         this.loadDocumentPages();
-        this.showMessageBox(error);
+        this.uiService.showMessageBox(error);
       });
 
     } else {
-      this.showMessageBox(this.translateService.instant('errors.noPagesSelectedForRotate'));
+      this.uiService.showMessageBox(this.translateService.instant('errors.noPagesSelectedForRotate'));
     }
   }
 
@@ -398,11 +406,11 @@ export class DocumentComponent implements OnInit, AfterViewInit {
 
       }, error => {
         this.loadDocumentPages();
-        this.showMessageBox(error);
+        this.uiService.showMessageBox(error);
       });
 
     } else {
-      this.showMessageBox(this.translateService.instant('errors.noPagesSelectedForRotate'));
+      this.uiService.showMessageBox(this.translateService.instant('errors.noPagesSelectedForRotate'));
     }
   }
 
@@ -422,12 +430,28 @@ export class DocumentComponent implements OnInit, AfterViewInit {
 
       }, error => {
         this.loadDocumentPages();
-        this.showMessageBox(error);
+        this.uiService.showMessageBox(error);
       });
 
     } else {
-      this.showMessageBox(this.translateService.instant('errors.noPagesSelectedForRemove'));
+      this.uiService.showMessageBox(this.translateService.instant('errors.noPagesSelectedForRemove'));
     }
+  }
+
+  reverseOrder() {
+
+    let allPageNumbers = this.getAllPageNumbers();
+    this.setPagesUnloaded(allPageNumbers);
+
+    this.api.reversePagesOrder(this.directory, this.document.name, this.document.directory).subscribe(() => {
+
+      this.loadDocumentPages();
+      this.setDocumentModifiedState(true);
+
+    }, error => {
+      this.loadDocumentPages();
+      this.uiService.showMessageBox(error);
+    });
   }
 
   reorder($event: PageOrderChangedEvent) {
@@ -441,7 +465,7 @@ export class DocumentComponent implements OnInit, AfterViewInit {
 
     }, error => {
       this.loadDocumentPages();
-      this.showMessageBox(error);
+      this.uiService.showMessageBox(error);
     });
   }
 
@@ -462,12 +486,12 @@ export class DocumentComponent implements OnInit, AfterViewInit {
         this.onNewDocument.emit(newDocument);
 
       } else {
-        this.showMessageBox(this.translateService.instant('errors.splitUnableToLoadNewDocument'));
+        this.uiService.showMessageBox(this.translateService.instant('errors.splitUnableToLoadNewDocument'));
       }
 
     }, error => {
       this.loadDocumentPages();
-      this.showMessageBox(error);
+      this.uiService.showMessageBox(error);
     });
   }
 
@@ -482,10 +506,10 @@ export class DocumentComponent implements OnInit, AfterViewInit {
         if (updatedDocument != null) {
           this.onReplaceDocument.emit({ originalDoc: this.document, newDocument: updatedDocument });
         } else {
-          this.showMessageBox(this.translateService.instant('errors.mergeUnableToLoadUpdatedDocument'));
+          this.uiService.showMessageBox(this.translateService.instant('errors.mergeUnableToLoadUpdatedDocument'));
         }
 
-      }, error => this.showMessageBox(error));
+      }, error => this.uiService.showMessageBox(error));
     }, () => {
 
       // Dismissed
@@ -501,22 +525,22 @@ export class DocumentComponent implements OnInit, AfterViewInit {
         if (updatedDocument != null) {
           this.onReplaceDocument.emit({ originalDoc: this.document, newDocument: updatedDocument });
         } else {
-          this.showMessageBox(this.translateService.instant('errors.fileDoesNotExist'));
+          this.uiService.showMessageBox(this.translateService.instant('errors.fileDoesNotExist'));
         }
       });
-    }, error => this.showMessageBox(error));
+    }, error => this.uiService.showMessageBox(error));
   }
 
   archive() {
     this.api.archive(this.directory, this.document.name, this.document.directory).subscribe(() => {
       this.onRemoveDocument.emit(this.document.name);
-    }, error => this.showMessageBox(error));
+    }, error => this.uiService.showMessageBox(error));
   }
 
   permenentlyDeleteFromArchive() {
     this.api.deleteFromArchive(this.document.name, this.document.directory).subscribe(() => {
       this.onRemoveDocument.emit(this.document.name);
-    }, error => this.showMessageBox(error));
+    }, error => this.uiService.showMessageBox(error));
   }
 
   download() {
@@ -545,7 +569,7 @@ export class DocumentComponent implements OnInit, AfterViewInit {
 
       this.api.saveAs(this.document.name, this.document.directory, path, name).subscribe(() => {
         this.onRemoveDocument.emit(this.document.name);
-      }, error => this.showMessageBox(error));
+      }, error => this.uiService.showMessageBox(error));
     }, () => {
 
       // Dismissed
@@ -556,18 +580,18 @@ export class DocumentComponent implements OnInit, AfterViewInit {
   save() {
     this.api.save(this.document.name, this.document.directory).subscribe(() => {
       this.onRemoveDocument.emit(this.document.name);
-    }, error => this.showMessageBox(error));
+    }, error => this.uiService.showMessageBox(error));
   }
 
   restore() {
     this.api.restore(this.directory, this.document.name, this.document.directory).subscribe(() => {
       this.onRemoveDocument.emit(this.document.name);
-    }, error => this.showMessageBox(error));
+    }, error => this.uiService.showMessageBox(error));
   }
 
   rename() {
 
-    this.showInputBox(this.translateService.instant('renameDocument.message'),
+    this.uiService.showInputBox(this.translateService.instant('renameDocument.message'),
       this.translateService.instant('renameDocument.title'),
       this.translateService.instant('renameDocument.buttons.rename'),
       this.translateService.instant('renameDocument.buttons.close'),
@@ -580,10 +604,10 @@ export class DocumentComponent implements OnInit, AfterViewInit {
             if (updatedDocument != null) {
               this.onReplaceDocument.emit({ originalDoc: this.document, newDocument: updatedDocument });
             } else {
-              this.showMessageBox(this.translateService.instant('errors.fileDoesNotExist'));
+              this.uiService.showMessageBox(this.translateService.instant('errors.fileDoesNotExist'));
             }
           });
-        }, error => this.showMessageBox(error.detail));
+        }, error => this.uiService.showMessageBox(error.detail));
       }
     }, () => {
 
@@ -594,7 +618,7 @@ export class DocumentComponent implements OnInit, AfterViewInit {
 
   unlock() {
 
-    this.showInputBox(this.translateService.instant('unlockDocument.message'),
+    this.uiService.showInputBox(this.translateService.instant('unlockDocument.message'),
       this.translateService.instant('unlockDocument.title'),
       this.translateService.instant('unlockDocument.buttons.unlock'),
       this.translateService.instant('unlockDocument.buttons.close'), true).then(result => {
@@ -606,10 +630,10 @@ export class DocumentComponent implements OnInit, AfterViewInit {
             if (updatedDocument != null) {
               this.onReplaceDocument.emit({ originalDoc: this.document, newDocument: updatedDocument });
             } else {
-              this.showMessageBox(this.translateService.instant('errors.fileDoesNotExist'));
+              this.uiService.showMessageBox(this.translateService.instant('errors.fileDoesNotExist'));
             }
           });
-        }, error => this.showMessageBox(error.detail));
+        }, error => this.uiService.showMessageBox(error.detail));
       }
     }, () => {
 
@@ -652,7 +676,7 @@ export class DocumentComponent implements OnInit, AfterViewInit {
 
                 this.document.pages.push(page);
               }
-            }, error => this.showMessageBox(error));
+            }, error => this.uiService.showMessageBox(error));
 
           } else {
 
@@ -687,6 +711,16 @@ export class DocumentComponent implements OnInit, AfterViewInit {
     return selectedPagesNumbers;
   }
 
+  getAllPageNumbers(): number[] {
+    let allPagesNumbers: number[] = [];
+
+    this.document.pages.forEach(page => {
+      allPagesNumbers.push(page.number);
+    });
+
+    return allPagesNumbers;
+  }
+
   setHasSelectedPages() {
 
     let hasSelectedPages = false;
@@ -711,44 +745,6 @@ export class DocumentComponent implements OnInit, AfterViewInit {
 
   setDocumentModifiedState(state: boolean) {
     this.document.canRevertChanges.next(state);
-  }
-
-  showMessageBox(message: any, title = '') {
-
-    let error: string | undefined | null;
-
-    if (!title) {
-      title = this.translateService.instant('errors.anErrorOccurred');
-    }
-
-    if (typeof message === 'string') {
-      error = message;
-    }
-
-    if (typeof message === 'object') {
-
-      if (message instanceof PDFWebEditAPI.ProblemDetails) {
-        error = message.detail;
-      } else {
-        error = this.translateService.instant('errors.unhandledException');
-      }
-    }
-
-    const modalRef = this.modalService.open(MessageBoxComponent);
-    modalRef.componentInstance.title = title;
-    modalRef.componentInstance.message = error;
-  }
-
-  showInputBox(message: string, title: string, okButton: string, closeButton: string, password: boolean, defaultValue?: string): Promise<string> {
-    const modalRef = this.modalService.open(InputBoxComponent);
-    modalRef.componentInstance.title = title;
-    modalRef.componentInstance.message = message;
-    modalRef.componentInstance.okButton = okButton;
-    modalRef.componentInstance.closeButton = closeButton;
-    modalRef.componentInstance.password = password;
-    modalRef.componentInstance.value = defaultValue;
-
-    return modalRef.result;
   }
 }
 

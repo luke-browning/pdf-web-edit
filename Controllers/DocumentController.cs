@@ -71,6 +71,57 @@ namespace PDFWebEdit.Controllers
         }
 
         /// <summary>
+        /// Gets directory documents.
+        /// </summary>
+        /// <param name="targetDirectory">The target directory.</param>
+        /// <param name="subDirectory">The sub directory containing the document.</param>
+        /// <returns>
+        /// The directory documents.
+        /// </returns>
+        [HttpGet]
+        [Route("directories/documents")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<Document>))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
+        [ProducesErrorResponseType(typeof(ObjectResult))]
+        public IActionResult GetDirectoryDocuments(TargetDirectory targetDirectory, string? subDirectory = null)
+        {
+            try
+            {
+                return Ok(_directoryService.GetDocumentList(targetDirectory, subDirectory: subDirectory, includeSubdirectories: false));
+            }
+            catch (Exception x)
+            {
+                return ExceptionHelpers.GetErrorObjectResult("Directories", HttpContext, x);
+            }
+        }
+
+        /// <summary>
+        /// Creates a directory.
+        /// </summary>
+        /// <param name="targetDirectory">The target directory.</param>
+        /// <param name="name">The name.</param>
+        /// <param name="subDirectory">The sub directory containing the document.</param>
+        /// <returns>
+        /// The new directory.
+        /// </returns>
+        [HttpPost]
+        [Route("directories")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Folder))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
+        [ProducesErrorResponseType(typeof(ObjectResult))]
+        public IActionResult CreateDirectory(TargetDirectory targetDirectory, string name, string? subDirectory = null)
+        {
+            try
+            {
+                return Ok(_directoryService.CreateFolder(targetDirectory, name, subDirectory: subDirectory));
+            }
+            catch (Exception x)
+            {
+                return ExceptionHelpers.GetErrorObjectResult("CreateDirectory", HttpContext, x);
+            }
+        }
+
+        /// <summary>
         /// Gets the documents in the selected folder.
         /// </summary>
         /// <param name="targetDirectory">The target directory.</param>
@@ -86,7 +137,7 @@ namespace PDFWebEdit.Controllers
         {
             try
             {
-                return Ok(_directoryService.GetDocumentList(targetDirectory, true));
+                return Ok(_directoryService.GetDocumentList(targetDirectory, includeSubdirectories: true));
             }
             catch (Exception x)
             {
@@ -444,6 +495,45 @@ namespace PDFWebEdit.Controllers
                 catch (Exception x)
                 {
                     return ExceptionHelpers.GetErrorObjectResult("Reorder", HttpContext, x);
+                }
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
+        /// <summary>
+        /// Reverse pages order.
+        /// </summary>
+        /// <param name="targetDirectory">The target directory.</param>
+        /// <param name="document">The document.</param>
+        /// <param name="subDirectory">The sub directory containing the document.</param>
+        /// <returns>
+        /// An IActionResult.
+        /// </returns>
+        [HttpPost]
+        [Route("reverse-pages-order/{targetDirectory}/{document}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
+        [ProducesErrorResponseType(typeof(ObjectResult))]
+        public IActionResult ReversePagesOrder(TargetDirectory targetDirectory, string document, string? subDirectory = null)
+        {
+            // Get the path to the document
+            var path = _directoryService.GetDocumentPath(targetDirectory, subDirectory, document);
+
+            if (path != null)
+            {
+                try
+                {
+                    _pdfManipulationService.ReversePagesOrder(targetDirectory, document, subDirectory);
+
+                    return Ok();
+                }
+                catch (Exception x)
+                {
+                    return ExceptionHelpers.GetErrorObjectResult("Reverse", HttpContext, x);
                 }
             }
             else

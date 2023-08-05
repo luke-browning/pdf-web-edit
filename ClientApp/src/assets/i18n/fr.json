@@ -24,6 +24,7 @@
       "deselectAll": "Désélectionner tout",
       "rotateClockwise": "Rotation horaire",
       "rotateAntiClockwise": "Rotation anti-horaire",
+      "reversePageOrder": "Ordre inverse des pages",
       "remove": "Supprimer",
       "split": "Diviser",
       "merge": "Fusionner",
@@ -64,6 +65,7 @@
       "defaultSortColumn": "Colonne de tri par défaut",
       "defaultSortDirection": "Direction de tri par défaut",
       "defaultColourMode": "Mode couleur par défaut",
+      "defaultShowFilesOnSaveAs": "Afficher les fichiers par défaut lors de l'enregistrement sous",
       "enableTour": "Activer la visite guidée",
       "showIcons": "Afficher les icônes",
       "showLabels": "Afficher les étiquettes"
@@ -105,6 +107,7 @@
       "showRemove": "Afficher Supprimer",
       "showRotateClockwise": "Afficher Rotation horaire",
       "showRotateAntiClockwise": "Afficher Rotation anti-horaire",
+      "showReversePageOrder": "Afficher l'ordre inverse des pages",
       "showSelectAll": "Afficher Sélectionner tout",
       "showUnselect": "Afficher Désélectionner",
       "batchShowArchive": "Afficher l'archive (lot)",
@@ -122,11 +125,23 @@
     "outbox": "Boîte d'envoi",
     "favourites": "Favoris",
     "history": "Historique",
+    "showFiles": "Afficher les fichiers",
     "up": "..",
     "noFolders": "Aucun dossier à afficher",
     "addToFavourites": "Ajouter aux favoris",
     "removeFromFavourites": "Retirer des favoris",
+    "documentName": "Nom du document",
+    "copyName": "Utiliser comme nom de document",
+    "createDirectory": {
+      "title": "Nouveau dossier",
+      "message": "Entrez le nom du nouveau dossier.",
+      "buttons": {
+        "create": "Créer",
+        "close": "Fermer"
+      }
+    },
     "buttons": {
+      "addDirectory": "Nouveau dossier",
       "save": "Enregistrer",
       "close": "Fermer"
     }

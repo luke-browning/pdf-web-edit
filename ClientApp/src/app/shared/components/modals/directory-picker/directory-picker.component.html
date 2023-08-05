@@ -34,8 +34,15 @@
           </button>
 
           <button type="button" class="list-group-item list-group-item-action" (click)="setPickerMode(pickerModes.History)" [class.active]="pickerMode == pickerModes.History">
-            <i class="bi bi-clock-history"></i> {{ 'directoryPicker.history' | translate }}
+            <i class="bi bi-clock-history"></i>{{ 'directoryPicker.history' | translate }}
           </button>
+        </div>
+
+        <div class="list-group location-options-list mt-4">
+          <li class="list-group-item">
+            <input class="form-check-input" type="checkbox" name="show-files" id="show-files" [(ngModel)]="showFiles" (ngModelChange)="updateShowFilesDefault($event)" [ngModelOptions]="{standalone: true}">
+            <label class="form-check-label" for="show-files">{{ 'directoryPicker.showFiles' | translate }}</label>
+          </li>
         </div>
       </div>
 
@@ -48,7 +55,6 @@
                   (click)="up()">
             {{ 'directoryPicker.up' | translate }}
           </button>
-
 
           <div class="list-group-item sub-list" *ngFor="let folder of sortBy(currentDirectoryFolders, 'name')">
             <div class="list-group list-group-horizontal list-group-flush">
@@ -72,12 +78,32 @@
             </div>
           </div>
 
+          <ng-container *ngIf="showFiles">
+            <div class="list-group-item sub-list" *ngFor="let file of sortBy(folderFiles, 'name')">
+              <div class="list-group list-group-horizontal list-group-flush">
+                <button type="button" class="list-group-item list-group-item-action" disabled>
+                  <i class="bi bi-filetype-pdf path-icon"></i> {{ file.name }}
+                </button>
+
+                <button type="button" class="list-group-item list-group-item-action favourite-button"
+                        (click)="name = file.name"
+                        placement="bottom" ngbTooltip="{{ 'directoryPicker.copyName' | translate }}" container="body">
+                  <i class="bi bi-input-cursor-text"></i>
+                </button>
+              </div>
+            </div>
+          </ng-container>
+
           <button type="button" class="list-group-item list-group-item-action"
-                  *ngIf="currentDirectoryFolders.length == 0"
+                  *ngIf="currentDirectoryFolders.length == 0 && folderFiles.length == 0"
                   disabled>
             {{ 'directoryPicker.noFolders' | translate }}
           </button>
         </div>
+
+        <button type="button" class="btn btn-secondary float-end after-list-button" (click)="createDirectory()" *ngIf="pickerMode == pickerModes.Outbox">
+          {{ 'directoryPicker.buttons.addDirectory' | translate }}
+        </button>
 
         <!-- Favourites -->
         <div class="list-group" *ngIf="pickerMode == pickerModes.Favourites">
@@ -132,8 +158,8 @@
     <div class="row name-container" *ngIf="showNameEditor">
       <div class="col">
         <div class="input-group">
-          <span class="input-group-text" id="name-addon">Document Name</span>
-          <input type="text" class="form-control" placeholder="Document Name" aria-label="Document Name" aria-describedby="name-addon" [(ngModel)]="name" [ngModelOptions]="{standalone: true}">
+          <span class="input-group-text" id="name-addon">{{ 'directoryPicker.documentName' | translate }}</span>
+          <input type="text" class="form-control" placeholder="{{ 'directoryPicker.documentName' | translate }}" aria-label="Document Name" aria-describedby="name-addon" [(ngModel)]="name" [ngModelOptions]="{standalone: true}">
         </div>
       </div>
     </div>

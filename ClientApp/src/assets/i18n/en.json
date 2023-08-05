@@ -24,6 +24,7 @@
       "deselectAll": "Deselect All",
       "rotateClockwise": "Rotate Clockwise",
       "rotateAntiClockwise": "Rotate Anti-Clockwise",
+      "reversePageOrder": "Reverse Page Order",
       "remove": "Remove",
       "split": "Split",
       "merge": "Merge",
@@ -64,6 +65,7 @@
       "defaultSortColumn": "Default Sort Column",
       "defaultSortDirection": "Default Sort Direction",
       "defaultColourMode": "Default Colour Mode",
+      "defaultShowFilesOnSaveAs": "Default Show Files on Save As",
       "enableTour": "Enable Tour",
       "showIcons": "Show Icons",
       "showLabels": "Show Labels"
@@ -105,6 +107,7 @@
       "showRemove": "Show Remove",
       "showRotateClockwise": "Show Rotate Clockwise",
       "showRotateAntiClockwise": "Show Rotate Anti-Clockwise",
+      "showReversePageOrder": "Show Reverse Page Order",
       "showSelectAll": "Show Select All",
       "showUnselect": "Show Unselect",
       "batchShowArchive": "Show Archive (batch)",
@@ -122,11 +125,23 @@
     "outbox": "Outbox",
     "favourites": "Favourites",
     "history": "History",
+    "showFiles": "Show Files",
     "up": "..",
     "noFolders": "No folders to show",
     "addToFavourites": "Add to favourites",
     "removeFromFavourites": "Remove from favourites",
+    "documentName": "Document Name",
+    "copyName": "Use as Document Name",
+    "createDirectory": {
+      "title": "New Folder",
+      "message": "Enter the name of the new folder.",
+      "buttons": {
+        "create": "Create",
+        "close": "Close"
+      }
+    },
     "buttons": {
+      "addDirectory": "New Folder",
       "save": "Save",
       "close": "Close"
     }
