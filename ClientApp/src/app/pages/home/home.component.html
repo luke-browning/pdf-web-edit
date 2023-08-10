@@ -4,7 +4,6 @@
           [config]="config"
           [size]="size"
           [directory]="directory"
-          [directoryStructure]="directoryStructure"
           (onNewDocument)="newDocumentEvent($event)"
           (onReplaceDocument)="replaceDocEvent($event)"
           (onRemoveDocument)="removeDocEvent($event)"></document>
@@ -24,6 +23,5 @@
 <footer *ngIf="alwaysShowFooter || hasDocumentsSelected()"
         [documents]="documents"
         [config]="config"
-        [directoryStructure]="directoryStructure"
         [directory]="directory"
         (onDocumentChanges)="batchDocumentChanges($event)"></footer>

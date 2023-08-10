@@ -13,10 +13,10 @@ import { PickerMode } from '../../../models/picker-mode';
 })
 export class DirectoryPickerComponent implements OnInit {
 
-  @Input() folders: PDFWebEditAPI.Folder[] = [];
   @Input() name: string | undefined;
   @Input() showNameEditor!: boolean;
 
+  rootFolder!: PDFWebEditAPI.Folder;
   targetDirectory = PDFWebEditAPI.TargetDirectory.Outbox;
 
   parentFolder?: PDFWebEditAPI.Folder;
@@ -38,45 +38,40 @@ export class DirectoryPickerComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.currentPath = [];
-    this.currentDirectoryFolders = this.folders;
-    this.getFolderFiles();
+    // Load directories
+    this.api.getDirectories().subscribe(result => {
+      this.rootFolder = result!;
 
-    // Load history and favourites
-    this.favourites = (localStorage.getItem('save_favourites') || '').split(',').filter(n => n);
-    this.history = (localStorage.getItem('save_history') || '').split(',').filter(n => n);
+      this.currentPath = [];
+      this.currentDirectoryFolders = this.rootFolder.subFolders;
+      this.folderFiles = this.rootFolder.documents;
 
-    // Show files
-    this.sessionService.showFilesOnSaveAs.subscribe(x => this.showFiles = x);
+      // Load history and favourites
+      this.favourites = (localStorage.getItem('save_favourites') || '').split(',').filter(n => n);
+      this.history = (localStorage.getItem('save_history') || '').split(',').filter(n => n);
+
+      // Show files
+      this.sessionService.showFilesOnSaveAs.subscribe(x => this.showFiles = x);
+    });
   }
 
   up() {
     this.currentPath.pop();
 
     if (this.currentPath.length == 0) {
-      this.currentDirectoryFolders = this.folders;
+      this.currentDirectoryFolders = this.rootFolder.subFolders;
+      this.folderFiles = this.rootFolder.documents;
     } else {
       this.currentDirectoryFolders = this.currentPath[this.currentPath.length - 1].subFolders;
+      this.folderFiles = this.currentPath[this.currentPath.length - 1].documents;
     }
-
-    this.getFolderFiles();
   }
 
   setFolder(folder: PDFWebEditAPI.Folder) {
     this.parentFolder = folder;
     this.currentPath.push(folder);
     this.currentDirectoryFolders = folder.subFolders;
-
-    this.getFolderFiles();
-  }
-
-  getFolderFiles() {
-
-    var currentDirectory = this.getCurrentSubDirectory();
-
-    this.api.getDirectoryDocuments(this.targetDirectory, currentDirectory).subscribe(result => {
-      this.folderFiles = result!;
-    });
+    this.folderFiles = folder.documents;
   }
 
   getCurrentSubDirectory() {
@@ -112,7 +107,8 @@ export class DirectoryPickerComponent implements OnInit {
     this.currentPath = [];
 
     // Get folders in root directory
-    let currentFolder = this.folders;
+    let currentFolder = this.rootFolder.subFolders;
+    let currentDocuments = this.rootFolder.documents;
 
     // Go through each segment and find the corresponding folder in the tree
     for (var i = 0; i < segments.length; i++) {
@@ -130,23 +126,22 @@ export class DirectoryPickerComponent implements OnInit {
           this.parentFolder = folder;
           this.currentPath.push(folder);
 
-          // And set the next set of folders to be this folders
-          // sub folders
+          // And set the next set of folders and documents to be this folders
+          // sub folders and documents
           currentFolder = folder.subFolders;
+          currentDocuments = folder.documents;
 
           break;
         }
       }
     }
 
-    // The last subfolders are the current directory
+    // The last subfolders and documents are the current directory
     this.currentDirectoryFolders = currentFolder;
+    this.folderFiles = currentDocuments;
 
     // Switch to the outbox view listing directories
     this.setPickerMode(PickerMode.Outbox);
-
-    // Load the files
-    this.getFolderFiles();
   }
 
   setPickerMode(mode: PickerMode) {

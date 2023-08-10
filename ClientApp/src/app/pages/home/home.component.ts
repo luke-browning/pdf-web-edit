@@ -27,7 +27,7 @@ export class HomeComponent {
   // Options
   directory = PDFWebEditAPI.TargetDirectory.Inbox;
   targetDirectories = PDFWebEditAPI.TargetDirectory;
-  directoryStructure: PDFWebEditAPI.Folder[] = [];
+  directoryStructure!: PDFWebEditAPI.Folder;
 
   size = new BehaviorSubject<string>('medium');
 
@@ -181,13 +181,6 @@ export class HomeComponent {
       });
 
     }, error => console.error(error));
-
-    // List directories
-    this.api.getDirectories().subscribe((result: PDFWebEditAPI.Folder[] | null) => {
-      if (result != null) {
-        this.directoryStructure = result;
-      }
-    });
   }
 
   updatedFilteredDocuments() {

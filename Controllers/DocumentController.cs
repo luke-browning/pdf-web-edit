@@ -55,7 +55,7 @@ namespace PDFWebEdit.Controllers
         /// </returns>
         [HttpGet]
         [Route("directories")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<Folder>))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Folder))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
         [ProducesErrorResponseType(typeof(ObjectResult))]
         public IActionResult GetDirectories()
@@ -63,31 +63,6 @@ namespace PDFWebEdit.Controllers
             try
             {
                 return Ok(_directoryService.GetFolders());
-            }
-            catch (Exception x)
-            {
-                return ExceptionHelpers.GetErrorObjectResult("Directories", HttpContext, x);
-            }
-        }
-
-        /// <summary>
-        /// Gets directory documents.
-        /// </summary>
-        /// <param name="targetDirectory">The target directory.</param>
-        /// <param name="subDirectory">The sub directory containing the document.</param>
-        /// <returns>
-        /// The directory documents.
-        /// </returns>
-        [HttpGet]
-        [Route("directories/documents")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<Document>))]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
-        [ProducesErrorResponseType(typeof(ObjectResult))]
-        public IActionResult GetDirectoryDocuments(TargetDirectory targetDirectory, string? subDirectory = null)
-        {
-            try
-            {
-                return Ok(_directoryService.GetDocumentList(targetDirectory, subDirectory: subDirectory, includeSubdirectories: false));
             }
             catch (Exception x)
             {
@@ -315,7 +290,7 @@ namespace PDFWebEdit.Controllers
         /// </returns>
         [HttpPost]
         [Route("rename/{targetDirectory}/{document}/{newDocumentName}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Document))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
         [ProducesErrorResponseType(typeof(ObjectResult))]
@@ -327,10 +302,8 @@ namespace PDFWebEdit.Controllers
             if (path != null)
             {
                 try
-                { 
-                    _directoryService.Rename(targetDirectory, subDirectory, document, newDocumentName);
-
-                    return Ok();
+                {
+                    return Ok(_directoryService.Rename(targetDirectory, subDirectory, document, newDocumentName));
                 }
                 catch (Exception x)
                 {
@@ -674,7 +647,7 @@ namespace PDFWebEdit.Controllers
         /// </returns>
         [HttpPost]
         [Route("archive/{targetDirectory}/{document}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Document))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
         [ProducesErrorResponseType(typeof(ObjectResult))]
@@ -687,9 +660,7 @@ namespace PDFWebEdit.Controllers
             {
                 try
                 {
-                    _directoryService.Archive(targetDirectory, subDirectory, document);
-
-                    return Ok();
+                    return Ok(_directoryService.Archive(targetDirectory, subDirectory, document));
                 }
                 catch (Exception x)
                 {
@@ -790,7 +761,7 @@ namespace PDFWebEdit.Controllers
         /// </returns>
         [HttpPost]
         [Route("restore/{document}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Document))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
         [ProducesErrorResponseType(typeof(ObjectResult))]
@@ -803,9 +774,7 @@ namespace PDFWebEdit.Controllers
             {
                 try
                 {
-                    _directoryService.Restore(targetDirectory, subDirectory, document);
-
-                    return Ok();
+                    return Ok(_directoryService.Restore(targetDirectory, subDirectory, document));
                 }
                 catch (Exception x)
                 {
@@ -830,7 +799,7 @@ namespace PDFWebEdit.Controllers
         /// </returns>
         [HttpPost]
         [Route("save-as/{document}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Document))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
         [ProducesErrorResponseType(typeof(ObjectResult))]
@@ -843,9 +812,7 @@ namespace PDFWebEdit.Controllers
             {
                 try
                 {
-                    _directoryService.Save(document, sourceSubDirectory, targetSubDirectory, newName);
-
-                    return Ok();
+                    return Ok(_directoryService.Save(document, sourceSubDirectory, targetSubDirectory, newName));
                 }
                 catch (Exception x)
                 {
@@ -868,7 +835,7 @@ namespace PDFWebEdit.Controllers
         /// </returns>
         [HttpPost]
         [Route("save/{document}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Document))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
         [ProducesErrorResponseType(typeof(ObjectResult))]
@@ -881,9 +848,7 @@ namespace PDFWebEdit.Controllers
             {
                 try
                 {
-                    _directoryService.Save(document, sourceSubDirectory, null);
-
-                    return Ok();
+                    return Ok(_directoryService.Save(document, sourceSubDirectory, null));
                 }
                 catch (Exception x)
                 {

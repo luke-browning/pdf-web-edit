@@ -26,7 +26,7 @@ export class DocumentComponent implements OnInit, AfterViewInit {
   @Input() size!: Observable<string>;
   @Input() config!: PDFWebEditAPI.Config;
   @Input() directory!: PDFWebEditAPI.TargetDirectory;
-  @Input() directoryStructure: PDFWebEditAPI.Folder[] = [];
+  @Input() directoryStructure!: PDFWebEditAPI.Folder;
   @Input() documents: Doc[] = [];
 
   @Output() onNewDocument: EventEmitter<PDFWebEditAPI.Document> = new EventEmitter();
@@ -532,7 +532,7 @@ export class DocumentComponent implements OnInit, AfterViewInit {
   }
 
   archive() {
-    this.api.archive(this.directory, this.document.name, this.document.directory).subscribe(() => {
+    this.api.archive(this.directory, this.document.name, this.document.directory).subscribe(result => {
       this.onRemoveDocument.emit(this.document.name);
     }, error => this.uiService.showMessageBox(error));
   }
@@ -558,7 +558,7 @@ export class DocumentComponent implements OnInit, AfterViewInit {
       size: 'lg'
     });
 
-    modalRef.componentInstance.folders = this.directoryStructure;
+    modalRef.componentInstance.rootFolder = this.directoryStructure;
     modalRef.componentInstance.name = this.document.name;
     modalRef.componentInstance.showNameEditor = true;
 
@@ -567,7 +567,7 @@ export class DocumentComponent implements OnInit, AfterViewInit {
       let path = result.path;
       let name = result.name;
 
-      this.api.saveAs(this.document.name, this.document.directory, path, name).subscribe(() => {
+      this.api.saveAs(this.document.name, this.document.directory, path, name).subscribe(result => {
         this.onRemoveDocument.emit(this.document.name);
       }, error => this.uiService.showMessageBox(error));
     }, () => {
@@ -578,7 +578,7 @@ export class DocumentComponent implements OnInit, AfterViewInit {
   }
 
   save() {
-    this.api.save(this.document.name, this.document.directory).subscribe(() => {
+    this.api.save(this.document.name, this.document.directory).subscribe(result => {
       this.onRemoveDocument.emit(this.document.name);
     }, error => this.uiService.showMessageBox(error));
   }
@@ -597,16 +597,14 @@ export class DocumentComponent implements OnInit, AfterViewInit {
       this.translateService.instant('renameDocument.buttons.close'),
       false, this.document.name).then(result => {
       if (result) {
-        this.api.rename(this.directory, this.document.name, result, this.document.directory).subscribe(() => {
-          this.api.getDocument(this.directory, result, this.document.directory).subscribe((updatedDocument: PDFWebEditAPI.Document | null) => {
+        this.api.rename(this.directory, this.document.name, result, this.document.directory).subscribe(updatedDocument => {
 
-            // Make sure the document isn't null
-            if (updatedDocument != null) {
-              this.onReplaceDocument.emit({ originalDoc: this.document, newDocument: updatedDocument });
-            } else {
-              this.uiService.showMessageBox(this.translateService.instant('errors.fileDoesNotExist'));
-            }
-          });
+          // Make sure the document isn't null
+          if (updatedDocument != null) {
+            this.onReplaceDocument.emit({ originalDoc: this.document, newDocument: updatedDocument });
+          } else {
+            this.uiService.showMessageBox(this.translateService.instant('errors.fileDoesNotExist'));
+          }
         }, error => this.uiService.showMessageBox(error.detail));
       }
     }, () => {
