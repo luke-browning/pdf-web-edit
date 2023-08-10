@@ -545,7 +545,7 @@ export class DocumentComponent implements OnInit, AfterViewInit {
 
   download() {
     var a = document.createElement("a");
-    a.href = this.getDownloadUrl(this.document.name, this.document.directory);
+    a.href = this.uiService.getDownloadUrl(this.directory, this.document);
     a.target = '_blank';
     // Don't set download attribute
     // a.download = "Example.pdf";
@@ -667,7 +667,7 @@ export class DocumentComponent implements OnInit, AfterViewInit {
                 let page: Page = {
                   number: i,
                   active: false,
-                  url: this.getPagePreviewUrl(i, this.pageWidth, this.pageHeight),
+                  url: this.uiService.getPagePreviewUrl(this.directory, this.document, i, this.pageWidth, this.pageHeight),
                   loaded: false,
                   show: true
                 };
@@ -681,20 +681,12 @@ export class DocumentComponent implements OnInit, AfterViewInit {
             // Load defined pages
             pages.forEach(page => {
 
-              this.document.pages[page - 1].url = this.getPagePreviewUrl(page, this.pageWidth, this.pageHeight);
+              this.document.pages[page - 1].url = this.uiService.getPagePreviewUrl(this.directory, this.document, page, this.pageWidth, this.pageHeight);
             })
           }
         }
 
       });
-  }
-
-  getPagePreviewUrl(page: number, width: number, height: number) {
-    return '/api/documents/preview/' + this.directory + '/' + this.document.name + '/' + page + '?subdirectory=' + encodeURIComponent(this.document.directory || '') + '&width=' + width + '&height=' + height + '&t=' + new Date().getTime();
-  }
-
-  getDownloadUrl(name: string, directory: string) {
-    return '/api/documents/download/' + this.directory + '/' + name + '?subdirectory=' + encodeURIComponent(directory || '');
   }
 
   getSelectedPageNumbers(): number[] {

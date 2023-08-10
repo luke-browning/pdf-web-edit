@@ -4,6 +4,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { PDFWebEditAPI } from '../../../../../api/PDFWebEditAPI';
 import { SessionService } from '../../../../services/session/session.service';
 import { UiService } from '../../../../services/ui/ui.service';
+import { Doc } from '../../../models/doc';
 import { PickerMode } from '../../../models/picker-mode';
 
 @Component({
@@ -292,6 +293,15 @@ export class DirectoryPickerComponent implements OnInit {
 
   updateShowFilesDefault($event: any) {
     this.sessionService.setShowFilesOnSaveAs(this.showFiles);
+  }
+
+  download(doc: Doc) {
+    var a = document.createElement("a");
+    a.href = this.uiService.getDownloadUrl(PDFWebEditAPI.TargetDirectory.Outbox, doc);
+    a.target = '_blank';
+    // Don't set download attribute
+    // a.download = "Example.pdf";
+    a.click();
   }
 
   ok() {

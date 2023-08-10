@@ -86,6 +86,12 @@
                 </button>
 
                 <button type="button" class="list-group-item list-group-item-action favourite-button"
+                        (click)="download(file)"
+                        placement="bottom" ngbTooltip="{{ 'directoryPicker.download' | translate }}" container="body">
+                  <i class="bi bi-download"></i>
+                </button>
+
+                <button type="button" class="list-group-item list-group-item-action favourite-button"
                         (click)="name = file.name"
                         placement="bottom" ngbTooltip="{{ 'directoryPicker.copyName' | translate }}" container="body">
                   <i class="bi bi-input-cursor-text"></i>

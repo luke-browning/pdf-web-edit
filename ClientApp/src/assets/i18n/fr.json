@@ -131,6 +131,7 @@
     "addToFavourites": "Ajouter aux favoris",
     "removeFromFavourites": "Retirer des favoris",
     "documentName": "Nom du document",
+    "download": "Télécharger",
     "copyName": "Utiliser comme nom de document",
     "createDirectory": {
       "title": "Nouveau dossier",
