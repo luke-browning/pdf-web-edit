@@ -19,15 +19,23 @@ export class HomeComponent {
   documentsLoaded = false;
   documents: Doc[] = [];
   filteredDocuments: Doc[] = [];
+  lazyLoadedDocuments: Doc[] = [];
   filterQuery = '';
+
+  // Pagination
+  enableLazyLoading = true;
+  start = 0;
+  end = 0;
+  pageSize = 3;
 
   // Config
   config!: PDFWebEditAPI.Config;
+  configAlreadyLoaded = false;
 
   // Options
   directory = PDFWebEditAPI.TargetDirectory.Inbox;
   targetDirectories = PDFWebEditAPI.TargetDirectory;
-  directoryStructure: PDFWebEditAPI.Folder[] = [];
+  directoryStructure!: PDFWebEditAPI.Folder;
 
   size = new BehaviorSubject<string>('medium');
 
@@ -35,6 +43,7 @@ export class HomeComponent {
   sortDirection: string = 'Asc';
 
   alwaysShowFooter: boolean = false;
+  
 
   constructor(private api: PDFWebEditAPI.DocumentClient, private modalService: NgbModal, private route: ActivatedRoute,
     private router: Router, private configService: ConfigService, private sessionService: SessionService) {
@@ -43,27 +52,35 @@ export class HomeComponent {
     configService.getConfig().subscribe((config: PDFWebEditAPI.Config | null | undefined) => {
       this.config = config!;
 
-      this.size.next(this.config?.previewConfig?.defaultSize!);
+      if (!this.configAlreadyLoaded) {
 
-      this.sort = this.config?.generalConfig?.defaultSortColumn!;
-      this.sortDirection = this.config?.generalConfig?.defaultSortDirection!;
+        this.size.next(this.config?.previewConfig?.defaultSize!);
 
-      this.alwaysShowFooter = this.config?.footerConfig.showAlways!;
+        this.sort = this.config?.generalConfig?.defaultSortColumn!;
+        this.sortDirection = this.config?.generalConfig?.defaultSortDirection!;
 
-      // Work out the current directory
-      switch (router.url) {
-        case '/inbox':
-          this.directory = PDFWebEditAPI.TargetDirectory.Inbox
-          break;
+        this.alwaysShowFooter = this.config?.footerConfig.showAlways!;
 
-        case '/outbox':
-          this.directory = PDFWebEditAPI.TargetDirectory.Outbox;
-          break;
+        // Work out the current directory
+        switch (router.url) {
+          case '/inbox':
+            this.directory = PDFWebEditAPI.TargetDirectory.Inbox
+            break;
 
-        case '/archive':
-          this.directory = PDFWebEditAPI.TargetDirectory.Archive;
-          break;
+          case '/outbox':
+            this.directory = PDFWebEditAPI.TargetDirectory.Outbox;
+            break;
+
+          case '/archive':
+            this.directory = PDFWebEditAPI.TargetDirectory.Archive;
+            break;
+        }
+
+        this.configAlreadyLoaded = true;
       }
+
+      this.enableLazyLoading = this.config?.generalConfig?.enableLazyLoading;
+      this.pageSize = this.config?.generalConfig?.lazyLoadingPageSize;
 
       this.refreshDocuments();
     });
@@ -74,6 +91,55 @@ export class HomeComponent {
     // Keep track of the sorting
     sessionService.sortBy.subscribe((sortBy: string) => this.setSort(sortBy));
     sessionService.sortDirection.subscribe((sortDirection: string) => this.setSortDirection(sortDirection));
+  }
+
+  //
+  // Infinite scroll
+  //  
+
+  onScroll() {
+
+    // Load the docs
+    this.loadPage();
+  }
+
+  loadPage() {
+
+    // Disable lazy loading
+    if (!this.enableLazyLoading) {
+
+      // Fill in the document list if its not set to everything
+      if (this.lazyLoadedDocuments.length == 0) {
+        this.lazyLoadedDocuments = this.filteredDocuments;
+        this.end = this.filteredDocuments.length;
+      }
+
+      return;
+    }
+
+    let totalNumberOfDocs = this.filteredDocuments.length;
+
+    // Check if theres any more to load
+    if (this.end == totalNumberOfDocs) {
+      return;
+    }
+
+    // Get next docs
+    let nextStart = this.end;
+    let nextEnd = nextStart + this.pageSize;
+
+    // Only load up until the last document
+    if (nextEnd > totalNumberOfDocs) {
+      nextEnd = totalNumberOfDocs;
+    }
+
+    let nextDocs = this.filteredDocuments.slice(nextStart, nextEnd);
+
+    // Load next docs
+    this.lazyLoadedDocuments = this.lazyLoadedDocuments.concat(nextDocs);
+
+    // Update position
+    this.end = nextEnd;
   }
 
   //
@@ -137,17 +203,20 @@ export class HomeComponent {
     let newDoc = this.loadDocument(newDocument);
     this.documents.push(newDoc);
     this.sortDocuments();
-    this.updatedFilteredDocuments();
+    this.updatedFilteredDocuments(false);
+    this.updateLazyLoadedDocuments();
   }
 
   replaceDocEvent($event: ReplaceDocument) {
     this.replaceDoc($event.originalDoc, $event.newDocument);
-    this.updatedFilteredDocuments();
+    this.updatedFilteredDocuments(false);
+    this.updateLazyLoadedDocuments();
   }
 
   removeDocEvent(name: string) {
     this.documents = this.documents.filter(item => item.name !== name);
-    this.updatedFilteredDocuments();
+    this.updatedFilteredDocuments(false);
+    this.updateLazyLoadedDocuments();
   }
 
   batchDocumentChanges(changes: PDFWebEditAPI.DocumentResult[]) {
@@ -159,7 +228,8 @@ export class HomeComponent {
       }
     });
 
-    this.updatedFilteredDocuments();
+    this.updatedFilteredDocuments(false);
+    this.updateLazyLoadedDocuments();
   }
 
   //
@@ -172,7 +242,6 @@ export class HomeComponent {
     this.api.getDocuments(this.directory).subscribe(result => {
 
       this.loadDocuments(result!);
-
       this.sortDocuments();
 
       this.sessionService.search.subscribe((query: string) => {
@@ -181,17 +250,37 @@ export class HomeComponent {
       });
 
     }, error => console.error(error));
-
-    // List directories
-    this.api.getDirectories().subscribe((result: PDFWebEditAPI.Folder[] | null) => {
-      if (result != null) {
-        this.directoryStructure = result;
-      }
-    });
   }
 
-  updatedFilteredDocuments() {
+  updatedFilteredDocuments(resetLazyLoading = true) {
+    
+    // Filter the docs
     this.filteredDocuments = this.documents.filter(doc => doc.name.toLowerCase().indexOf(this.filterQuery.toLowerCase()) > -1);
+
+    // Reset
+    if (resetLazyLoading) {
+      this.resetLazyLoading();
+    }
+  }
+
+  resetLazyLoading() {
+
+    // Load the paginated docs
+    this.start = 0;
+    this.end = 0;
+    this.lazyLoadedDocuments = [];
+    this.loadPage();
+  }
+
+  updateLazyLoadedDocuments() {
+
+    // Make sure we don't try and load too many if everything is on screen
+    if (this.end > this.filteredDocuments.length) {
+      this.end = this.filteredDocuments.length;
+    }
+
+    // Update the lazy loaded documents
+    this.lazyLoadedDocuments = this.filteredDocuments.slice(this.start, this.end);
   }
 
   replaceDoc(originalDoc: Doc, newDocument: PDFWebEditAPI.Document) {

@@ -55,6 +55,18 @@
             <hr />
 
             <div class="form-check form-switch mb-3">
+              <input class="form-check-input" type="checkbox" role="switch" name="enable-lazy-loading" id="enable-lazy-loading" [(ngModel)]="config.generalConfig.enableLazyLoading">
+              <label class="form-check-label" for="enable-lazy-loading">{{ 'settings.general.enableLazyLoading' | translate }}</label>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-check-label" for="lazy-loading-page-size">{{ 'settings.general.lazyLoadingPageSize' | translate }}</label>
+              <input class="form-control" type="number" name="lazy-loading-page-size" id="lazy-loading-page-size" [(ngModel)]="config.generalConfig.lazyLoadingPageSize">
+            </div>
+
+            <hr />
+
+            <div class="form-check form-switch mb-3">
               <input class="form-check-input" type="checkbox" role="switch" name="enable-tour" id="enable-tour" [(ngModel)]="config.generalConfig.enableTour">
               <label class="form-check-label" for="enable-tour">{{ 'settings.general.enableTour' | translate }}</label>
             </div>

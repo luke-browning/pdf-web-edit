@@ -20,5 +20,13 @@
         /// The sub folders.
         /// </value>
         public IEnumerable<Folder> SubFolders { get; set; }
+
+        /// <summary>
+        /// Gets or sets the documents.
+        /// </summary>
+        /// <value>
+        /// The documents.
+        /// </value>
+        public IEnumerable<Document> Documents { get; set; }
     }
 }

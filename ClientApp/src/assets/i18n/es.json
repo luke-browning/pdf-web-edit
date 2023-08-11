@@ -66,6 +66,8 @@
       "defaultSortDirection": "Dirección de ordenación predeterminada",
       "defaultColourMode": "Modo de color predeterminado",
       "defaultShowFilesOnSaveAs": "Mostrar archivos por defecto al guardar como",
+      "enableLazyLoading": "Habilitar carga lenta",
+      "lazyLoadingPageSize": "Tamaño de página de carga lenta",
       "enableTour": "Activar recorrido",
       "showIcons": "Mostrar iconos",
       "showLabels": "Mostrar etiquetas"
@@ -131,6 +133,7 @@
     "addToFavourites": "Agregar a favoritos",
     "removeFromFavourites": "Eliminar de favoritos",
     "documentName": "Nombre del documento",
+    "download": "Descargar",
     "copyName": "Usar como nombre de documento",
     "createDirectory": {
       "title": "Nueva carpeta",

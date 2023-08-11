@@ -14,6 +14,8 @@ import { SessionService } from './services/session/session.service';
 })
 export class AppComponent {
 
+  config!: PDFWebEditAPI.Config | null | undefined;
+
   colourMode!: string;
 
   stickyHeader = false;
@@ -21,7 +23,9 @@ export class AppComponent {
   constructor(private tourService: TourService, private configService: ConfigService, private sessionService: SessionService,
     private renderer: Renderer2, private translateService: TranslateService, private titleService: Title) {
 
-    configService.getConfig().subscribe((config: PDFWebEditAPI.Config | null | undefined) => {
+    configService.getConfig().subscribe(config => {
+
+      this.config = config;
 
       // Is the tour enabled?
       if (config?.generalConfig.enableTour) {

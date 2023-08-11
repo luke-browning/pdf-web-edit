@@ -18,7 +18,6 @@ export class FooterComponent {
 
   @Input() documents!: Doc[];
   @Input() config!: PDFWebEditAPI.Config;
-  @Input() directoryStructure: PDFWebEditAPI.Folder[] = [];
   @Input() directory!: PDFWebEditAPI.TargetDirectory;
 
   @Output() onDocumentChanges: EventEmitter<PDFWebEditAPI.DocumentResult[]> = new EventEmitter();
@@ -243,7 +242,6 @@ export class FooterComponent {
       size: 'lg'
     });
 
-    modalRef.componentInstance.folders = this.directoryStructure;
     modalRef.componentInstance.showNameEditor = false;
 
     modalRef.result.then(result => {

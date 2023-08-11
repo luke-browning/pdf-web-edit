@@ -85,16 +85,6 @@
             An enumerator that allows foreach to be used to process the directories in this collection.
             </returns>
         </member>
-        <member name="M:PDFWebEdit.Controllers.DocumentController.GetDirectoryDocuments(PDFWebEdit.Enumerations.TargetDirectory,System.String)">
-            <summary>
-            Gets directory documents.
-            </summary>
-            <param name="targetDirectory">The target directory.</param>
-            <param name="subDirectory">The sub directory containing the document.</param>
-            <returns>
-            The directory documents.
-            </returns>
-        </member>
         <member name="M:PDFWebEdit.Controllers.DocumentController.CreateDirectory(PDFWebEdit.Enumerations.TargetDirectory,System.String,System.String)">
             <summary>
             Creates a directory.
@@ -1176,6 +1166,14 @@
             The sub folders.
             </value>
         </member>
+        <member name="P:PDFWebEdit.Models.Folder.Documents">
+            <summary>
+            Gets or sets the documents.
+            </summary>
+            <value>
+            The documents.
+            </value>
+        </member>
         <member name="T:PDFWebEdit.Models.Api.BatchResponse`1">
             <summary>
             A batch response.
@@ -1713,13 +1711,16 @@
             The target directory path.
             </returns>
         </member>
-        <member name="M:PDFWebEdit.Services.DirectoryService.GetFolders(System.String)">
+        <member name="M:PDFWebEdit.Services.DirectoryService.GetFoldersRecursive(PDFWebEdit.Enumerations.TargetDirectory,System.String,System.String)">
             <summary>
-            Gets the folders in the defined directory.
+            Gets the folders recursives in this collection.
             </summary>
-            <param name="directory">The directory.</param>
+            <param name="targetDirectory">Target directory.</param>
+            <param name="rootDirectory">Pathname of the root directory.</param>
+            <param name="subDirectory">The sub-directory.</param>
             <returns>
-            An enumerator that allows foreach to be used to process the folders in this collection.
+            An enumerator that allows foreach to be used to process the folders recursives in this
+            collection.
             </returns>
         </member>
         <member name="T:PDFWebEdit.Services.DocNetPDFService">

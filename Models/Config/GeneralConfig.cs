@@ -79,6 +79,10 @@ namespace PDFWebEdit.Models.Config
         /// </value>
         public bool DefaultShowFilesOnSaveAs { get; set; } = true;
 
+        public bool EnableLazyLoading { get; set; } = true;
+
+        public int LazyLoadingPageSize { get; set; } = 10;
+
         /// <summary>
         /// Gets or sets a value indicating whether the debug mode.
         /// </summary>

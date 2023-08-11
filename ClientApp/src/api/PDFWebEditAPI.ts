@@ -232,7 +232,7 @@ export class DocumentClient {
      * Gets the directories in this collection.
      * @return An enumerator that allows foreach to be used to process the directories in this collection.
      */
-    getDirectories(): Observable<Folder[] | null> {
+    getDirectories(): Observable<Folder | null> {
         let url_ = this.baseUrl + "/api/documents/directories";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -252,14 +252,14 @@ export class DocumentClient {
                 try {
                     return this.processGetDirectories(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<Folder[] | null>;
+                    return _observableThrow(e) as any as Observable<Folder | null>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<Folder[] | null>;
+                return _observableThrow(response_) as any as Observable<Folder | null>;
         }));
     }
 
-    protected processGetDirectories(response: HttpResponseBase): Observable<Folder[] | null> {
+    protected processGetDirectories(response: HttpResponseBase): Observable<Folder | null> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -270,14 +270,7 @@ export class DocumentClient {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if (Array.isArray(resultData200)) {
-                result200 = [] as any;
-                for (let item of resultData200)
-                    result200!.push(Folder.fromJS(item));
-            }
-            else {
-                result200 = <any>null;
-            }
+            result200 = resultData200 ? Folder.fromJS(resultData200) : <any>null;
             return _observableOf(result200);
             }));
         } else if (status === 500) {
@@ -351,81 +344,6 @@ export class DocumentClient {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result200 = resultData200 ? Folder.fromJS(resultData200) : <any>null;
-            return _observableOf(result200);
-            }));
-        } else if (status === 500) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            let result500: any = null;
-            let resultData500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result500 = resultData500 ? ProblemDetails.fromJS(resultData500) : <any>null;
-            return throwException("A server side error occurred.", status, _responseText, _headers, result500);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf(null as any);
-    }
-
-    /**
-     * Gets directory documents.
-     * @param targetDirectory The target directory.
-     * @param subDirectory (optional) The sub directory containing the document.
-     * @return The directory documents.
-     */
-    getDirectoryDocuments(targetDirectory: TargetDirectory, subDirectory?: string | null | undefined): Observable<Document[] | null> {
-        let url_ = this.baseUrl + "/api/documents/directories/documents?";
-        if (targetDirectory === undefined || targetDirectory === null)
-            throw new Error("The parameter 'targetDirectory' must be defined and cannot be null.");
-        else
-            url_ += "targetDirectory=" + encodeURIComponent("" + targetDirectory) + "&";
-        if (subDirectory !== undefined && subDirectory !== null)
-            url_ += "subDirectory=" + encodeURIComponent("" + subDirectory) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            withCredentials: true,
-            headers: new HttpHeaders({
-                "Accept": "application/json"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetDirectoryDocuments(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGetDirectoryDocuments(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<Document[] | null>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<Document[] | null>;
-        }));
-    }
-
-    protected processGetDirectoryDocuments(response: HttpResponseBase): Observable<Document[] | null> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if (Array.isArray(resultData200)) {
-                result200 = [] as any;
-                for (let item of resultData200)
-                    result200!.push(Document.fromJS(item));
-            }
-            else {
-                result200 = <any>null;
-            }
             return _observableOf(result200);
             }));
         } else if (status === 500) {
@@ -841,7 +759,7 @@ export class DocumentClient {
      * @param subDirectory (optional) The sub directory containing the document.
      * @return An IActionResult.
      */
-    rename(targetDirectory: TargetDirectory, document: string, newDocumentName: string, subDirectory?: string | null | undefined): Observable<void> {
+    rename(targetDirectory: TargetDirectory, document: string, newDocumentName: string, subDirectory?: string | null | undefined): Observable<Document | null> {
         let url_ = this.baseUrl + "/api/documents/rename/{targetDirectory}/{document}/{newDocumentName}?";
         if (targetDirectory === undefined || targetDirectory === null)
             throw new Error("The parameter 'targetDirectory' must be defined.");
@@ -861,6 +779,7 @@ export class DocumentClient {
             responseType: "blob",
             withCredentials: true,
             headers: new HttpHeaders({
+                "Accept": "application/json"
             })
         };
 
@@ -871,14 +790,14 @@ export class DocumentClient {
                 try {
                     return this.processRename(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<void>;
+                    return _observableThrow(e) as any as Observable<Document | null>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<void>;
+                return _observableThrow(response_) as any as Observable<Document | null>;
         }));
     }
 
-    protected processRename(response: HttpResponseBase): Observable<void> {
+    protected processRename(response: HttpResponseBase): Observable<Document | null> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -887,7 +806,10 @@ export class DocumentClient {
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return _observableOf(null as any);
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? Document.fromJS(resultData200) : <any>null;
+            return _observableOf(result200);
             }));
         } else if (status === 404) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
@@ -1523,7 +1445,7 @@ export class DocumentClient {
      * @param subDirectory (optional) The sub directory containing the document.
      * @return An IActionResult.
      */
-    archive(targetDirectory: TargetDirectory, document: string, subDirectory?: string | null | undefined): Observable<void> {
+    archive(targetDirectory: TargetDirectory, document: string, subDirectory?: string | null | undefined): Observable<Document | null> {
         let url_ = this.baseUrl + "/api/documents/archive/{targetDirectory}/{document}?";
         if (targetDirectory === undefined || targetDirectory === null)
             throw new Error("The parameter 'targetDirectory' must be defined.");
@@ -1540,6 +1462,7 @@ export class DocumentClient {
             responseType: "blob",
             withCredentials: true,
             headers: new HttpHeaders({
+                "Accept": "application/json"
             })
         };
 
@@ -1550,14 +1473,14 @@ export class DocumentClient {
                 try {
                     return this.processArchive(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<void>;
+                    return _observableThrow(e) as any as Observable<Document | null>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<void>;
+                return _observableThrow(response_) as any as Observable<Document | null>;
         }));
     }
 
-    protected processArchive(response: HttpResponseBase): Observable<void> {
+    protected processArchive(response: HttpResponseBase): Observable<Document | null> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -1566,7 +1489,10 @@ export class DocumentClient {
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return _observableOf(null as any);
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? Document.fromJS(resultData200) : <any>null;
+            return _observableOf(result200);
             }));
         } else if (status === 404) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
@@ -1737,7 +1663,7 @@ export class DocumentClient {
      * @param subDirectory (optional) The sub directory containing the document.
      * @return An IActionResult.
      */
-    restore(targetDirectory: TargetDirectory, document: string, subDirectory?: string | null | undefined): Observable<void> {
+    restore(targetDirectory: TargetDirectory, document: string, subDirectory?: string | null | undefined): Observable<Document | null> {
         let url_ = this.baseUrl + "/api/documents/restore/{document}?";
         if (document === undefined || document === null)
             throw new Error("The parameter 'document' must be defined.");
@@ -1755,6 +1681,7 @@ export class DocumentClient {
             responseType: "blob",
             withCredentials: true,
             headers: new HttpHeaders({
+                "Accept": "application/json"
             })
         };
 
@@ -1765,14 +1692,14 @@ export class DocumentClient {
                 try {
                     return this.processRestore(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<void>;
+                    return _observableThrow(e) as any as Observable<Document | null>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<void>;
+                return _observableThrow(response_) as any as Observable<Document | null>;
         }));
     }
 
-    protected processRestore(response: HttpResponseBase): Observable<void> {
+    protected processRestore(response: HttpResponseBase): Observable<Document | null> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -1781,7 +1708,10 @@ export class DocumentClient {
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return _observableOf(null as any);
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? Document.fromJS(resultData200) : <any>null;
+            return _observableOf(result200);
             }));
         } else if (status === 404) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
@@ -1810,7 +1740,7 @@ export class DocumentClient {
      * @param newName (optional) New name of the file
      * @return An IActionResult.
      */
-    saveAs(document: string, sourceSubDirectory?: string | null | undefined, targetSubDirectory?: string | null | undefined, newName?: string | undefined): Observable<void> {
+    saveAs(document: string, sourceSubDirectory?: string | null | undefined, targetSubDirectory?: string | null | undefined, newName?: string | undefined): Observable<Document | null> {
         let url_ = this.baseUrl + "/api/documents/save-as/{document}?";
         if (document === undefined || document === null)
             throw new Error("The parameter 'document' must be defined.");
@@ -1830,6 +1760,7 @@ export class DocumentClient {
             responseType: "blob",
             withCredentials: true,
             headers: new HttpHeaders({
+                "Accept": "application/json"
             })
         };
 
@@ -1840,14 +1771,14 @@ export class DocumentClient {
                 try {
                     return this.processSaveAs(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<void>;
+                    return _observableThrow(e) as any as Observable<Document | null>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<void>;
+                return _observableThrow(response_) as any as Observable<Document | null>;
         }));
     }
 
-    protected processSaveAs(response: HttpResponseBase): Observable<void> {
+    protected processSaveAs(response: HttpResponseBase): Observable<Document | null> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -1856,7 +1787,10 @@ export class DocumentClient {
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return _observableOf(null as any);
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? Document.fromJS(resultData200) : <any>null;
+            return _observableOf(result200);
             }));
         } else if (status === 404) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
@@ -1883,7 +1817,7 @@ export class DocumentClient {
      * @param sourceSubDirectory (optional) The subDirectory to move from.
      * @return An IActionResult.
      */
-    save(document: string, sourceSubDirectory?: string | null | undefined): Observable<void> {
+    save(document: string, sourceSubDirectory?: string | null | undefined): Observable<Document | null> {
         let url_ = this.baseUrl + "/api/documents/save/{document}?";
         if (document === undefined || document === null)
             throw new Error("The parameter 'document' must be defined.");
@@ -1897,6 +1831,7 @@ export class DocumentClient {
             responseType: "blob",
             withCredentials: true,
             headers: new HttpHeaders({
+                "Accept": "application/json"
             })
         };
 
@@ -1907,14 +1842,14 @@ export class DocumentClient {
                 try {
                     return this.processSave(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<void>;
+                    return _observableThrow(e) as any as Observable<Document | null>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<void>;
+                return _observableThrow(response_) as any as Observable<Document | null>;
         }));
     }
 
-    protected processSave(response: HttpResponseBase): Observable<void> {
+    protected processSave(response: HttpResponseBase): Observable<Document | null> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -1923,7 +1858,10 @@ export class DocumentClient {
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return _observableOf(null as any);
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? Document.fromJS(resultData200) : <any>null;
+            return _observableOf(result200);
             }));
         } else if (status === 404) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
@@ -2712,6 +2650,8 @@ export class GeneralConfig implements IGeneralConfig {
     defaultColourMode!: string;
     /** Gets or sets a value indicating whether the default show files on save as. */
     defaultShowFilesOnSaveAs!: boolean;
+    enableLazyLoading!: boolean;
+    lazyLoadingPageSize!: number;
     /** Gets or sets a value indicating whether the debug mode. */
     debugMode!: boolean;
 
@@ -2735,6 +2675,8 @@ export class GeneralConfig implements IGeneralConfig {
             this.showLabels = _data["showLabels"] !== undefined ? _data["showLabels"] : <any>null;
             this.defaultColourMode = _data["defaultColourMode"] !== undefined ? _data["defaultColourMode"] : <any>null;
             this.defaultShowFilesOnSaveAs = _data["defaultShowFilesOnSaveAs"] !== undefined ? _data["defaultShowFilesOnSaveAs"] : <any>null;
+            this.enableLazyLoading = _data["enableLazyLoading"] !== undefined ? _data["enableLazyLoading"] : <any>null;
+            this.lazyLoadingPageSize = _data["lazyLoadingPageSize"] !== undefined ? _data["lazyLoadingPageSize"] : <any>null;
             this.debugMode = _data["debugMode"] !== undefined ? _data["debugMode"] : <any>null;
         }
     }
@@ -2757,6 +2699,8 @@ export class GeneralConfig implements IGeneralConfig {
         data["showLabels"] = this.showLabels !== undefined ? this.showLabels : <any>null;
         data["defaultColourMode"] = this.defaultColourMode !== undefined ? this.defaultColourMode : <any>null;
         data["defaultShowFilesOnSaveAs"] = this.defaultShowFilesOnSaveAs !== undefined ? this.defaultShowFilesOnSaveAs : <any>null;
+        data["enableLazyLoading"] = this.enableLazyLoading !== undefined ? this.enableLazyLoading : <any>null;
+        data["lazyLoadingPageSize"] = this.lazyLoadingPageSize !== undefined ? this.lazyLoadingPageSize : <any>null;
         data["debugMode"] = this.debugMode !== undefined ? this.debugMode : <any>null;
         return data;
     }
@@ -2782,6 +2726,8 @@ export interface IGeneralConfig {
     defaultColourMode: string;
     /** Gets or sets a value indicating whether the default show files on save as. */
     defaultShowFilesOnSaveAs: boolean;
+    enableLazyLoading: boolean;
+    lazyLoadingPageSize: number;
     /** Gets or sets a value indicating whether the debug mode. */
     debugMode: boolean;
 }
@@ -3358,6 +3304,8 @@ export class Folder implements IFolder {
     name!: string;
     /** Gets or sets the sub folders. */
     subFolders!: Folder[];
+    /** Gets or sets the documents. */
+    documents!: Document[];
 
     constructor(data?: IFolder) {
         if (data) {
@@ -3368,6 +3316,7 @@ export class Folder implements IFolder {
         }
         if (!data) {
             this.subFolders = [];
+            this.documents = [];
         }
     }
 
@@ -3381,6 +3330,14 @@ export class Folder implements IFolder {
             }
             else {
                 this.subFolders = <any>null;
+            }
+            if (Array.isArray(_data["documents"])) {
+                this.documents = [] as any;
+                for (let item of _data["documents"])
+                    this.documents!.push(Document.fromJS(item));
+            }
+            else {
+                this.documents = <any>null;
             }
         }
     }
@@ -3400,6 +3357,11 @@ export class Folder implements IFolder {
             for (let item of this.subFolders)
                 data["subFolders"].push(item.toJSON());
         }
+        if (Array.isArray(this.documents)) {
+            data["documents"] = [];
+            for (let item of this.documents)
+                data["documents"].push(item.toJSON());
+        }
         return data;
     }
 }
@@ -3410,6 +3372,8 @@ export interface IFolder {
     name: string;
     /** Gets or sets the sub folders. */
     subFolders: Folder[];
+    /** Gets or sets the documents. */
+    documents: Document[];
 }
 
 /** A document. */

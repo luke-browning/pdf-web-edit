@@ -79,14 +79,19 @@ namespace PDFWebEdit.Services
         /// <returns>
         /// An enumerator that allows foreach to be used to process the folders in this collection.
         /// </returns>
-        public IEnumerable<Folder> GetFolders()
+        public Folder GetFolders()
         {
             string directory = GetTargetDirectoryPath(TargetDirectory.Outbox);
 
-            // Recursively get folders
-            var tree = GetFolders(directory);
+            // Load all folders and documents
+            var root = new Folder
+            {
+                Name = Path.GetFileName(directory),
+                Documents = GetDocumentList(TargetDirectory.Outbox, includeSubdirectories: false),
+                SubFolders = GetFoldersRecursive(TargetDirectory.Outbox, directory)
+            };
 
-            return tree;
+            return root;
         }
 
         /// <summary>
@@ -112,7 +117,7 @@ namespace PDFWebEdit.Services
             }
 
             // Load docs
-            var documents = Directory.EnumerateFiles(directory, $"*{PDF_EXTENSION}", searchOption)
+            var docs = Directory.EnumerateFiles(directory, $"*{PDF_EXTENSION}", searchOption)
                 .Where(x => !x.EndsWith(EDITING_PDF_EXTENSION, StringComparison.OrdinalIgnoreCase))
                 .Select(path => {
 
@@ -129,9 +134,10 @@ namespace PDFWebEdit.Services
                     };
 
                     return doc;
-                });
+                })
+                .ToList();
 
-            return documents;
+            return docs;
         }
 
         /// <summary>
@@ -350,7 +356,7 @@ namespace PDFWebEdit.Services
         /// <param name="subDirectory">Subdirectory storing document.</param>
         /// <param name="name">The name.</param>
         /// <param name="newName">Name of the new.</param>
-        public void Rename(TargetDirectory targetDirectory, string? subDirectory, string name, string newName)
+        public Document Rename(TargetDirectory targetDirectory, string? subDirectory, string name, string newName)
         {
             string directory = GetTargetDirectoryPath(targetDirectory);
             directory = Path.Join(directory, subDirectory ?? string.Empty);
@@ -389,6 +395,8 @@ namespace PDFWebEdit.Services
                     File.Move(originalPDFPath, newOriginalPDFPath);
                 }
             }
+
+            return GetDocument(targetDirectory, subDirectory, newName);
         }
 
         /// <summary>
@@ -432,7 +440,7 @@ namespace PDFWebEdit.Services
         /// <param name="targetDirectory">The target directory.</param>
         /// <param name="subDirectory">Subdirectory storing document.</param>
         /// <param name="name">The name.</param>
-        public void Archive(TargetDirectory targetDirectory, string? subDirectory, string name)
+        public Document Archive(TargetDirectory targetDirectory, string? subDirectory, string name)
         {
             string directory = GetTargetDirectoryPath(targetDirectory);
             directory = Path.Join(directory, subDirectory ?? string.Empty);
@@ -481,6 +489,8 @@ namespace PDFWebEdit.Services
                     }
                 }
             }
+
+            return GetDocument(TargetDirectory.Archive, null, name);
         }
 
         /// <summary>
@@ -517,7 +527,7 @@ namespace PDFWebEdit.Services
         /// <param name="targetDirectory">The target directory.</param>
         /// <param name="subDirectory">Subdirectory storing document.</param>
         /// <param name="name">The name.</param>
-        public void Restore(TargetDirectory targetDirectory, string? subDirectory, string name)
+        public Document Restore(TargetDirectory targetDirectory, string? subDirectory, string name)
         {
             string directory = GetTargetDirectoryPath(targetDirectory);
             directory = Path.Join(directory, subDirectory ?? string.Empty);
@@ -552,6 +562,8 @@ namespace PDFWebEdit.Services
                     File.Move(originalPDFPath, originalPDFInboxDirectoryPath);
                 }
             }
+
+            return GetDocument(TargetDirectory.Inbox, null, name);
         }
 
         /// <summary>
@@ -561,7 +573,7 @@ namespace PDFWebEdit.Services
         /// <param name="sourceSubDirectory">The source sub directory.</param>
         /// <param name="targetSubDirectory">The target sub directory.</param>
         /// <param name="newName">New name.</param>
-        public void Save(string name, string? sourceSubDirectory, string? targetSubDirectory, string newName = null)
+        public Document Save(string name, string? sourceSubDirectory, string? targetSubDirectory, string newName = null)
         {
             string sourceDirectory = GetTargetDirectoryPath(TargetDirectory.Inbox);
             sourceDirectory = Path.Join(sourceDirectory, sourceSubDirectory ?? string.Empty);
@@ -611,6 +623,8 @@ namespace PDFWebEdit.Services
                     File.Move(originalPDFPath, outboxPath);
                 }
             }
+
+            return GetDocument(TargetDirectory.Outbox, targetSubDirectory, newName ?? name);
         }
 
         #region Helpers
@@ -646,20 +660,32 @@ namespace PDFWebEdit.Services
         }
 
         /// <summary>
-        /// Gets the folders in the defined directory.
+        /// Gets the folders recursives in this collection.
         /// </summary>
-        /// <param name="directory">The directory.</param>
+        /// <param name="targetDirectory">Target directory.</param>
+        /// <param name="rootDirectory">Pathname of the root directory.</param>
+        /// <param name="subDirectory">The sub-directory.</param>
         /// <returns>
-        /// An enumerator that allows foreach to be used to process the folders in this collection.
+        /// An enumerator that allows foreach to be used to process the folders recursives in this
+        /// collection.
         /// </returns>
-        private IEnumerable<Folder> GetFolders(string directory)
+        private IEnumerable<Folder> GetFoldersRecursive(TargetDirectory targetDirectory, string rootDirectory, string subDirectory = null)
         {
-            var result = Directory.GetDirectories(directory)
-                .Select(x => new Folder
-                {
-                    Name = Path.GetFileName(x),
-                    SubFolders = GetFolders(Path.Combine(directory, x))
-                });
+            var dir = Path.Join(rootDirectory, subDirectory ?? string.Empty);
+
+            var result = Directory.GetDirectories(dir)
+                .Select(x => {
+
+                    var nextSubDirectory = x.Replace(rootDirectory, string.Empty);
+
+                    return new Folder
+                    {
+                        Name = Path.GetFileName(x),
+                        Documents = GetDocumentList(targetDirectory, nextSubDirectory, includeSubdirectories: false),
+                        SubFolders = GetFoldersRecursive(targetDirectory, rootDirectory, nextSubDirectory)
+                    };
+                })
+                .ToList();
 
             return result;
         }

@@ -26,7 +26,7 @@ export class DocumentComponent implements OnInit, AfterViewInit {
   @Input() size!: Observable<string>;
   @Input() config!: PDFWebEditAPI.Config;
   @Input() directory!: PDFWebEditAPI.TargetDirectory;
-  @Input() directoryStructure: PDFWebEditAPI.Folder[] = [];
+  @Input() directoryStructure!: PDFWebEditAPI.Folder;
   @Input() documents: Doc[] = [];
 
   @Output() onNewDocument: EventEmitter<PDFWebEditAPI.Document> = new EventEmitter();
@@ -532,7 +532,7 @@ export class DocumentComponent implements OnInit, AfterViewInit {
   }
 
   archive() {
-    this.api.archive(this.directory, this.document.name, this.document.directory).subscribe(() => {
+    this.api.archive(this.directory, this.document.name, this.document.directory).subscribe(result => {
       this.onRemoveDocument.emit(this.document.name);
     }, error => this.uiService.showMessageBox(error));
   }
@@ -545,7 +545,7 @@ export class DocumentComponent implements OnInit, AfterViewInit {
 
   download() {
     var a = document.createElement("a");
-    a.href = this.getDownloadUrl(this.document.name, this.document.directory);
+    a.href = this.uiService.getDownloadUrl(this.directory, this.document);
     a.target = '_blank';
     // Don't set download attribute
     // a.download = "Example.pdf";
@@ -558,7 +558,7 @@ export class DocumentComponent implements OnInit, AfterViewInit {
       size: 'lg'
     });
 
-    modalRef.componentInstance.folders = this.directoryStructure;
+    modalRef.componentInstance.rootFolder = this.directoryStructure;
     modalRef.componentInstance.name = this.document.name;
     modalRef.componentInstance.showNameEditor = true;
 
@@ -567,7 +567,7 @@ export class DocumentComponent implements OnInit, AfterViewInit {
       let path = result.path;
       let name = result.name;
 
-      this.api.saveAs(this.document.name, this.document.directory, path, name).subscribe(() => {
+      this.api.saveAs(this.document.name, this.document.directory, path, name).subscribe(result => {
         this.onRemoveDocument.emit(this.document.name);
       }, error => this.uiService.showMessageBox(error));
     }, () => {
@@ -578,7 +578,7 @@ export class DocumentComponent implements OnInit, AfterViewInit {
   }
 
   save() {
-    this.api.save(this.document.name, this.document.directory).subscribe(() => {
+    this.api.save(this.document.name, this.document.directory).subscribe(result => {
       this.onRemoveDocument.emit(this.document.name);
     }, error => this.uiService.showMessageBox(error));
   }
@@ -597,16 +597,14 @@ export class DocumentComponent implements OnInit, AfterViewInit {
       this.translateService.instant('renameDocument.buttons.close'),
       false, this.document.name).then(result => {
       if (result) {
-        this.api.rename(this.directory, this.document.name, result, this.document.directory).subscribe(() => {
-          this.api.getDocument(this.directory, result, this.document.directory).subscribe((updatedDocument: PDFWebEditAPI.Document | null) => {
+        this.api.rename(this.directory, this.document.name, result, this.document.directory).subscribe(updatedDocument => {
 
-            // Make sure the document isn't null
-            if (updatedDocument != null) {
-              this.onReplaceDocument.emit({ originalDoc: this.document, newDocument: updatedDocument });
-            } else {
-              this.uiService.showMessageBox(this.translateService.instant('errors.fileDoesNotExist'));
-            }
-          });
+          // Make sure the document isn't null
+          if (updatedDocument != null) {
+            this.onReplaceDocument.emit({ originalDoc: this.document, newDocument: updatedDocument });
+          } else {
+            this.uiService.showMessageBox(this.translateService.instant('errors.fileDoesNotExist'));
+          }
         }, error => this.uiService.showMessageBox(error.detail));
       }
     }, () => {
@@ -669,7 +667,7 @@ export class DocumentComponent implements OnInit, AfterViewInit {
                 let page: Page = {
                   number: i,
                   active: false,
-                  url: this.getPagePreviewUrl(i, this.pageWidth, this.pageHeight),
+                  url: this.uiService.getPagePreviewUrl(this.directory, this.document, i, this.pageWidth, this.pageHeight),
                   loaded: false,
                   show: true
                 };
@@ -683,20 +681,12 @@ export class DocumentComponent implements OnInit, AfterViewInit {
             // Load defined pages
             pages.forEach(page => {
 
-              this.document.pages[page - 1].url = this.getPagePreviewUrl(page, this.pageWidth, this.pageHeight);
+              this.document.pages[page - 1].url = this.uiService.getPagePreviewUrl(this.directory, this.document, page, this.pageWidth, this.pageHeight);
             })
           }
         }
 
       });
-  }
-
-  getPagePreviewUrl(page: number, width: number, height: number) {
-    return '/api/documents/preview/' + this.directory + '/' + this.document.name + '/' + page + '?subdirectory=' + encodeURIComponent(this.document.directory || '') + '&width=' + width + '&height=' + height + '&t=' + new Date().getTime();
-  }
-
-  getDownloadUrl(name: string, directory: string) {
-    return '/api/documents/download/' + this.directory + '/' + name + '?subdirectory=' + encodeURIComponent(directory || '');
   }
 
   getSelectedPageNumbers(): number[] {

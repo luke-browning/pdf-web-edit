@@ -4,6 +4,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { PDFWebEditAPI } from '../../../api/PDFWebEditAPI';
 import { InputBoxComponent } from '../../shared/components/modals/input-box/input-box.component';
 import { MessageBoxComponent } from '../../shared/components/modals/message-box/message-box.component';
+import { Doc } from '../../shared/models/doc';
 
 @Injectable({
   providedIn: 'root'
@@ -48,5 +49,13 @@ export class UiService {
     modalRef.componentInstance.value = defaultValue;
 
     return modalRef.result;
+  }
+
+  getPagePreviewUrl(targetDirectory: PDFWebEditAPI.TargetDirectory, document: Doc, page: number, width: number, height: number) {
+    return '/api/documents/preview/' + targetDirectory + '/' + document.name + '/' + page + '?subdirectory=' + encodeURIComponent(document.directory || '') + '&width=' + width + '&height=' + height + '&t=' + new Date().getTime();
+  }
+
+  getDownloadUrl(targetDirectory: PDFWebEditAPI.TargetDirectory, doc: Doc) {
+    return '/api/documents/download/' + targetDirectory + '/' + doc.name + '?subdirectory=' + encodeURIComponent(doc.directory || '');
   }
 }

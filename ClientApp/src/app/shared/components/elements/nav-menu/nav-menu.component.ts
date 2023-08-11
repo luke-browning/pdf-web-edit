@@ -1,7 +1,7 @@
 import { Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { NavigationEnd, Router, RouterEvent } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { fromEvent } from 'rxjs';
+import { fromEvent, Observable } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, tap } from 'rxjs/operators';
 import { PDFWebEditAPI } from '../../../../../api/PDFWebEditAPI';
 import { ConfigService } from '../../../../services/config/config.service';
@@ -17,10 +17,10 @@ import { Title } from '@angular/platform-browser';
 })
 export class NavMenuComponent {
 
-  config!: PDFWebEditAPI.Config;
+  @Input() config!: PDFWebEditAPI.Config | null | undefined;
 
   // Search
-  @ViewChild('search') search!: ElementRef;
+  @ViewChild('search') search!: ElementRef<HTMLInputElement>;
   searchFocused = false;
 
   // Colour modes
@@ -48,10 +48,6 @@ export class NavMenuComponent {
 
   constructor(private router: Router, private modalService: NgbModal, private configService: ConfigService,
     private sessionService: SessionService, private translateService: TranslateService, private titleService: Title) {
-
-    configService.getConfig().subscribe((config: PDFWebEditAPI.Config | null | undefined) => {
-      this.config = config!;
-    });
 
     // Watch url for changes
     this.router.events.pipe(
