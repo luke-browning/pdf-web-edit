@@ -66,6 +66,8 @@
       "defaultSortDirection": "Dirección de ordenación predeterminada",
       "defaultColourMode": "Modo de color predeterminado",
       "defaultShowFilesOnSaveAs": "Mostrar archivos por defecto al guardar como",
+      "enableLazyLoading": "Habilitar carga lenta",
+      "lazyLoadingPageSize": "Tamaño de página de carga lenta",
       "enableTour": "Activar recorrido",
       "showIcons": "Mostrar iconos",
       "showLabels": "Mostrar etiquetas"

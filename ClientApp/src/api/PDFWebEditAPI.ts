@@ -2650,6 +2650,8 @@ export class GeneralConfig implements IGeneralConfig {
     defaultColourMode!: string;
     /** Gets or sets a value indicating whether the default show files on save as. */
     defaultShowFilesOnSaveAs!: boolean;
+    enableLazyLoading!: boolean;
+    lazyLoadingPageSize!: number;
     /** Gets or sets a value indicating whether the debug mode. */
     debugMode!: boolean;
 
@@ -2673,6 +2675,8 @@ export class GeneralConfig implements IGeneralConfig {
             this.showLabels = _data["showLabels"] !== undefined ? _data["showLabels"] : <any>null;
             this.defaultColourMode = _data["defaultColourMode"] !== undefined ? _data["defaultColourMode"] : <any>null;
             this.defaultShowFilesOnSaveAs = _data["defaultShowFilesOnSaveAs"] !== undefined ? _data["defaultShowFilesOnSaveAs"] : <any>null;
+            this.enableLazyLoading = _data["enableLazyLoading"] !== undefined ? _data["enableLazyLoading"] : <any>null;
+            this.lazyLoadingPageSize = _data["lazyLoadingPageSize"] !== undefined ? _data["lazyLoadingPageSize"] : <any>null;
             this.debugMode = _data["debugMode"] !== undefined ? _data["debugMode"] : <any>null;
         }
     }
@@ -2695,6 +2699,8 @@ export class GeneralConfig implements IGeneralConfig {
         data["showLabels"] = this.showLabels !== undefined ? this.showLabels : <any>null;
         data["defaultColourMode"] = this.defaultColourMode !== undefined ? this.defaultColourMode : <any>null;
         data["defaultShowFilesOnSaveAs"] = this.defaultShowFilesOnSaveAs !== undefined ? this.defaultShowFilesOnSaveAs : <any>null;
+        data["enableLazyLoading"] = this.enableLazyLoading !== undefined ? this.enableLazyLoading : <any>null;
+        data["lazyLoadingPageSize"] = this.lazyLoadingPageSize !== undefined ? this.lazyLoadingPageSize : <any>null;
         data["debugMode"] = this.debugMode !== undefined ? this.debugMode : <any>null;
         return data;
     }
@@ -2720,6 +2726,8 @@ export interface IGeneralConfig {
     defaultColourMode: string;
     /** Gets or sets a value indicating whether the default show files on save as. */
     defaultShowFilesOnSaveAs: boolean;
+    enableLazyLoading: boolean;
+    lazyLoadingPageSize: number;
     /** Gets or sets a value indicating whether the debug mode. */
     debugMode: boolean;
 }

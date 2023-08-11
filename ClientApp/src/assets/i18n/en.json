@@ -65,7 +65,9 @@
       "defaultSortColumn": "Default Sort Column",
       "defaultSortDirection": "Default Sort Direction",
       "defaultColourMode": "Default Colour Mode",
-      "defaultShowFilesOnSaveAs": "Default Show Files on Save As",
+      "defaultShowFilesOnSaveAs": "Show Files on Save As by Default",
+      "enableLazyLoading": "Enable Lazy Loading",
+      "lazyLoadingPageSize": "Lazy Loading Page Size",
       "enableTour": "Enable Tour",
       "showIcons": "Show Icons",
       "showLabels": "Show Labels"

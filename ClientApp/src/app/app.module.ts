@@ -7,6 +7,8 @@ import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { DndModule } from 'ngx-drag-drop';
 import { NgScrollbarModule } from 'ngx-scrollbar';
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 
 import { AppComponent } from './app.component';
 import { NavMenuComponent } from './shared/components/elements/nav-menu/nav-menu.component';
@@ -76,7 +78,8 @@ export function HttpLoaderFactory(http: HttpClient) {
       }
     }),
     DndModule,
-    NgScrollbarModule
+    NgScrollbarModule,
+    InfiniteScrollModule
   ],
   providers: [
     {

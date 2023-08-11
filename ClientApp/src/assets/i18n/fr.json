@@ -66,6 +66,8 @@
       "defaultSortDirection": "Direction de tri par défaut",
       "defaultColourMode": "Mode couleur par défaut",
       "defaultShowFilesOnSaveAs": "Afficher les fichiers par défaut lors de l'enregistrement sous",
+      "enableLazyLoading": "Activer le chargement paresseux",
+      "lazyLoadingPageSize": "Taille de la page de chargement paresseux",
       "enableTour": "Activer la visite guidée",
       "showIcons": "Afficher les icônes",
       "showLabels": "Afficher les étiquettes"

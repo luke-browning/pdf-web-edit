@@ -1,19 +1,26 @@
-<document *ngFor="let document of filteredDocuments"
-          [document]="document"
-          [documents]="documents"
-          [config]="config"
-          [size]="size"
-          [directory]="directory"
-          (onNewDocument)="newDocumentEvent($event)"
-          (onReplaceDocument)="replaceDocEvent($event)"
-          (onRemoveDocument)="removeDocEvent($event)"></document>
+<div infiniteScroll
+     [infiniteScrollDistance]="2"
+     [infiniteScrollThrottle]="50"
+     (scrolled)="onScroll()">
 
-<div *ngIf="!documentsLoaded" class="text-center text-muted mt-5">
-  {{ 'shared.loading' | translate }}
-</div>
+  <document *ngFor="let document of lazyLoadedDocuments"
+            [document]="document"
+            [documents]="documents"
+            [config]="config"
+            [size]="size"
+            [directory]="directory"
+            (onNewDocument)="newDocumentEvent($event)"
+            (onReplaceDocument)="replaceDocEvent($event)"
+            (onRemoveDocument)="removeDocEvent($event)"></document>
 
-<div *ngIf="documentsLoaded && filteredDocuments.length == 0" class="text-center text-muted mt-5">
-  {{ 'shared.noDocumentsFound' | translate }}
+  <div *ngIf="!documentsLoaded" class="text-center text-muted mt-5">
+    {{ 'shared.loading' | translate }}
+  </div>
+
+  <div *ngIf="documentsLoaded && filteredDocuments.length == 0" class="text-center text-muted mt-5">
+    {{ 'shared.noDocumentsFound' | translate }}
+  </div>
+
 </div>
 
 <div class="footer-padding" *ngIf="alwaysShowFooter || hasDocumentsSelected()">
