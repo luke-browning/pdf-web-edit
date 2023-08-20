@@ -1,3 +1,7 @@
+.navbar {
+  --bs-navbar-padding-x: 1rem;
+}
+
 a.navbar-brand {
   white-space: normal;
   text-align: center;
@@ -30,6 +34,10 @@ html {
     
 }
 
+.nav-search {
+    width: 50%;
+}
+
 #search::placeholder {
-    /*color: white;*/
+  /*color: white;*/
 }

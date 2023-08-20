@@ -44,7 +44,7 @@ export class NavMenuComponent {
 
   targetDirectory = PDFWebEditAPI.TargetDirectory;
 
-  isExpanded = false;
+  isMenuCollapsed = true;
 
   constructor(private router: Router, private modalService: NgbModal, private configService: ConfigService,
     private sessionService: SessionService, private translateService: TranslateService, private titleService: Title) {
@@ -164,11 +164,11 @@ export class NavMenuComponent {
   }
 
   collapse() {
-    this.isExpanded = false;
+    this.isMenuCollapsed = false;
   }
 
   toggle() {
-    this.isExpanded = !this.isExpanded;
+    this.isMenuCollapsed = !this.isMenuCollapsed;
   }
 
   editConfig() {
