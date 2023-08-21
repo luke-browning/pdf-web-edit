@@ -23,7 +23,7 @@
     </div>
 
     <div class="row directory-container">
-      <div class="col-3">
+      <div class="col-lg-3">
         <div class="list-group locations-list">
           <button type="button" class="list-group-item list-group-item-action" (click)="setPickerMode(pickerModes.Outbox)" [class.active]="pickerMode == pickerModes.Outbox">
             <i class="bi bi-house-fill"></i>{{ 'directoryPicker.outbox' | translate }}
@@ -38,7 +38,7 @@
           </button>
         </div>
 
-        <div class="list-group location-options-list mt-4">
+        <div class="list-group location-options-list mt-4 mb-3">
           <li class="list-group-item">
             <input class="form-check-input" type="checkbox" name="show-files" id="show-files" [(ngModel)]="showFiles" (ngModelChange)="updateShowFilesDefault($event)" [ngModelOptions]="{standalone: true}">
             <label class="form-check-label" for="show-files">{{ 'directoryPicker.showFiles' | translate }}</label>
@@ -46,7 +46,7 @@
         </div>
       </div>
 
-      <div class="col">
+      <div class="col-lg">
 
         <!-- Outbox -->
         <div class="list-group" *ngIf="pickerMode == pickerModes.Outbox">
