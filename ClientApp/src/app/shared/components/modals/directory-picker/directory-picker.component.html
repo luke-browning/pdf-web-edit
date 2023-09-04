@@ -23,22 +23,22 @@
     </div>
 
     <div class="row directory-container">
-      <div class="col-3">
+      <div class="col-lg-3">
         <div class="list-group locations-list">
-          <button type="button" class="list-group-item list-group-item-action" (click)="setPickerMode(pickerModes.Outbox)" [class.active]="pickerMode == pickerModes.Outbox">
+          <button type="button" [disabled]="loading" class="list-group-item list-group-item-action" (click)="setPickerMode(pickerModes.Outbox)" [class.active]="pickerMode == pickerModes.Outbox">
             <i class="bi bi-house-fill"></i>{{ 'directoryPicker.outbox' | translate }}
           </button>
 
-          <button type="button" class="list-group-item list-group-item-action" (click)="setPickerMode(pickerModes.Favourites)" [class.active]="pickerMode == pickerModes.Favourites">
+          <button type="button" [disabled]="loading" class="list-group-item list-group-item-action" (click)="setPickerMode(pickerModes.Favourites)" [class.active]="pickerMode == pickerModes.Favourites">
             <i class="bi bi-star-fill"></i>{{ 'directoryPicker.favourites' | translate }}
           </button>
 
-          <button type="button" class="list-group-item list-group-item-action" (click)="setPickerMode(pickerModes.History)" [class.active]="pickerMode == pickerModes.History">
+          <button type="button" [disabled]="loading" class="list-group-item list-group-item-action" (click)="setPickerMode(pickerModes.History)" [class.active]="pickerMode == pickerModes.History">
             <i class="bi bi-clock-history"></i>{{ 'directoryPicker.history' | translate }}
           </button>
         </div>
 
-        <div class="list-group location-options-list mt-4">
+        <div class="list-group location-options-list mt-4 mb-3">
           <li class="list-group-item">
             <input class="form-check-input" type="checkbox" name="show-files" id="show-files" [(ngModel)]="showFiles" (ngModelChange)="updateShowFilesDefault($event)" [ngModelOptions]="{standalone: true}">
             <label class="form-check-label" for="show-files">{{ 'directoryPicker.showFiles' | translate }}</label>
@@ -46,7 +46,7 @@
         </div>
       </div>
 
-      <div class="col">
+      <div class="col-lg" *ngIf="!loading">
 
         <!-- Outbox -->
         <div class="list-group" *ngIf="pickerMode == pickerModes.Outbox">
@@ -159,6 +159,15 @@
           </button>
         </div>
       </div>
+
+      <div class="col-lg" *ngIf="loading">
+        <div class="d-flex justify-content-center">
+          <div class="spinner-border text-secondary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      </div>
+
     </div>
 
     <div class="row name-container" *ngIf="showNameEditor">

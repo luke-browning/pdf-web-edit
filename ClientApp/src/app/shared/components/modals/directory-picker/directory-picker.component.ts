@@ -33,27 +33,53 @@ export class DirectoryPickerComponent implements OnInit {
   history: string[] = [];
 
   showFiles = false;
+  loading = false;
+
+  directoryCacheKey = 'save_as_directory_listing';
 
   constructor(private activeModal: NgbActiveModal, private api: PDFWebEditAPI.DocumentClient, private uiService: UiService,
     private sessionService: SessionService, private modalService: NgbModal, private translateService: TranslateService) { }
 
   ngOnInit(): void {
 
+    this.loading = true;
+
+    // Try and load cached copy of directory structure
+    let rootFolder = this.sessionService.getCache(this.directoryCacheKey);
+
+    if (rootFolder) {
+      this.directoriesUpdated(rootFolder as PDFWebEditAPI.Folder);
+    }
+
     // Load directories
     this.api.getDirectories().subscribe(result => {
-      this.rootFolder = result!;
-
-      this.currentPath = [];
-      this.currentDirectoryFolders = this.rootFolder.subFolders;
-      this.folderFiles = this.rootFolder.documents;
-
-      // Load history and favourites
-      this.favourites = (localStorage.getItem('save_favourites') || '').split(',').filter(n => n);
-      this.history = (localStorage.getItem('save_history') || '').split(',').filter(n => n);
-
-      // Show files
-      this.sessionService.showFilesOnSaveAs.subscribe(x => this.showFiles = x);
+      this.directoriesUpdated(result!);
     });
+
+    // Load history and favourites
+    this.favourites = (localStorage.getItem('save_favourites') || '').split(',').filter(n => n);
+    this.history = (localStorage.getItem('save_history') || '').split(',').filter(n => n);
+
+    // Show files
+    this.sessionService.showFilesOnSaveAs.subscribe(x => this.showFiles = x);
+  }
+
+  directoriesUpdated(rootFolder: PDFWebEditAPI.Folder) {
+
+    // Cache the latest directory listing
+    this.sessionService.setCache(this.directoryCacheKey, rootFolder);
+
+    // Get the current path before we replace the folder structure
+    let currentPath = this.getCurrentPath();
+
+    // Replace the folder structure
+    this.rootFolder = rootFolder;
+
+    // Set the current directory back to what it was
+    this.setFolderByPath(currentPath);
+
+    // Finished load
+    this.loading = false;
   }
 
   up() {

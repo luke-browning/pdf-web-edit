@@ -21,6 +21,7 @@ export class NavMenuComponent {
 
   // Search
   @ViewChild('search') search!: ElementRef<HTMLInputElement>;
+  @ViewChild('searchmobile') searchMobile!: ElementRef<HTMLInputElement>;
   searchFocused = false;
 
   // Colour modes
@@ -44,7 +45,7 @@ export class NavMenuComponent {
 
   targetDirectory = PDFWebEditAPI.TargetDirectory;
 
-  isExpanded = false;
+  isMenuCollapsed = true;
 
   constructor(private router: Router, private modalService: NgbModal, private configService: ConfigService,
     private sessionService: SessionService, private translateService: TranslateService, private titleService: Title) {
@@ -161,14 +162,25 @@ export class NavMenuComponent {
         })
       )
       .subscribe();
+
+    fromEvent(this.searchMobile.nativeElement, 'keyup')
+      .pipe(
+        filter(Boolean),
+        debounceTime(0),
+        distinctUntilChanged(),
+        tap(() => {
+          this.sessionService.setSearch(this.searchMobile.nativeElement.value)
+        })
+      )
+      .subscribe();
   }
 
   collapse() {
-    this.isExpanded = false;
+    this.isMenuCollapsed = false;
   }
 
   toggle() {
-    this.isExpanded = !this.isExpanded;
+    this.isMenuCollapsed = !this.isMenuCollapsed;
   }
 
   editConfig() {
@@ -209,6 +221,7 @@ export class NavMenuComponent {
 
   clearSearch() {
     this.search.nativeElement.value = '';
+    this.searchMobile.nativeElement.value = '';
     this.sessionService.setSearch('');
   }
 }
