@@ -44,6 +44,9 @@ export class SessionService {
   private showFilesOnSaveAs$ = new BehaviorSubject<boolean>(false);
   showFilesOnSaveAs = this.showFilesOnSaveAs$.asObservable();
 
+  // Cache
+  private cache = new Map<string, object>();
+
   constructor(private ref: ApplicationRef, private configService: ConfigService, private translate: TranslateService) {
 
     this.readBrowserColourMode();
@@ -156,6 +159,18 @@ export class SessionService {
 
     // Save the currently selected sort direction
     this.search$.next(search);
+  }
+
+  setCache(key: string, value: object) {
+
+    // Save the key-value pair
+    this.cache.set(key, value);
+  }
+
+  getCache(key: string): object | undefined {
+
+    // Get the value for the key
+    return this.cache.get(key);
   }
 
   /// <summary>
