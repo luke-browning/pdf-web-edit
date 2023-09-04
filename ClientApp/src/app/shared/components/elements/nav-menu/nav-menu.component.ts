@@ -21,6 +21,7 @@ export class NavMenuComponent {
 
   // Search
   @ViewChild('search') search!: ElementRef<HTMLInputElement>;
+  @ViewChild('searchmobile') searchMobile!: ElementRef<HTMLInputElement>;
   searchFocused = false;
 
   // Colour modes
@@ -161,6 +162,17 @@ export class NavMenuComponent {
         })
       )
       .subscribe();
+
+    fromEvent(this.searchMobile.nativeElement, 'keyup')
+      .pipe(
+        filter(Boolean),
+        debounceTime(0),
+        distinctUntilChanged(),
+        tap(() => {
+          this.sessionService.setSearch(this.searchMobile.nativeElement.value)
+        })
+      )
+      .subscribe();
   }
 
   collapse() {
@@ -209,6 +221,7 @@ export class NavMenuComponent {
 
   clearSearch() {
     this.search.nativeElement.value = '';
+    this.searchMobile.nativeElement.value = '';
     this.sessionService.setSearch('');
   }
 }

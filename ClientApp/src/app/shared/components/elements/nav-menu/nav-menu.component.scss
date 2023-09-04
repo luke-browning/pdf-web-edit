@@ -1,3 +1,7 @@
+@import 'node_modules/bootstrap/scss/functions';
+@import 'node_modules/bootstrap/scss/variables';
+@import 'node_modules/bootstrap/scss/mixins';
+
 .navbar {
   --bs-navbar-padding-x: 1rem;
 }
@@ -34,10 +38,41 @@ html {
     
 }
 
+.nav-divider {
+  line-height: 0em;
+  margin: 10px 0 20px;
+  border-bottom: 1px solid var(--bs-gray-300);
+
+  span {
+    background: var(--bs-white);
+    padding: 0 10px 0 2px;
+    font-size: 0.875em;
+    text-transform: uppercase;
+  }
+}
+
+.navbar-dark {
+  .nav-divider {
+    border-bottom: 1px solid var(--bs-gray-800) !important;
+
+    span {
+      background: rgba(var(--bs-dark-rgb), var(--bs-bg-opacity)) !important;
+      color: var(--bs-secondary) !important;
+    }
+  }
+}
+
+
 .nav-search {
     width: 50%;
 }
 
 #search::placeholder {
   /*color: white;*/
+}
+
+@include media-breakpoint-up(lg) {
+  .mobile-nav {
+    display: none !important;
+  }
 }

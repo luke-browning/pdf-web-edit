@@ -1,170 +1,299 @@
-<nav class="navbar navbar-expand-md mb-3"
+<nav class="navbar navbar-expand-lg mb-3"
      [ngClass]="colourMode == 'light' ? 'navbar-light bg-white border-bottom box-shadow' : 'navbar-dark bg-dark'">
 
   <a class="navbar-brand" [routerLink]="['/']">
     <span class="logo-1">{{ 'header.branding.logo1' | translate }}</span><span class="logo-2"> {{ 'header.branding.logo2' | translate }}</span>
   </a>
 
-  <div class="navbar-collapse collapse">
-    <ul class="navbar-nav me-auto" *ngIf="config?.headerConfig?.showDirectoryPicker">
-      <li class="nav-item" ngbDropdown>
-        <a class="nav-link dropdown-toggle" ngbDropdownToggle role="button" aria-expanded="false" tourAnchor="folder">
-          {{ currentDirectoryTranslated }}
-        </a>
-        <div ngbDropdownMenu class="dropdown-menu" [ngClass]="colourMode == 'light' ? '' : 'dropdown-menu-dark'">
-          <button ngbDropdownItem class="dropdown-item" routerLink="/inbox" [class.active]="currentDirectory == 'Inbox'">
-            {{ 'shared.folders.inbox' | translate }}
-          </button>
-          <button ngbDropdownItem class="dropdown-item" routerLink="/outbox" [class.active]="currentDirectory == 'Outbox'">
-            {{ 'shared.folders.outbox' | translate }}
-          </button>
-          <hr class="dropdown-divider">
-          <button ngbDropdownItem class="dropdown-item" routerLink="/archive" [class.active]="currentDirectory == 'Archive'">
-            {{ 'shared.folders.archive' | translate }}
-          </button>
-        </div>
-      </li>
-    </ul>
-
-    <div class="me-auto nav-search" *ngIf="config?.headerConfig?.showSearch">
-      <input type="text"
-             class="form-control border-0"
-             [ngClass]="searchFocused ? '' : 'text-light bg-secondary'"
-             style="--bs-bg-opacity: .4; padding-right: 40px; display: inline-block"
-             id="search"
-             placeholder="{{ 'header.search.placeholder' | translate }}"
-             (focus)="searchFocused = true;"
-             (focusout)="searchFocused = false;"
-             #search>
-      <button class="btn bg-transparent border-0"
-              [ngClass]="searchFocused ? 'text-dark bg-white' : (colourMode == 'light' ? 'text-secondary bg-secondary' : 'text-light bg-secondary')"
-              style="--bs-bg-opacity: .4; margin-left: -40px; z-index: 100;"
-              type="button"
-              (click)="clearSearch()">
-        <i class="bi bi-x-lg"></i>
-      </button>
-    </div>
-
-    <ul class="navbar-nav">
-      <ng-container *ngIf="config?.headerConfig?.showPreviewSizePicker">
-        <li class="nav-item" ngbDropdown ngbTooltip="{{ 'shared.previewSize.label' | translate }}" placement="left" tourAnchor="size">
-          <a class="nav-link" ngbDropdownToggle role="button">
-            <i class="bi bi-layout-three-columns" *ngIf="previewSize == 'small' && config?.headerConfig?.showIcons!"></i>
-            <i class="bi bi-layout-split" *ngIf="previewSize == 'medium' && config?.headerConfig?.showIcons!"></i>
-            <i class="bi bi-square" *ngIf="previewSize == 'large' && config?.headerConfig?.showIcons!"></i>
-            <span *ngIf="config?.headerConfig?.showIcons! && config?.headerConfig?.showLabels!">&nbsp;</span>
-            <span *ngIf="previewSize == 'small' && config?.headerConfig?.showLabels!">{{ 'shared.previewSize.sizes.small' | translate }}</span>
-            <span *ngIf="previewSize == 'medium' && config?.headerConfig?.showLabels!">{{ 'shared.previewSize.sizes.medium' | translate }}</span>
-            <span *ngIf="previewSize == 'large' && config?.headerConfig?.showLabels!">{{ 'shared.previewSize.sizes.large' | translate }}</span>
-          </a>
-          <div ngbDropdownMenu class="dropdown-menu dropdown-menu-end" [ngClass]="colourMode == 'light' ? '' : 'dropdown-menu-dark'">
-            <a ngbDropdownItem href="#" (click)="$event.preventDefault(); setPreviewSize('small');" [class.active]="previewSize == 'small'">
-              <i class="bi bi-layout-three-columns pe-2"></i> {{ 'shared.previewSize.sizes.small' | translate }}
-            </a>
-            <a ngbDropdownItem href="#" (click)="$event.preventDefault(); setPreviewSize('medium');" [class.active]="previewSize == 'medium'">
-              <i class="bi bi-layout-split pe-2"></i> {{ 'shared.previewSize.sizes.medium' | translate }}
-            </a>
-            <a ngbDropdownItem href="#" (click)="$event.preventDefault(); setPreviewSize('large');" [class.active]="previewSize == 'large'">
-              <i class="bi bi-square pe-2"></i> {{ 'shared.previewSize.sizes.large' | translate }}
-            </a>
-          </div>
-        </li>
-      </ng-container>
-
-      <ng-container *ngIf="config?.headerConfig?.showSortPicker">
-        <li class="nav-item" ngbDropdown ngbTooltip="{{ 'shared.sort.label' | translate }}" placement="left" tourAnchor="order">
-          <a class="nav-link" ngbDropdownToggle role="button">
-            <i class="bi bi-sort-alpha-down" *ngIf="config?.headerConfig?.showIcons!"></i>
-            <span *ngIf="config?.headerConfig?.showIcons! && config?.headerConfig?.showLabels!">&nbsp;</span>
-            <span *ngIf="config?.headerConfig?.showLabels!">{{ sortByTranslated }} ({{ sortDirectionTranslated }})</span>
-          </a>
-          <div ngbDropdownMenu class="dropdown-menu dropdown-menu-end" [ngClass]="colourMode == 'light' ? '' : 'dropdown-menu-dark'">
-            <div class="btn-group ps-2 pe-2">
-              <div class="btn-group" ngbDropdown role="group">
-                <button type="button" class="btn btn-secondary" ngbDropdownToggle>{{ sortByTranslated }}</button>
-                <div class="dropdown-menu" ngbDropdownMenu [ngClass]="colourMode == 'light' ? '' : 'dropdown-menu-dark'">
-                  <button ngbDropdownItem (click)="setSortBy('Name')" [class.active]="sortBy == 'Name'">{{ 'shared.sort.by.name' | translate }}</button>
-                  <button ngbDropdownItem (click)="setSortBy('Created')" [class.active]="sortBy == 'Created'">{{ 'shared.sort.by.created' | translate }}</button>
-                  <button ngbDropdownItem (click)="setSortBy('Last Modified')" [class.active]="sortBy == 'Last Modified'">{{ 'shared.sort.by.lastModified' | translate }}</button>
-                </div>
-              </div>
-              <div class="btn-group" ngbDropdown role="group">
-                <button type="button" class="btn btn-secondary" ngbDropdownToggle>{{ sortDirectionTranslated }}</button>
-                <div class="dropdown-menu" ngbDropdownMenu [ngClass]="colourMode == 'light' ? '' : 'dropdown-menu-dark'">
-                  <button ngbDropdownItem (click)="setSortDirection('Asc')" [class.active]="sortDirection == 'Asc'">{{ 'shared.sort.direction.asc' | translate }}</button>
-                  <button ngbDropdownItem (click)="setSortDirection('Desc')" [class.active]="sortDirection == 'Desc'">{{ 'shared.sort.direction.desc' | translate }}</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </li>
-      </ng-container>
-
-      <ng-container *ngIf="config?.headerConfig?.showLanguagePicker">
-        <li class="nav-item" ngbDropdown ngbTooltip="{{ 'shared.languages.label' | translate }}" placement="left">
-          <a class="nav-link" ngbDropdownToggle role="button">
-            <i class="bi bi-translate" *ngIf="config?.headerConfig?.showIcons!"></i>
-            <span *ngIf="config?.headerConfig?.showIcons! && config?.headerConfig?.showLabels!">&nbsp;</span>
-            <span *ngIf="config?.headerConfig?.showLabels!">{{ 'shared.languages.language' | translate }}</span>
-          </a>
-          <div ngbDropdownMenu class="dropdown-menu dropdown-menu-end" [ngClass]="colourMode == 'light' ? '' : 'dropdown-menu-dark'">
-            <a ngbDropdownItem href="#" (click)="$event.preventDefault(); setLanguage('en')" [class.active]="language == 'en'">
-              <i class="bi bi-geo-alt pe-2"></i> {{ 'shared.languages.languages.en' | translate }}
-            </a>
-            <a ngbDropdownItem href="#" (click)="$event.preventDefault(); setLanguage('es')" [class.active]="language == 'es'">
-              <i class="bi bi-geo-alt pe-2"></i> {{ 'shared.languages.languages.es' | translate }}
-            </a>
-            <a ngbDropdownItem href="#" (click)="$event.preventDefault(); setLanguage('fr')" [class.active]="language == 'fr'">
-              <i class="bi bi-geo-alt pe-2"></i> {{ 'shared.languages.languages.fr' | translate }}
-            </a>
-          </div>
-        </li>
-      </ng-container>
-
-      <ng-container *ngIf="config?.headerConfig?.showColourModePicker">
-        <li class="nav-item" ngbDropdown ngbTooltip="{{ 'shared.colourMode.label' | translate }}" placement="left">
-          <a class="nav-link" ngbDropdownToggle role="button">
-            <i class="bi bi-sun-fill" *ngIf="selectedColourMode == 'light' && config?.headerConfig?.showIcons!"></i>
-            <i class="bi bi-moon-fill" *ngIf="selectedColourMode == 'dark' && config?.headerConfig?.showIcons!"></i>
-            <i class="bi bi-circle-half" *ngIf="selectedColourMode == 'auto' && config?.headerConfig?.showIcons!"></i>
-            <span *ngIf="config?.headerConfig?.showIcons! && config?.headerConfig?.showLabels!">&nbsp;</span>
-            <span *ngIf="selectedColourMode == 'light' && config?.headerConfig?.showLabels!">{{ 'shared.colourMode.modes.light' | translate }}</span>
-            <span *ngIf="selectedColourMode == 'dark' && config?.headerConfig?.showLabels!">{{ 'shared.colourMode.modes.dark' | translate }}</span>
-            <span *ngIf="selectedColourMode == 'auto' && config?.headerConfig?.showLabels!">{{ 'shared.colourMode.modes.auto' | translate }}</span>
-          </a>
-          <div ngbDropdownMenu class="dropdown-menu dropdown-menu-end" [ngClass]="colourMode == 'light' ? '' : 'dropdown-menu-dark'">
-            <a ngbDropdownItem href="#" (click)="$event.preventDefault(); setColourMode('light')" [class.active]="selectedColourMode == 'light'">
-              <i class="bi bi-sun-fill pe-2"></i> {{ 'shared.colourMode.modes.light' | translate }}
-            </a>
-            <a ngbDropdownItem href="#" (click)="$event.preventDefault(); setColourMode('dark')" [class.active]="selectedColourMode == 'dark'">
-              <i class="bi bi-moon-fill pe-2"></i> {{ 'shared.colourMode.modes.dark' | translate }}
-            </a>
-            <hr class="dropdown-divider">
-            <a ngbDropdownItem href="#" (click)="$event.preventDefault(); setColourMode('auto')" [class.active]="selectedColourMode == 'auto'">
-              <i class="bi bi-circle-half pe-2"></i> {{ 'shared.colourMode.modes.auto' | translate }}
-            </a>
-          </div>
-        </li>
-      </ng-container>
-
-      <ng-container *ngIf="config?.headerConfig?.showSettingsButton">
-        <li class="nav-item py-2">
-          <div class="vr d-flex h-100 mx-2 text-secondary"></div>
-          <hr class="d-none my-2 text-secondary-50">
-        </li>
-
-        <li class="nav-item" ngbTooltip="{{ 'header.settings.label' | translate }}" placement="left">
-          <a type="button" class="nav-link" (click)="editConfig()">
-            <i class="bi bi-gear-fill"></i>
-          </a>
-        </li>
-      </ng-container>
-
-    </ul>
-  </div>
-
   <button class="navbar-toggler" type="button" aria-label="Toggle navigation"
           [attr.aria-expanded]="isMenuCollapsed" (click)="toggle()">
     <span class="navbar-toggler-icon"></span>
   </button>
+
+  <ul class="navbar-nav me-auto d-none d-lg-flex" *ngIf="config?.headerConfig?.showDirectoryPicker">
+    <li class="nav-item" ngbDropdown>
+      <a class="nav-link dropdown-toggle" ngbDropdownToggle role="button" aria-expanded="false" tourAnchor="folder">
+        {{ currentDirectoryTranslated }}
+      </a>
+      <div ngbDropdownMenu class="dropdown-menu" [ngClass]="colourMode == 'light' ? '' : 'dropdown-menu-dark'">
+        <button ngbDropdownItem class="dropdown-item" routerLink="/inbox" [class.active]="currentDirectory == 'Inbox'">
+          {{ 'shared.folders.inbox' | translate }}
+        </button>
+        <button ngbDropdownItem class="dropdown-item" routerLink="/outbox" [class.active]="currentDirectory == 'Outbox'">
+          {{ 'shared.folders.outbox' | translate }}
+        </button>
+        <hr class="dropdown-divider">
+        <button ngbDropdownItem class="dropdown-item" routerLink="/archive" [class.active]="currentDirectory == 'Archive'">
+          {{ 'shared.folders.archive' | translate }}
+        </button>
+      </div>
+    </li>
+  </ul>
+
+  <div class="me-auto nav-search d-none d-lg-flex" *ngIf="config?.headerConfig?.showSearch">
+    <input type="text"
+           class="form-control border-0"
+           [ngClass]="searchFocused ? '' : 'text-light bg-secondary'"
+           style="--bs-bg-opacity: .4; padding-right: 40px; display: inline-block"
+           id="search"
+           placeholder="{{ 'header.search.placeholder' | translate }}"
+           (focus)="searchFocused = true;"
+           (focusout)="searchFocused = false;"
+           #search>
+    <button class="btn bg-transparent border-0"
+            [ngClass]="searchFocused ? 'text-dark bg-white' : (colourMode == 'light' ? 'text-secondary bg-secondary' : 'text-light bg-secondary')"
+            style="--bs-bg-opacity: .4; margin-left: -40px; z-index: 100;"
+            type="button"
+            (click)="clearSearch()">
+      <i class="bi bi-x-lg"></i>
+    </button>
+  </div>
+
+  <ul class="navbar-nav d-none d-lg-flex">
+    <ng-container *ngIf="config?.headerConfig?.showPreviewSizePicker">
+      <li class="nav-item" ngbDropdown ngbTooltip="{{ 'shared.previewSize.label' | translate }}" placement="left" tourAnchor="size">
+        <a class="nav-link" ngbDropdownToggle role="button">
+          <i class="bi bi-layout-three-columns" *ngIf="previewSize == 'small' && config?.headerConfig?.showIcons!"></i>
+          <i class="bi bi-layout-split" *ngIf="previewSize == 'medium' && config?.headerConfig?.showIcons!"></i>
+          <i class="bi bi-square" *ngIf="previewSize == 'large' && config?.headerConfig?.showIcons!"></i>
+          <span *ngIf="config?.headerConfig?.showIcons! && config?.headerConfig?.showLabels!">&nbsp;</span>
+          <span *ngIf="previewSize == 'small' && config?.headerConfig?.showLabels!">{{ 'shared.previewSize.sizes.small' | translate }}</span>
+          <span *ngIf="previewSize == 'medium' && config?.headerConfig?.showLabels!">{{ 'shared.previewSize.sizes.medium' | translate }}</span>
+          <span *ngIf="previewSize == 'large' && config?.headerConfig?.showLabels!">{{ 'shared.previewSize.sizes.large' | translate }}</span>
+        </a>
+        <div ngbDropdownMenu class="dropdown-menu dropdown-menu-end" [ngClass]="colourMode == 'light' ? '' : 'dropdown-menu-dark'">
+          <a ngbDropdownItem href="#" (click)="$event.preventDefault(); setPreviewSize('small');" [class.active]="previewSize == 'small'">
+            <i class="bi bi-layout-three-columns pe-2"></i> {{ 'shared.previewSize.sizes.small' | translate }}
+          </a>
+          <a ngbDropdownItem href="#" (click)="$event.preventDefault(); setPreviewSize('medium');" [class.active]="previewSize == 'medium'">
+            <i class="bi bi-layout-split pe-2"></i> {{ 'shared.previewSize.sizes.medium' | translate }}
+          </a>
+          <a ngbDropdownItem href="#" (click)="$event.preventDefault(); setPreviewSize('large');" [class.active]="previewSize == 'large'">
+            <i class="bi bi-square pe-2"></i> {{ 'shared.previewSize.sizes.large' | translate }}
+          </a>
+        </div>
+      </li>
+    </ng-container>
+
+    <ng-container *ngIf="config?.headerConfig?.showSortPicker">
+      <li class="nav-item" ngbDropdown ngbTooltip="{{ 'shared.sort.label' | translate }}" placement="left" tourAnchor="order">
+        <a class="nav-link" ngbDropdownToggle role="button">
+          <i class="bi bi-sort-alpha-down" *ngIf="config?.headerConfig?.showIcons!"></i>
+          <span *ngIf="config?.headerConfig?.showIcons! && config?.headerConfig?.showLabels!">&nbsp;</span>
+          <span *ngIf="config?.headerConfig?.showLabels!">{{ sortByTranslated }} ({{ sortDirectionTranslated }})</span>
+        </a>
+        <div ngbDropdownMenu class="dropdown-menu dropdown-menu-end" [ngClass]="colourMode == 'light' ? '' : 'dropdown-menu-dark'">
+          <div class="btn-group ps-2 pe-2">
+            <div class="btn-group" ngbDropdown role="group">
+              <button type="button" class="btn btn-secondary" ngbDropdownToggle>{{ sortByTranslated }}</button>
+              <div class="dropdown-menu" ngbDropdownMenu [ngClass]="colourMode == 'light' ? '' : 'dropdown-menu-dark'">
+                <button ngbDropdownItem (click)="setSortBy('Name')" [class.active]="sortBy == 'Name'">{{ 'shared.sort.by.name' | translate }}</button>
+                <button ngbDropdownItem (click)="setSortBy('Created')" [class.active]="sortBy == 'Created'">{{ 'shared.sort.by.created' | translate }}</button>
+                <button ngbDropdownItem (click)="setSortBy('Last Modified')" [class.active]="sortBy == 'Last Modified'">{{ 'shared.sort.by.lastModified' | translate }}</button>
+              </div>
+            </div>
+            <div class="btn-group" ngbDropdown role="group">
+              <button type="button" class="btn btn-secondary" ngbDropdownToggle>{{ sortDirectionTranslated }}</button>
+              <div class="dropdown-menu" ngbDropdownMenu [ngClass]="colourMode == 'light' ? '' : 'dropdown-menu-dark'">
+                <button ngbDropdownItem (click)="setSortDirection('Asc')" [class.active]="sortDirection == 'Asc'">{{ 'shared.sort.direction.asc' | translate }}</button>
+                <button ngbDropdownItem (click)="setSortDirection('Desc')" [class.active]="sortDirection == 'Desc'">{{ 'shared.sort.direction.desc' | translate }}</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </li>
+    </ng-container>
+
+    <ng-container *ngIf="config?.headerConfig?.showLanguagePicker">
+      <li class="nav-item" ngbDropdown ngbTooltip="{{ 'shared.languages.label' | translate }}" placement="left">
+        <a class="nav-link" ngbDropdownToggle role="button">
+          <i class="bi bi-translate" *ngIf="config?.headerConfig?.showIcons!"></i>
+          <span *ngIf="config?.headerConfig?.showIcons! && config?.headerConfig?.showLabels!">&nbsp;</span>
+          <span *ngIf="config?.headerConfig?.showLabels!">{{ 'shared.languages.language' | translate }}</span>
+        </a>
+        <div ngbDropdownMenu class="dropdown-menu dropdown-menu-end" [ngClass]="colourMode == 'light' ? '' : 'dropdown-menu-dark'">
+          <a ngbDropdownItem href="#" (click)="$event.preventDefault(); setLanguage('en')" [class.active]="language == 'en'">
+            <i class="bi bi-geo-alt pe-2"></i> {{ 'shared.languages.languages.en' | translate }}
+          </a>
+          <a ngbDropdownItem href="#" (click)="$event.preventDefault(); setLanguage('es')" [class.active]="language == 'es'">
+            <i class="bi bi-geo-alt pe-2"></i> {{ 'shared.languages.languages.es' | translate }}
+          </a>
+          <a ngbDropdownItem href="#" (click)="$event.preventDefault(); setLanguage('fr')" [class.active]="language == 'fr'">
+            <i class="bi bi-geo-alt pe-2"></i> {{ 'shared.languages.languages.fr' | translate }}
+          </a>
+        </div>
+      </li>
+    </ng-container>
+
+    <ng-container *ngIf="config?.headerConfig?.showColourModePicker">
+      <li class="nav-item" ngbDropdown ngbTooltip="{{ 'shared.colourMode.label' | translate }}" placement="left">
+        <a class="nav-link" ngbDropdownToggle role="button">
+          <i class="bi bi-sun-fill" *ngIf="selectedColourMode == 'light' && config?.headerConfig?.showIcons!"></i>
+          <i class="bi bi-moon-fill" *ngIf="selectedColourMode == 'dark' && config?.headerConfig?.showIcons!"></i>
+          <i class="bi bi-circle-half" *ngIf="selectedColourMode == 'auto' && config?.headerConfig?.showIcons!"></i>
+          <span *ngIf="config?.headerConfig?.showIcons! && config?.headerConfig?.showLabels!">&nbsp;</span>
+          <span *ngIf="selectedColourMode == 'light' && config?.headerConfig?.showLabels!">{{ 'shared.colourMode.modes.light' | translate }}</span>
+          <span *ngIf="selectedColourMode == 'dark' && config?.headerConfig?.showLabels!">{{ 'shared.colourMode.modes.dark' | translate }}</span>
+          <span *ngIf="selectedColourMode == 'auto' && config?.headerConfig?.showLabels!">{{ 'shared.colourMode.modes.auto' | translate }}</span>
+        </a>
+        <div ngbDropdownMenu class="dropdown-menu dropdown-menu-end" [ngClass]="colourMode == 'light' ? '' : 'dropdown-menu-dark'">
+          <a ngbDropdownItem href="#" (click)="$event.preventDefault(); setColourMode('light')" [class.active]="selectedColourMode == 'light'">
+            <i class="bi bi-sun-fill pe-2"></i> {{ 'shared.colourMode.modes.light' | translate }}
+          </a>
+          <a ngbDropdownItem href="#" (click)="$event.preventDefault(); setColourMode('dark')" [class.active]="selectedColourMode == 'dark'">
+            <i class="bi bi-moon-fill pe-2"></i> {{ 'shared.colourMode.modes.dark' | translate }}
+          </a>
+          <hr class="dropdown-divider">
+          <a ngbDropdownItem href="#" (click)="$event.preventDefault(); setColourMode('auto')" [class.active]="selectedColourMode == 'auto'">
+            <i class="bi bi-circle-half pe-2"></i> {{ 'shared.colourMode.modes.auto' | translate }}
+          </a>
+        </div>
+      </li>
+    </ng-container>
+
+    <ng-container *ngIf="config?.headerConfig?.showSettingsButton">
+      <li class="nav-item py-2">
+        <div class="vr d-flex h-100 mx-2 text-secondary"></div>
+        <hr class="d-none my-2 text-secondary-50">
+      </li>
+
+      <li class="nav-item" ngbTooltip="{{ 'header.settings.label' | translate }}" placement="left">
+        <a type="button" class="nav-link" (click)="editConfig()">
+          <i class="bi bi-gear-fill"></i>
+        </a>
+      </li>
+    </ng-container>
+  </ul>
+
+  <div class="mobile-nav collapse navbar-collapse" [ngbCollapse]="isMenuCollapsed">
+    <ul class="navbar-nav me-auto mt-3 mb-2">
+      <li class="nav-item mb-3" *ngIf="config?.headerConfig?.showDirectoryPicker">
+        <div class="btn-group d-flex" role="group">
+          <button class="btn btn-outline-primary" routerLink="/inbox" [class.active]="currentDirectory == 'Inbox'">
+            {{ 'shared.folders.inbox' | translate }}
+          </button>
+          <button class="btn btn-outline-primary" routerLink="/outbox" [class.active]="currentDirectory == 'Outbox'">
+            {{ 'shared.folders.outbox' | translate }}
+          </button>
+          <button class="btn btn-outline-primary" routerLink="/archive" [class.active]="currentDirectory == 'Archive'">
+            {{ 'shared.folders.archive' | translate }}
+          </button>
+        </div>
+      </li>
+
+      <li class="nav-item" *ngIf="config?.headerConfig?.showSearch">
+        <input type="text"
+               class="form-control border-0 mb-3"
+               [ngClass]="searchFocused ? '' : 'text-light bg-secondary'"
+               style="--bs-bg-opacity: .4; padding-right: 40px; display: inline-block"
+               id="search-mobile"
+               placeholder="{{ 'header.search.placeholder' | translate }}"
+               (focus)="searchFocused = true;"
+               (focusout)="searchFocused = false;"
+               #searchmobile>
+        <button class="btn bg-transparent border-0"
+                [ngClass]="searchFocused ? 'text-dark bg-white' : (colourMode == 'light' ? 'text-secondary bg-secondary' : 'text-light bg-secondary')"
+                style="--bs-bg-opacity: .4; margin-left: -40px; z-index: 100;"
+                type="button"
+                (click)="clearSearch()">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </li>
+
+      <li class="nav-divider">
+        <span>{{ 'shared.previewSize.label' | translate }}</span>
+      </li>
+
+      <li class="nav-item" *ngIf="config?.headerConfig?.showPreviewSizePicker">
+        <div class="btn-group d-flex mb-3" role="group">
+          <button class="btn btn-outline-primary" (click)="$event.preventDefault(); setPreviewSize('small');" [class.active]="previewSize == 'small'">
+            {{ 'shared.previewSize.sizes.small' | translate }}
+          </button>
+          <button class="btn btn-outline-primary" (click)="$event.preventDefault(); setPreviewSize('medium');" [class.active]="previewSize == 'medium'">
+            {{ 'shared.previewSize.sizes.medium' | translate }}
+          </button>
+          <button class="btn btn-outline-primary" (click)="$event.preventDefault(); setPreviewSize('large');" [class.active]="previewSize == 'large'">
+            {{ 'shared.previewSize.sizes.large' | translate }}
+          </button>
+        </div>
+      </li>
+
+      <li class="nav-divider">
+        <span>{{ 'shared.sort.label' | translate }}</span>
+      </li>
+
+      <li class="nav-item" *ngIf="config?.headerConfig?.showSortPicker">
+        <div class="btn-group d-flex mb-3" role="group">
+          <button class="btn btn-outline-primary" (click)="setSortBy('Name')" [class.active]="sortBy == 'Name'">
+            {{ 'shared.sort.by.name' | translate }}
+          </button>
+          <button class="btn btn-outline-primary" (click)="setSortBy('Created')" [class.active]="sortBy == 'Created'">
+            {{ 'shared.sort.by.created' | translate }}
+          </button>
+          <button class="btn btn-outline-primary" (click)="setSortBy('Last Modified')" [class.active]="sortBy == 'Last Modified'">
+            {{ 'shared.sort.by.lastModified' | translate }}
+          </button>
+        </div>
+      </li>
+
+      <li class="nav-item" *ngIf="config?.headerConfig?.showSortPicker">
+        <div class="btn-group d-flex mb-3" role="group">
+          <button class="btn btn-outline-primary" (click)="setSortDirection('Asc')" [class.active]="sortDirection == 'Asc'">
+            {{ 'shared.sort.direction.asc' | translate }}
+          </button>
+          <button class="btn btn-outline-primary" (click)="setSortDirection('Desc')" [class.active]="sortDirection == 'Desc'">
+            {{ 'shared.sort.direction.desc' | translate }}
+          </button>
+        </div>
+      </li>
+
+      <li class="nav-divider">
+        <span>{{ 'shared.languages.label' | translate }}</span>
+      </li>
+
+      <li class="nav-item" *ngIf="config?.headerConfig?.showLanguagePicker">
+        <div class="btn-group d-flex mb-3" role="group">
+          <button class="btn btn-outline-primary" (click)="$event.preventDefault(); setLanguage('en')" [class.active]="language == 'en'">
+            {{ 'shared.languages.languages.en' | translate }}
+          </button>
+          <button class="btn btn-outline-primary" (click)="$event.preventDefault(); setLanguage('es')" [class.active]="language == 'es'">
+            {{ 'shared.languages.languages.es' | translate }}
+          </button>
+          <button class="btn btn-outline-primary" (click)="$event.preventDefault(); setLanguage('fr')" [class.active]="language == 'fr'">
+            {{ 'shared.languages.languages.fr' | translate }}
+          </button>
+        </div>
+      </li>
+
+      <li class="nav-divider">
+        <span>{{ 'shared.colourMode.label' | translate }}</span>
+      </li>
+
+      <li class="nav-item" *ngIf="config?.headerConfig?.showColourModePicker">
+        <div class="btn-group d-flex mb-3" role="group">
+          <button class="btn btn-outline-primary" (click)="$event.preventDefault(); setColourMode('light')" [class.active]="selectedColourMode == 'light'">
+            {{ 'shared.colourMode.modes.light' | translate }}
+          </button>
+          <button class="btn btn-outline-primary" (click)="$event.preventDefault(); setColourMode('dark')" [class.active]="selectedColourMode == 'dark'">
+            {{ 'shared.colourMode.modes.dark' | translate }}
+          </button>
+          <button class="btn btn-outline-primary" (click)="$event.preventDefault(); setColourMode('auto')" [class.active]="selectedColourMode == 'auto'">
+            {{ 'shared.colourMode.modes.auto' | translate }}
+          </button>
+        </div>
+      </li>
+
+      <li class="nav-divider">
+        <span>{{ 'header.settings.label' | translate }}</span>
+      </li>
+
+      <li class="nav-item" *ngIf="config?.headerConfig?.showSettingsButton">
+        <div class="btn-group d-flex" role="group">
+          <button class="btn btn-outline-primary" (click)="editConfig()">
+            {{ 'header.settings.label' | translate }}
+          </button>
+        </div>
+      </li>
+    </ul>
+  </div>
 </nav>
