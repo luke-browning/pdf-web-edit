@@ -1,4 +1,6 @@
-﻿using PDFWebEdit.Enumerations;
+﻿using iText.IO.Image;
+using iText.Kernel.Pdf;
+using PDFWebEdit.Enumerations;
 using PDFWebEdit.Helpers;
 using PDFWebEdit.Models;
 
@@ -119,7 +121,8 @@ namespace PDFWebEdit.Services
             // Load docs
             var docs = Directory.EnumerateFiles(directory, $"*{PDF_EXTENSION}", searchOption)
                 .Where(x => !x.EndsWith(EDITING_PDF_EXTENSION, StringComparison.OrdinalIgnoreCase))
-                .Select(path => {
+                .Select(path =>
+                {
 
                     var editedPdfPath = Path.Combine(Path.GetDirectoryName(path), Path.GetFileNameWithoutExtension(path) + EDITING_PDF_EXTENSION);
 
@@ -422,7 +425,7 @@ namespace PDFWebEdit.Services
             {
                 result = File.ReadAllBytes(editedPDFPath);
             }
-            else  if (File.Exists(originalPDFPath))
+            else if (File.Exists(originalPDFPath))
             {
                 result = File.ReadAllBytes(originalPDFPath);
             }
@@ -637,19 +640,45 @@ namespace PDFWebEdit.Services
             string inboxDirectory = GetTargetDirectoryPath(TargetDirectory.Inbox);
             string filePath = Path.Combine(inboxDirectory, name);
 
-
-            lock (__lock)
+            // Convert jpg to PDF
+            if (file.ContentType == "image/jpeg")
             {
-                if (File.Exists(filePath))
+                using (var imageStream = File.Create(filePath))
                 {
-                    throw new Exception("A file with the same name already exists in the inbox directory. Creation aborted.");
+                    file.CopyTo(imageStream);
                 }
 
-                // Save the uploaded file to the specified path
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                string pdfFilePath = Path.Combine(inboxDirectory, name.Split(".").First() + ".pdf");
+                ImageData imageData = ImageDataFactory.Create(filePath);
+                using (var pdfStream = new FileStream(pdfFilePath, FileMode.Create, FileAccess.Write))
+                using (var writer = new PdfWriter(pdfStream))
+                using (var pdfDocument = new PdfDocument(writer))
                 {
-                    file.CopyTo(fileStream);
+                    iText.Layout.Document document = new(pdfDocument);
+                    iText.Layout.Element.Image image = new(imageData);
+                    document.Add(image);
                 }
+                // File.Delete(filePath);
+            }
+            else if (file.ContentType == "application/pdf")
+            {
+                lock (__lock)
+                {
+                    if (File.Exists(filePath))
+                    {
+                        throw new Exception($"A file with the same name ('{name}') already exists in the inbox directory. Creation aborted.");
+                    }
+
+                    // Save the uploaded file to the specified path
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        file.CopyTo(fileStream);
+                    }
+                }
+            }
+            else
+            {
+                throw new Exception($"File is not a PDF or Image. (is '{file.ContentType}').");
             }
         }
 
@@ -700,7 +729,8 @@ namespace PDFWebEdit.Services
             var dir = Path.Join(rootDirectory, subDirectory ?? string.Empty);
 
             var result = Directory.GetDirectories(dir)
-                .Select(x => {
+                .Select(x =>
+                {
 
                     var nextSubDirectory = x.Replace(rootDirectory, string.Empty);
 

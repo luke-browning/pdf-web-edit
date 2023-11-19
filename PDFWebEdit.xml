@@ -1713,7 +1713,7 @@
         </member>
         <member name="M:PDFWebEdit.Services.DirectoryService.Create(System.String,Microsoft.AspNetCore.Http.IFormFile)">
             <summary>
-            Saves the document to the outbox directory.
+            Creates document in the inbox directory.
             </summary>
             <param name="name">The name.</param>
             <param name="file">The File.</param>
