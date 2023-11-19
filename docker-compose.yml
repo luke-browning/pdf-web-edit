@@ -1,0 +1,14 @@
+version: '3'
+services:
+  pdfedit:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8080:8080
+    volumes:
+      - ./volumes/config/:/config
+      - ./volumes/inbox/:/inbox
+      - ./volumes/outbox/:/outbox
+      - ./volumes/archive/:/archive
+    user: '1000:1000'
