@@ -627,6 +627,32 @@ namespace PDFWebEdit.Services
             return GetDocument(TargetDirectory.Outbox, targetSubDirectory, newName ?? name);
         }
 
+        /// <summary>
+        /// Creates document in the inbox directory.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="file">The File.</param>
+        public void Create(string name, IFormFile file)
+        {
+            string inboxDirectory = GetTargetDirectoryPath(TargetDirectory.Inbox);
+            string filePath = Path.Combine(inboxDirectory, name);
+
+
+            lock (__lock)
+            {
+                if (File.Exists(filePath))
+                {
+                    throw new Exception("A file with the same name already exists in the inbox directory. Creation aborted.");
+                }
+
+                // Save the uploaded file to the specified path
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    file.CopyTo(fileStream);
+                }
+            }
+        }
+
         #region Helpers
 
         /// <summary>
