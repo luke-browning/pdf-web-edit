@@ -67,6 +67,21 @@ docker run -p 10000:80 -v /host/config:/config -v /host/inbox:/inbox -v /host/ou
 
 Congratulations, PDF Web Edit should now be running on port 10000!
 
+Add it to [ngx-paperless](https://github.com/paperless-ngx/paperless-ngx) `docker-compose.yml`:
+
+```yml
+pdfedit:
+  image: ghcr.io/danielhabenicht/danielhabenicht/fork.pdf-web-edit:v0.9.2
+  ports:
+    - 8080:8080
+  volumes:
+    - ./pdf-edit-config/:/config/
+    - ./pdf-edit-inbox:/inbox
+    - ./consume:/outbox
+    - ./pdf-edit-archive:/archive
+  user: '1000:1000'
+```
+
 ### :wrench: Configuration
 
 A configuration file named conf.json is created in the Config directory on first launch. You can edit the config through the web based interface (cog on the right hand side of the navigation) or you can be modify the config file to change any settings.
@@ -118,5 +133,5 @@ dotnet watch run
 
 # Test Upload
 wget https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf
-curl -i -o - -k -F "file=@dummy.pdf" -u "import:dc424e67-535f-48d7-98ec-5a335b50c178" https://localhost:7114/api/documents/upload
+curl -i -o - -k -F "file=@dummy.pdf" https://localhost:7114/api/documents/upload
 ```
