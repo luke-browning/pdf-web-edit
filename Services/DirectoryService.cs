@@ -638,39 +638,47 @@ namespace PDFWebEdit.Services
         public void Create(string name, IFormFile file)
         {
             string inboxDirectory = GetTargetDirectoryPath(TargetDirectory.Inbox);
-            string filePath = Path.Combine(inboxDirectory, name);
+            string uploadFilePath = Path.Combine(inboxDirectory, name);
 
             // Convert jpg to PDF
             if (file.ContentType == "image/jpeg")
             {
-                using (var imageStream = File.Create(filePath))
+                using (var imageStream = File.Create(uploadFilePath))
                 {
                     file.CopyTo(imageStream);
                 }
 
-                string pdfFilePath = Path.Combine(inboxDirectory, name.Split(".").First() + ".pdf");
-                ImageData imageData = ImageDataFactory.Create(filePath);
+                ImageData imageData = ImageDataFactory.Create(uploadFilePath);
+                File.Delete(uploadFilePath);
+
+                string pdfFileName = name.Split(".").First() + ".pdf";
+                string pdfFilePath = Path.Combine(inboxDirectory, pdfFileName);
+                if (File.Exists(pdfFilePath))
+                {
+                    throw new Exception($"A file with the same name ('{pdfFileName}') already exists in the inbox directory. Creation aborted.");
+                }
+
                 using (var pdfStream = new FileStream(pdfFilePath, FileMode.Create, FileAccess.Write))
                 using (var writer = new PdfWriter(pdfStream))
                 using (var pdfDocument = new PdfDocument(writer))
                 {
                     iText.Layout.Document document = new(pdfDocument);
+                    document.SetMargins(0, 0, 0, 0);
                     iText.Layout.Element.Image image = new(imageData);
                     document.Add(image);
                 }
-                // File.Delete(filePath);
             }
             else if (file.ContentType == "application/pdf")
             {
                 lock (__lock)
                 {
-                    if (File.Exists(filePath))
+                    if (File.Exists(uploadFilePath))
                     {
                         throw new Exception($"A file with the same name ('{name}') already exists in the inbox directory. Creation aborted.");
                     }
 
                     // Save the uploaded file to the specified path
-                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    using (var fileStream = new FileStream(uploadFilePath, FileMode.Create))
                     {
                         file.CopyTo(fileStream);
                     }
