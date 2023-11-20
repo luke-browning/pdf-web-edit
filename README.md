@@ -122,6 +122,7 @@ The project uses a number of 3rd party libraries for manipulating the PDF docume
 
 ```bash
 # Create Volumes directories
+sh ./.devcontainer/seed.sh
 mkdir ./volumes/inbox ./volumes/outbox ./volumes/archive ./volumes/config
 
 cd ClientApp/
@@ -132,6 +133,5 @@ npm run start
 dotnet watch run
 
 # Test Upload
-wget https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf
-curl -i -o - -k -F "file=@dummy.pdf" https://localhost:7114/api/documents/upload
+curl -i -o - -k -F "file=@samples/dummy.pdf" https://localhost:7114/api/documents/upload
 ```
