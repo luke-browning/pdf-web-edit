@@ -3,7 +3,7 @@
 {
 	"name": "C# (.NET)",
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-	"image": "mcr.microsoft.com/devcontainers/dotnet:1-7.0-bullseye",
+	"image": "mcr.microsoft.com/devcontainers/dotnet:6.0-bullseye",
 	"customizations": {
 		"vscode": {
 			"extensions": [
@@ -14,7 +14,9 @@
 	},
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
-	// "features": {},
+	"features": {
+		"ghcr.io/devcontainers/features/node:1": {}
+	},
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [5000, 5001],
@@ -33,5 +35,6 @@
 	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
 	// "remoteUser": "root"
 
-	"onCreateCommand": "sh ./.devcontainer/seed.sh"
+	"onCreateCommand": "sh ./.devcontainer/seed.sh",
+	"postStartCommand": "cd ClientApp && npm install"
 }
