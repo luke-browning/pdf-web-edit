@@ -2023,5 +2023,10 @@
             <param name="password">The password.</param>
             <param name="subDirectory">Subdirectory storing document.</param>
         </member>
+        <member name="T:EventHub">
+            <summary>
+            Event hub for websocket messages to and from the client.
+            </summary>
+        </member>
     </members>
 </doc>

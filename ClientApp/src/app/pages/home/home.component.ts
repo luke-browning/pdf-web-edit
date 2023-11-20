@@ -7,6 +7,7 @@ import { ConfigService } from '../../services/config/config.service';
 import { ReplaceDocument } from '../../shared/components/elements/document/document.component';
 import { BehaviorSubject } from 'rxjs';
 import { SessionService } from '../../services/session/session.service';
+import { EventService } from 'src/api/events';
 
 @Component({
   selector: 'app-home',
@@ -46,7 +47,7 @@ export class HomeComponent {
 
 
   constructor(private api: PDFWebEditAPI.DocumentClient, private modalService: NgbModal, private route: ActivatedRoute,
-    private router: Router, private configService: ConfigService, private sessionService: SessionService) {
+    private router: Router, private configService: ConfigService, private sessionService: SessionService, private eventService: EventService) {
 
     // Load the app config
     configService.getConfig().subscribe((config: PDFWebEditAPI.Config | null | undefined) => {
@@ -94,9 +95,12 @@ export class HomeComponent {
       this.updatedFilteredDocuments();
     });
 
-    this.sessionService.refreshDocuments.subscribe((query: string) => {
+    // this.sessionService.refreshDocuments.subscribe((query: string) => {
+    // });
+
+    this.eventService.events.subscribe(event => {
       this.refreshDocuments();
-    });
+    })
 
     // Keep track of the sorting
     sessionService.sortBy.subscribe((sortBy: string) => this.setSort(sortBy));
