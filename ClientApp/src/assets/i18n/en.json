@@ -12,6 +12,9 @@
     },
     "settings": {
       "label": "Settings"
+    },
+    "reload":{
+      "label": "Reload Folder"
     }
   },
   "footer": {

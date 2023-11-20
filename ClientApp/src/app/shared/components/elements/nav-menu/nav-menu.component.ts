@@ -71,7 +71,7 @@ export class NavMenuComponent {
 
       this.translateVariables();
     });
-    
+
     // Colour mode
     this.sessionService.colourMode.subscribe((colourMode: string) => this.colourMode = colourMode);
     this.sessionService.selectedColourMode.subscribe((selectedColourMode: string) => this.selectedColourMode = selectedColourMode);
@@ -189,12 +189,16 @@ export class NavMenuComponent {
     });
 
     modalRef.result.then(result => {
-      
+
     }, () => {
 
       // Dismissed
       return;
     });
+  }
+
+  reload () {
+    this.sessionService.refreshDocumentsNow()
   }
 
   setColourMode(colourMode: string) {
