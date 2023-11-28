@@ -1,4 +1,5 @@
-﻿using iText.IO.Image;
+﻿using ImageMagick;
+using iText.IO.Image;
 using iText.Kernel.Pdf;
 using PDFWebEdit.Enumerations;
 using PDFWebEdit.Helpers;
@@ -647,6 +648,12 @@ namespace PDFWebEdit.Services
                 {
                     file.CopyTo(imageStream);
                 }
+
+                using var magickimage = new MagickImage(uploadFilePath);
+                // ImageMagick docs say 40% should work for most images
+                magickimage.Deskew(new Percentage(40d));
+                magickimage.Enhance();
+                magickimage.Write(uploadFilePath);
 
                 ImageData imageData = ImageDataFactory.Create(uploadFilePath);
                 File.Delete(uploadFilePath);
