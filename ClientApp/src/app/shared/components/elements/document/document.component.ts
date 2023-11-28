@@ -327,7 +327,7 @@ export class DocumentComponent implements OnInit, AfterViewInit {
 
   //
   // Preview
-  // 
+  //
 
   updatePreviewSize($event: MaxPreviewSizeChangedEvent) {
     this.maxPreviewHeight = $event.height + this.getDocumentScrollWrapperScrollbarHeight();
@@ -341,9 +341,9 @@ export class DocumentComponent implements OnInit, AfterViewInit {
     return scrollbarHeight;
   }
 
-  // 
+  //
   // Selection
-  // 
+  //
 
   selectionChanged($event: SelectionChangedEvent) {
     this.document.hasSelectedPages.next($event.selectedPages.length > 0);
@@ -366,7 +366,7 @@ export class DocumentComponent implements OnInit, AfterViewInit {
 
   //
   // Manipulation
-  // 
+  //
 
   rotateClockwise() {
 
@@ -505,6 +505,13 @@ export class DocumentComponent implements OnInit, AfterViewInit {
 
         if (updatedDocument != null) {
           this.onReplaceDocument.emit({ originalDoc: this.document, newDocument: updatedDocument });
+          if(this.config.inboxConfig.archiveFileOnMerge){
+            this.api.archive(this.directory, result.name, result.directory).subscribe(result => {
+              if (result != null){
+                this.onRemoveDocument.emit(result.name);
+              }
+            }, error => this.uiService.showMessageBox(error));
+          }
         } else {
           this.uiService.showMessageBox(this.translateService.instant('errors.mergeUnableToLoadUpdatedDocument'));
         }

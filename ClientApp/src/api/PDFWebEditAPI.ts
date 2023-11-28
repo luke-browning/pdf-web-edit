@@ -3042,6 +3042,8 @@ export class InboxConfig implements IInboxConfig {
     batchShowSave!: boolean;
     /** Gets or sets a value indicating whether to archive the original file on save . */
     archiveOriginalFileOnSave!: boolean;
+    /** Gets or sets a value indicating whether to archive a file on merging it with another. */
+    archiveFileOnMerge!: boolean;
     /** Gets or sets a value indicating whether the document on archive wil be deleted. */
     deleteDocumentOnArchive!: boolean;
 
@@ -3075,6 +3077,7 @@ export class InboxConfig implements IInboxConfig {
             this.batchShowSaveAs = _data["batchShowSaveAs"] !== undefined ? _data["batchShowSaveAs"] : <any>null;
             this.batchShowSave = _data["batchShowSave"] !== undefined ? _data["batchShowSave"] : <any>null;
             this.archiveOriginalFileOnSave = _data["archiveOriginalFileOnSave"] !== undefined ? _data["archiveOriginalFileOnSave"] : <any>null;
+            this.archiveFileOnMerge = _data["archiveFileOnMerge"] !== undefined ? _data["archiveFileOnMerge"] : <any>null;
             this.deleteDocumentOnArchive = _data["deleteDocumentOnArchive"] !== undefined ? _data["deleteDocumentOnArchive"] : <any>null;
         }
     }
@@ -3107,6 +3110,7 @@ export class InboxConfig implements IInboxConfig {
         data["batchShowSaveAs"] = this.batchShowSaveAs !== undefined ? this.batchShowSaveAs : <any>null;
         data["batchShowSave"] = this.batchShowSave !== undefined ? this.batchShowSave : <any>null;
         data["archiveOriginalFileOnSave"] = this.archiveOriginalFileOnSave !== undefined ? this.archiveOriginalFileOnSave : <any>null;
+        data["archiveFileOnMerge"] = this.archiveFileOnMerge !== undefined ? this.archiveFileOnMerge : <any>null;
         data["deleteDocumentOnArchive"] = this.deleteDocumentOnArchive !== undefined ? this.deleteDocumentOnArchive : <any>null;
         return data;
     }
@@ -3152,6 +3156,8 @@ export interface IInboxConfig {
     batchShowSave: boolean;
     /** Gets or sets a value indicating whether to archive the original file on save . */
     archiveOriginalFileOnSave: boolean;
+    /** Gets or sets a value indicating whether to archive a file on merging it with another. */
+    archiveFileOnMerge: boolean;
     /** Gets or sets a value indicating whether the document on archive wil be deleted. */
     deleteDocumentOnArchive: boolean;
 }
