@@ -15,7 +15,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development",
         "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": "Microsoft.AspNetCore.SpaProxy"
       },
-      "applicationUrl": "https://localhost:7114;http://localhost:5114"
+      "applicationUrl": "http://localhost:5114"
     },
     "IIS Express": {
       "commandName": "IISExpress",
