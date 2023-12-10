@@ -642,7 +642,7 @@ namespace PDFWebEdit.Services
             string uploadFilePath = Path.Combine(inboxDirectory, name);
 
             // Convert jpg to PDF
-            if (file.ContentType == "image/jpeg")
+            if (file.ContentType == "image/jpeg" || file.ContentType == "image/png")
             {
                 using (var imageStream = File.Create(uploadFilePath))
                 {
