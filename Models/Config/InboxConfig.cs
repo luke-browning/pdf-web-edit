@@ -158,6 +158,14 @@
         public bool ArchiveOriginalFileOnSave { get; set; } = true;
 
         /// <summary>
+        /// Gets or sets a value indicating whether to archive a file on merging it with another.
+        /// </summary>
+        /// <value>
+        /// True if archiving the file on merge, false if not.
+        /// </value>
+        public bool ArchiveFileOnMerge { get; set; } = true;
+
+        /// <summary>
         /// Gets or sets a value indicating whether the document on archive wil be deleted.
         /// </summary>
         /// <value>

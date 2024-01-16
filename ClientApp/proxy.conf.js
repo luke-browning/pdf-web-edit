@@ -1,18 +1,12 @@
-const { env } = require('process');
-
-const target = env.ASPNETCORE_HTTPS_PORT ? `https://localhost:${env.ASPNETCORE_HTTPS_PORT}` :
-  env.ASPNETCORE_URLS ? env.ASPNETCORE_URLS.split(';')[0] : 'http://localhost:25638';
+const target = "http://localhost:5114";
 
 const PROXY_CONFIG = [
   {
-    context: [
-      "/api/configuration",
-      "/api/documents",
-      "/swagger",
-   ],
+    context: ["/api/**"],
     target: target,
-    secure: false
-  }
-]
+    secure: false,
+    ws: true
+  },
+];
 
 module.exports = PROXY_CONFIG;

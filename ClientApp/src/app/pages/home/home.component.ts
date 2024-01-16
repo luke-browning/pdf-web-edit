@@ -7,6 +7,7 @@ import { ConfigService } from '../../services/config/config.service';
 import { ReplaceDocument } from '../../shared/components/elements/document/document.component';
 import { BehaviorSubject } from 'rxjs';
 import { SessionService } from '../../services/session/session.service';
+import { EventService } from 'src/api/events';
 
 @Component({
   selector: 'app-home',
@@ -43,10 +44,10 @@ export class HomeComponent {
   sortDirection: string = 'Asc';
 
   alwaysShowFooter: boolean = false;
-  
+
 
   constructor(private api: PDFWebEditAPI.DocumentClient, private modalService: NgbModal, private route: ActivatedRoute,
-    private router: Router, private configService: ConfigService, private sessionService: SessionService) {
+    private router: Router, private configService: ConfigService, private sessionService: SessionService, private eventService: EventService) {
 
     // Load the app config
     configService.getConfig().subscribe((config: PDFWebEditAPI.Config | null | undefined) => {
@@ -88,6 +89,19 @@ export class HomeComponent {
     // Keep track of the preview size
     sessionService.previewSize.subscribe((previewSize: string) => this.size.next(previewSize));
 
+    // Keep track of search
+    this.sessionService.search.subscribe((query: string) => {
+      this.filterQuery = query;
+      this.updatedFilteredDocuments();
+    });
+
+    // this.sessionService.refreshDocuments.subscribe((query: string) => {
+    // });
+
+    this.eventService.events.subscribe(event => {
+      this.refreshDocuments();
+    })
+
     // Keep track of the sorting
     sessionService.sortBy.subscribe((sortBy: string) => this.setSort(sortBy));
     sessionService.sortDirection.subscribe((sortDirection: string) => this.setSortDirection(sortDirection));
@@ -95,7 +109,7 @@ export class HomeComponent {
 
   //
   // Infinite scroll
-  //  
+  //
 
   onScroll() {
 
@@ -144,7 +158,7 @@ export class HomeComponent {
 
   //
   // Sorting
-  // 
+  //
 
   setSort(sort: string) {
     this.sort = sort;
@@ -195,7 +209,7 @@ export class HomeComponent {
 
   //
   // Events
-  // 
+  //
 
   newDocumentEvent(newDocument: PDFWebEditAPI.Document) {
 
@@ -243,17 +257,13 @@ export class HomeComponent {
 
       this.loadDocuments(result!);
       this.sortDocuments();
-
-      this.sessionService.search.subscribe((query: string) => {
-        this.filterQuery = query;
-        this.updatedFilteredDocuments();
-      });
+      this.updatedFilteredDocuments();
 
     }, error => console.error(error));
   }
 
   updatedFilteredDocuments(resetLazyLoading = true) {
-    
+
     // Filter the docs
     this.filteredDocuments = this.documents.filter(doc => doc.name.toLowerCase().indexOf(this.filterQuery.toLowerCase()) > -1);
 

@@ -36,6 +36,10 @@ export class SessionService {
   private search$ = new BehaviorSubject<string>('');
   search = this.search$.asObservable();
 
+  // DocumentListRefresh
+  private refreshDocuments$ = new BehaviorSubject('');
+  refreshDocuments = this.refreshDocuments$.asObservable();
+
   // Language
   private language$ = new BehaviorSubject<string>('');
   language = this.language$.asObservable();
@@ -159,6 +163,11 @@ export class SessionService {
 
     // Save the currently selected sort direction
     this.search$.next(search);
+  }
+
+
+  refreshDocumentsNow() {
+    this.refreshDocuments$.next(new Date().toISOString());
   }
 
   setCache(key: string, value: object) {

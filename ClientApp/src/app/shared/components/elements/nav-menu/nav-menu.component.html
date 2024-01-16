@@ -50,6 +50,18 @@
   </div>
 
   <ul class="navbar-nav d-none d-lg-flex">
+    <li class="nav-item">
+      <div class="btn-group d-flex" role="group">
+        <li class="nav-item" ngbTooltip="{{ 'header.reload.label' | translate }}" placement="left">
+          <a type="button" class="nav-link" (click)="reload()">
+            <i class="bi bi-arrow-clockwise"></i>
+          </a>
+        </li>
+      </div>
+    </li>
+  </ul>
+
+  <ul class="navbar-nav d-none d-lg-flex">
     <ng-container *ngIf="config?.headerConfig?.showPreviewSizePicker">
       <li class="nav-item" ngbDropdown ngbTooltip="{{ 'shared.previewSize.label' | translate }}" placement="left" tourAnchor="size">
         <a class="nav-link" ngbDropdownToggle role="button">

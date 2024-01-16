@@ -583,6 +583,78 @@ export class DocumentClient {
     }
 
     /**
+     * Posts a document.
+     * @param model (optional) Form Data with the document as "file=".
+     * @return The document.
+     */
+    uploadDocument(model?: FileUploadModel | undefined): Observable<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/documents/upload";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = new FormData();
+        if (model === null || model === undefined)
+            throw new Error("The parameter 'model' cannot be null.");
+        else
+            content_.append("model", JSON.stringify(model));
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUploadDocument(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUploadDocument(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<FileResponse | null>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<FileResponse | null>;
+        }));
+    }
+
+    protected processUploadDocument(response: HttpResponseBase): Observable<FileResponse | null> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return _observableOf({ fileName: fileName, data: responseBlob as any, status: status, headers: _headers });
+        } else if (status === 500) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result500: any = null;
+            let resultData500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result500 = resultData500 ? ProblemDetails.fromJS(resultData500) : <any>null;
+            return throwException("A server side error occurred.", status, _responseText, _headers, result500);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    /**
      * Gets page count of the specified document.
      * @param targetDirectory The target directory.
      * @param document The document.
@@ -2970,6 +3042,8 @@ export class InboxConfig implements IInboxConfig {
     batchShowSave!: boolean;
     /** Gets or sets a value indicating whether to archive the original file on save . */
     archiveOriginalFileOnSave!: boolean;
+    /** Gets or sets a value indicating whether to archive a file on merging it with another. */
+    archiveFileOnMerge!: boolean;
     /** Gets or sets a value indicating whether the document on archive wil be deleted. */
     deleteDocumentOnArchive!: boolean;
 
@@ -3003,6 +3077,7 @@ export class InboxConfig implements IInboxConfig {
             this.batchShowSaveAs = _data["batchShowSaveAs"] !== undefined ? _data["batchShowSaveAs"] : <any>null;
             this.batchShowSave = _data["batchShowSave"] !== undefined ? _data["batchShowSave"] : <any>null;
             this.archiveOriginalFileOnSave = _data["archiveOriginalFileOnSave"] !== undefined ? _data["archiveOriginalFileOnSave"] : <any>null;
+            this.archiveFileOnMerge = _data["archiveFileOnMerge"] !== undefined ? _data["archiveFileOnMerge"] : <any>null;
             this.deleteDocumentOnArchive = _data["deleteDocumentOnArchive"] !== undefined ? _data["deleteDocumentOnArchive"] : <any>null;
         }
     }
@@ -3035,6 +3110,7 @@ export class InboxConfig implements IInboxConfig {
         data["batchShowSaveAs"] = this.batchShowSaveAs !== undefined ? this.batchShowSaveAs : <any>null;
         data["batchShowSave"] = this.batchShowSave !== undefined ? this.batchShowSave : <any>null;
         data["archiveOriginalFileOnSave"] = this.archiveOriginalFileOnSave !== undefined ? this.archiveOriginalFileOnSave : <any>null;
+        data["archiveFileOnMerge"] = this.archiveFileOnMerge !== undefined ? this.archiveFileOnMerge : <any>null;
         data["deleteDocumentOnArchive"] = this.deleteDocumentOnArchive !== undefined ? this.deleteDocumentOnArchive : <any>null;
         return data;
     }
@@ -3080,6 +3156,8 @@ export interface IInboxConfig {
     batchShowSave: boolean;
     /** Gets or sets a value indicating whether to archive the original file on save . */
     archiveOriginalFileOnSave: boolean;
+    /** Gets or sets a value indicating whether to archive a file on merging it with another. */
+    archiveFileOnMerge: boolean;
     /** Gets or sets a value indicating whether the document on archive wil be deleted. */
     deleteDocumentOnArchive: boolean;
 }
@@ -3458,6 +3536,42 @@ export enum TargetDirectory {
     Inbox = 0,
     Outbox = 1,
     Archive = 2,
+}
+
+export class FileUploadModel implements IFileUploadModel {
+    file!: any;
+
+    constructor(data?: IFileUploadModel) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.file = _data["file"] !== undefined ? _data["file"] : <any>null;
+        }
+    }
+
+    static fromJS(data: any): FileUploadModel {
+        data = typeof data === 'object' ? data : {};
+        let result = new FileUploadModel();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["file"] = this.file !== undefined ? this.file : <any>null;
+        return data;
+    }
+}
+
+export interface IFileUploadModel {
+    file: any;
 }
 
 /** Encapsulates the result of a document. */

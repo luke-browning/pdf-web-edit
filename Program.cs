@@ -26,12 +26,15 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+builder.Services.AddSignalR();
 builder.Services.AddSingleton<DocNetSingleton>();
 builder.Services.AddSingleton<ConfigService>();
 builder.Services.AddSingleton<DirectoryService>();
 
 builder.Services.AddTransient<IPDFService, DocNetPDFService>();
 builder.Services.AddTransient<IPDFManipulationService, iTextPDFManipulationService>();
+
+builder.Services.AddHostedService<FileInputMonitorService>();
 
 var app = builder.Build();
 
@@ -59,7 +62,9 @@ app.UseRouting();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller}/{action=Index}/{id?}");
-
+app.UseEndpoints(endpoints => {
+    endpoints.MapHub<EventHub>("/api/events");
+});
 app.MapFallbackToFile("index.html");
 
 app.Run();

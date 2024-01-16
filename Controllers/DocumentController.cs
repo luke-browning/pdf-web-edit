@@ -187,6 +187,37 @@ namespace PDFWebEdit.Controllers
         }
 
         /// <summary>
+        /// Posts a document.
+        /// </summary>
+        /// <param name="model">Form Data with the document as "file=".</param>
+        /// <returns>
+        /// The document.
+        /// </returns>
+        [HttpPost]
+        [Route("upload")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(FileContentResult))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
+        [ProducesErrorResponseType(typeof(ObjectResult))]
+        public IActionResult UploadDocument([FromForm] FileUploadModel model)
+        {
+            if (model?.File == null || model.File.Length <= 0)
+            {
+                return BadRequest("No file was uploaded.");
+            }
+
+            try
+            {
+                _directoryService.Create(model.File.FileName, model.File);
+
+                return Ok();
+            }
+            catch (Exception x)
+            {
+                return ExceptionHelpers.GetErrorObjectResult("Download", HttpContext, x);
+            }
+        }
+
+        /// <summary>
         /// Gets page count of the specified document.
         /// </summary>
         /// <param name="targetDirectory">The target directory.</param>

@@ -127,6 +127,15 @@
             The document.
             </returns>
         </member>
+        <member name="M:PDFWebEdit.Controllers.DocumentController.UploadDocument(PDFWebEdit.Models.FileUploadModel)">
+            <summary>
+            Posts a document.
+            </summary>
+            <param name="model">Form Data with the document as "file=".</param>
+            <returns>
+            The document.
+            </returns>
+        </member>
         <member name="M:PDFWebEdit.Controllers.DocumentController.GetPageCount(PDFWebEdit.Enumerations.TargetDirectory,System.String,System.String)">
             <summary>
             Gets page count of the specified document.
@@ -992,6 +1001,14 @@
             True if archive original file on save, false if not.
             </value>
         </member>
+        <member name="P:PDFWebEdit.Models.Config.InboxConfig.ArchiveFileOnMerge">
+            <summary>
+            Gets or sets a value indicating whether to archive a file on merging it with another.
+            </summary>
+            <value>
+            True if archiving the file on merge, false if not.
+            </value>
+        </member>
         <member name="P:PDFWebEdit.Models.Config.InboxConfig.DeleteDocumentOnArchive">
             <summary>
             Gets or sets a value indicating whether the document on archive wil be deleted.
@@ -1702,6 +1719,13 @@
             <param name="targetSubDirectory">The target sub directory.</param>
             <param name="newName">New name.</param>
         </member>
+        <member name="M:PDFWebEdit.Services.DirectoryService.Create(System.String,Microsoft.AspNetCore.Http.IFormFile)">
+            <summary>
+            Creates document in the inbox directory.
+            </summary>
+            <param name="name">The name.</param>
+            <param name="file">The File.</param>
+        </member>
         <member name="M:PDFWebEdit.Services.DirectoryService.GetTargetDirectoryPath(PDFWebEdit.Enumerations.TargetDirectory)">
             <summary>
             Gets target directory path.
@@ -2006,6 +2030,11 @@
             <param name="document">The document.</param>
             <param name="password">The password.</param>
             <param name="subDirectory">Subdirectory storing document.</param>
+        </member>
+        <member name="T:EventHub">
+            <summary>
+            Event hub for websocket messages to and from the client.
+            </summary>
         </member>
     </members>
 </doc>
